@@ -24,7 +24,7 @@ import org.docksidestage.unit.PlainTestCase;
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
  * (javadocの通りにエクササイズを実施。質問形式の場合はテストを実行する前に考えて答えを書いてみましょう)
  * @author jflute
- * @author your_name_here
+ * @author Ryo Fujisawa
  */
 public class Step01VariableTest extends PlainTestCase {
 
@@ -37,7 +37,8 @@ public class Step01VariableTest extends PlainTestCase {
      */
     public void test_variable_basic() { // example, so begin from the next method
         String sea = "mystic";
-        log(sea); // your answer? => mystic
+        log(sea); // your answer? => mystic 正解
+        // 変数にmystic文字列入されており、それがlogで出力されている
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -47,7 +48,9 @@ public class Step01VariableTest extends PlainTestCase {
         String piari = null;
         String dstore = "mai";
         sea = sea + land + piari + ":" + dstore;
-        log(sea); // your answer? => 
+        log(sea); // your answer? => mystic8:mai 不正解
+        // nullは出力されないと思ったが、文字列としてnullが結合されて出力されるのは驚きです
+        // [調べたこと] Javaの文字列連結演算子は、null参照を文字列の"null"に変換して連結する -> 予期せぬ挙動につながる恐れがある
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -56,7 +59,13 @@ public class Step01VariableTest extends PlainTestCase {
         String land = "oneman";
         sea = land;
         land = land + "'s dreams";
-        log(sea); // your answer? => 
+        log(sea); // your answer? => oneman 正解
+        // 値渡しか参照渡しか、勘で値渡しにして正解
+        // [調べたこと] seaはlandの参照を受け取り、seaもlandも"oneman"を示す
+        // その後、Stringがimmutableなためlandの参照先が"oneman's dreams"になる
+        // seaの参照先は"oneman"のままなため、log(sea)はonemanとなる
+        // [考えたこと] 値渡し、参照渡しというより、
+        // immutableなクラスでは、変更しようとすると新しいインスタンスが作成され、変数は新しいインスタンスを示すようになる。
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -65,17 +74,23 @@ public class Step01VariableTest extends PlainTestCase {
         int land = 415;
         sea = land;
         land++;
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 415 正解
+        // 1問前と同じ、変数は値渡し
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_variable_reassigned_BigDecimal() {
         BigDecimal sea = new BigDecimal(94);
         BigDecimal land = new BigDecimal(415);
-        sea = land;
-        sea = land.add(new BigDecimal(1));
-        sea.add(new BigDecimal(1));
-        log(sea); // your answer? => 
+        sea = land; // sea 415
+        sea = land.add(new BigDecimal(1)); // sea 416 
+        sea.add(new BigDecimal(1)); // sea 417
+        log(sea); // your answer? => 417 不正解
+        // よく見たらseaに代入されてない、、、単純な見落としでした、、、
+        // sea.add(new BigDecimal(1))は、417を作るはず
+        log(sea.add(new BigDecimal(1)));
+        // これは417になる
+        // [調べたこと] BidDecimalはimmutable
     }
 
     // ===================================================================================
@@ -89,19 +104,24 @@ public class Step01VariableTest extends PlainTestCase {
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_variable_instance_variable_default_String() {
         String sea = instanceBroadway;
-        log(sea); // your answer? => 
+        log(sea); // your answer? => null 正解
+        // instanceBroadwayは定義されただけで値が代入されていない->デフォルトはnullだと予想
+        // logでnullが出力されるのは前の問題で確認済み
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_variable_instance_variable_default_int() {
         int sea = instanceDockside;
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 0 正解
+        // intのデフォルトは0だと予想
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_variable_instance_variable_default_Integer() {
         Integer sea = instanceHangar;
-        log(sea); // your answer? => 
+        log(sea); // your answer? => null 正解
+        // intとIntegerの違い
+        // Integerはクラスっぽいので、nullになると予想
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -110,7 +130,11 @@ public class Step01VariableTest extends PlainTestCase {
         instanceMagiclamp = "magician";
         helpInstanceVariableViaMethod(instanceMagiclamp);
         String sea = instanceBroadway + "|" + instanceDockside + "|" + instanceHangar + "|" + instanceMagiclamp;
-        log(sea); // your answer? => 
+        log(sea); // your answer? => null|0|null|magician 不正解
+        // 外部の変数は触らないと思って回答
+        // 解答見た後よく考えたら、外部の変数というよりクラスにぶら下がってるattributeだから、変更できるってことな気がする
+        // kotlinとかも、this.を省略してかけたから、その辺と同じ挙動か？
+        // instanceMagiclampは、関数の引数なのでクラスにぶら下がってる値を変更している訳ではない
     }
 
     private void helpInstanceVariableViaMethod(String instanceMagiclamp) {
@@ -130,13 +154,27 @@ public class Step01VariableTest extends PlainTestCase {
         String sea = "harbor";
         int land = 415;
         helpMethodArgumentImmutableMethodcall(sea, land);
-        log(sea); // your answer? => 
+        log(sea); // your answer? => harbor416 不正解
+        // immutableって問題に書いてあるからimmutableなんだろうなとメタ読みしたものの、最初に自分が思った解答を記述
+        // Stringがimmutableで関数がreturnしている訳でもないから、関数内での変更は外に反映されない？
+        String sea2 = helpMethodArgumentImmutableMethodCall2(sea, land);
+        log(sea2);
+        // こうすればできそう、と思って実装
+        // harbor416が出力された
     }
 
     private void helpMethodArgumentImmutableMethodcall(String sea, int land) {
         ++land;
         String landStr = String.valueOf(land); // is "416"
         sea.concat(landStr);
+        log(sea);
+    }
+
+    private String helpMethodArgumentImmutableMethodCall2(String sea, int land) {
+        ++land;
+        String landStr = String.valueOf(land);
+        String sea2 = sea.concat(landStr);
+        return sea2;
     }
 
     // -----------------------------------------------------
@@ -147,13 +185,30 @@ public class Step01VariableTest extends PlainTestCase {
         StringBuilder sea = new StringBuilder("harbor");
         int land = 415;
         helpMethodArgumentMethodcall(sea, land);
-        log(sea); // your answer? => 
+        log(sea); // your answer? => harbor 不正解
+        // こっちはmutableなんだろうなとは思ったものの、appendでintのまま結合できるとは思いませんでした。
+        // こっちはStringBuilderが参照を渡すのか？
+        log(land);
+        // landはどうなっているんだろうと思い実行
+        // 引数でとっているlandなので、外の値は変更されていないだろうと予想し、予想通り415
+        // StringBuilder sea2 = new StringBuilder("harbor");
+        // helpMethodArgumentMethodcall2(sea2, land);
+        // 前の問題と同様のことができるかどうか確認
+        // が、StringBuilder型にはそもそもconcatというメソッドが用意されていない
+        // 確認がてら見てみたが、appendメソッドは割となんでも結合できそうですごい、が予期せぬ動作も起こりやすそうな印象
     }
 
     private void helpMethodArgumentMethodcall(StringBuilder sea, int land) {
         ++land;
         sea.append(land);
     }
+    /*
+    private void helpMethodArgumentMethodcall2(StringBuilder sea, int land) {
+        ++land;
+        String landStr = String.valueOf(land);
+        sea.concat(landStr);
+    }
+    */
 
     // -----------------------------------------------------
     //                                   Variable Assignment
@@ -163,12 +218,14 @@ public class Step01VariableTest extends PlainTestCase {
         StringBuilder sea = new StringBuilder("harbor");
         int land = 415;
         helpMethodArgumentVariable(sea, land);
-        log(sea); // your answer? => 
+        log(sea); // your answer? => harbor 正解
+        // ヘルパー内ではseaに新しく代入しており、引数として渡しているseaとは別のインスタンスを指定していると予想
     }
 
     private void helpMethodArgumentVariable(StringBuilder sea, int land) {
         ++land;
         String seaStr = sea.toString(); // is "harbor"
+        // sea.append(land); ここでappendを呼べばsea = harbor416になり、最終的な出力はharbor416になる予想をし、正解
         sea = new StringBuilder(seaStr).append(land);
     }
 
@@ -191,8 +248,13 @@ public class Step01VariableTest extends PlainTestCase {
      * o すべての変数をlog()でカンマ区切りの文字列で表示
      * </pre>
      */
+    private int piari;
+
     public void test_variable_writing() {
         // define variables here
+        String sea = "mystic";
+        Integer land = null;
+        log(sea + "," + land + "," + piari);
     }
 
     // ===================================================================================
@@ -208,7 +270,12 @@ public class Step01VariableTest extends PlainTestCase {
      * _/_/_/_/_/_/_/_/_/_/
      * </pre>
      */
+    private String s1 = "abcde";
+    private String s2 = "fghij";
+
     public void test_variable_yourExercise() {
         // write your code here
+        String s1 = "abc";
+        log(s1 + "," + s2); // => 
     }
 }
