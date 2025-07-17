@@ -266,7 +266,7 @@ public class Step01VariableTest extends PlainTestCase {
      * <pre>
      * _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
      * your question here (ここにあなたの質問を):
-     * 
+     * メソッド終了時に出力される文字列は？
      * _/_/_/_/_/_/_/_/_/_/
      * </pre>
      */
@@ -276,6 +276,7 @@ public class Step01VariableTest extends PlainTestCase {
     public void test_variable_yourExercise() {
         // write your code here
         String s1 = "abc";
-        log(s1 + "," + s2); // => 
+        log(s1 + "," + s2); // => ?
     }
+    // 自分でやってみましたが、メソッド内ではローカル変数が優先されます。
 }
