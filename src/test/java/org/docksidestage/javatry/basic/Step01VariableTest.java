@@ -51,6 +51,13 @@ public class Step01VariableTest extends PlainTestCase {
         log(sea); // your answer? => mystic8:mai 不正解
         // nullは出力されないと思ったが、文字列としてnullが結合されて出力されるのは驚きです
         // [調べたこと] Javaの文字列連結演算子は、null参照を文字列の"null"に変換して連結する -> 予期せぬ挙動につながる恐れがある
+        // TODO fujisawa [いいね] 調べてこと書いてあると嬉しいです。 by jflute (2025/07/22)
+        // 予期せぬ挙動、まさしく昔のインターネット画面では、「こんにちは null さん」とかよく出てました。
+        // 例外(エラー)になるのが一番安全かもですが、それはそれで都度チェックするのも大変かもと。
+        // 空文字で出すのか？nullで出すのか？例えばC#だと空文字になります。
+        // 一方で、mystic8:mai だと間違いがあった風に見えなくて気付きにくいという面もあります。
+        // 逆に、JavaScriptはnullだけじゃなくundefinedとかまで表示されたりもします。
+        // 些細な言語の挙動に違いではありますが、こういうところそれぞれ思想があって違いが生まれるのかもですね。
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -66,6 +73,15 @@ public class Step01VariableTest extends PlainTestCase {
         // seaの参照先は"oneman"のままなため、log(sea)はonemanとなる
         // [考えたこと] 値渡し、参照渡しというより、
         // immutableなクラスでは、変更しようとすると新しいインスタンスが作成され、変数は新しいインスタンスを示すようになる。
+        // TODO fujisawa [ふぉろー] そうですね、Stringがimmutableだからってのが大きいかもですね by jflute (2025/07/22)
+        // Stringで+したときは、新しいインスタンスが戻されるということで、seaが参照しているインスタンスに変化はないと。
+        //
+        // Object型 (Stringなど) の変数は、メモリ上のどこかに置いてあるインスタンスへの参照(アドレス)を持っています。
+        // sea は、"mystic" というStringインスタンスへの参照(アドレス)を持っていて、
+        // land は、"oneman" というStringインスタンスへの参照(アドレス)を持っています。
+        // sea = land; をすると、landが持っている参照(アドレス)を、seaにコピーします。
+        // その一瞬だけ、sea も land も同じインスタンスを参照することになります。(同じアドレス持っている)
+        // また、"mystic" のStringインスタンスは誰からも参照されなくなります。
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -91,6 +107,11 @@ public class Step01VariableTest extends PlainTestCase {
         log(sea.add(new BigDecimal(1)));
         // これは417になる
         // [調べたこと] BidDecimalはimmutable
+        // TODO fujisawa [いいね] immutable, そのとおりです。 by jflute (2025/07/22)
+        // immutableの場合は変化させるメソッドを呼び出しても戻り値で受け取らなかったら意味がないのでご注意を。
+
+        // TODO jflute 1on1にて、immutableの話を深堀りする予定 (2025/07/22)
+        // (↑このtodoはくぼ用のtodoなのでそのまま置いておいてください)
     }
 
     // ===================================================================================
@@ -135,6 +156,14 @@ public class Step01VariableTest extends PlainTestCase {
         // 解答見た後よく考えたら、外部の変数というよりクラスにぶら下がってるattributeだから、変更できるってことな気がする
         // kotlinとかも、this.を省略してかけたから、その辺と同じ挙動か？
         // instanceMagiclampは、関数の引数なのでクラスにぶら下がってる値を変更している訳ではない
+        // TODO fujisawa [ふぉろー] test_側のinstanceMagiclampは、インスタンス変数 (attribute) なので... by jflute (2025/07/22)
+        // やろうと思えばクラス内のインスタンスメソッドであればどこからでも変更することは可能です。
+        // ただ、helpメソッド側のinstanceMagiclampは、(たまたま名前が同じだけの)引数としてのローカル変数なので、
+        // その変数に対して再代入で参照先を新しく変えても、インスタンス変数のinstanceMagiclampは全く別の変数なので無関係であると。
+        // メソッドを呼び出すの引数は、変数が渡ってるというよりかは「インスタンスが渡っている」(厳密にはアドレスだけが渡っている)、
+        // というニュアンスですね。
+        // TODO fujisawa IDE上の変数の色にも着目してみてください。 by jflute (2025/07/22)
+        // インスタンス変数と、ローカル変数では、フォントカラーが変わっているかと思います。
     }
 
     private void helpInstanceVariableViaMethod(String instanceMagiclamp) {
@@ -161,6 +190,14 @@ public class Step01VariableTest extends PlainTestCase {
         log(sea2);
         // こうすればできそう、と思って実装
         // harbor416が出力された
+        // TODO fujisawa [いいね] "immutableって問題に書いてあるから" って気付いたこと素晴らしいです by jflute (2025/07/22)
+        // また、それにも関わらず自分が思った解答をされたというのも素晴らしいです(^^。
+        //
+        // "harbor"インスタンスは、helpの中にも渡っていってconcat()は呼ばれますが、
+        // BigDecimalと同じでimmutableなので、連結した値を新しく戻すだけで"harbor"インスタンス自身は変化しないです。
+        // ちなみに、戻り値で受け取っていれば答えは変化するのか？ってところで言うと、
+        // 仮に sea = sea.concat(landStr); と変えたとしても、にしても、seaは引数としてのローカル変数であって、
+        // test_メソッド側のsea変数とは(名前がたまたま同じだけの)別変数なので、やはり答えは変わりません。
     }
 
     private void helpMethodArgumentImmutableMethodcall(String sea, int land) {
@@ -170,6 +207,7 @@ public class Step01VariableTest extends PlainTestCase {
         log(sea);
     }
 
+    // TODO fujisawa [いいね] こういう風にお試し実装書いてみるのGood by jflute (2025/07/22)
     private String helpMethodArgumentImmutableMethodCall2(String sea, int land) {
         ++land;
         String landStr = String.valueOf(land);
@@ -188,6 +226,10 @@ public class Step01VariableTest extends PlainTestCase {
         log(sea); // your answer? => harbor 不正解
         // こっちはmutableなんだろうなとは思ったものの、appendでintのまま結合できるとは思いませんでした。
         // こっちはStringBuilderが参照を渡すのか？
+        // TODO fujisawa [ふぉろー] append()がオーバーロードという文法で色々な引数を受け取れるようになっています。 by jflute (2025/07/22)
+        // ぜひ、IDE上で append() のところにカーソルを置いてJavaDocを表示してみてください。
+        // append(int i) を呼び出してることがわかります。中では数値を文字列に変換してappendしています。
+        // (ソースコード追ってみて単純だろうと思ったら、意外にややこしいことしてるぞぅ: Integer.getChars()など)
         log(land);
         // landはどうなっているんだろうと思い実行
         // 引数でとっているlandなので、外の値は変更されていないだろうと予想し、予想通り415
@@ -196,6 +238,16 @@ public class Step01VariableTest extends PlainTestCase {
         // 前の問題と同様のことができるかどうか確認
         // が、StringBuilder型にはそもそもconcatというメソッドが用意されていない
         // 確認がてら見てみたが、appendメソッドは割となんでも結合できそうですごい、が予期せぬ動作も起こりやすそうな印象
+        // TODO fujisawa [ふぉろー] land は int ということで、Javaではプリミティブ型というデータになって... by jflute (2025/07/22)
+        // インスタンスという概念は存在せず、変数にそのまま415という値が入っていて、変わるときは416という別に値が入るみたいになります。
+        // ++land; は、単純に land = land + 1 をやっているだけなので、新しい値に差し替えているだけとなります。
+        // そしてここでも、help側のlandは引数としてのローカル変数で、test_側のlandとは別変数なので、全く操作の影響は受けません。
+        // TODO fujisawa [いいね] 確かに、オーバーロードメソッドでどんな型でも入っちゃう作りになっているので... by jflute (2025/07/22)
+        // ついついちゃんと業務ルール通りの文字列に変換してからappendしないといけないってときもスッと入っちゃうので怖いですね。
+        // オーバーロードは、StringBuilderとか本当に単純で汎用的なクラスで使われる感じで、
+        // 個人的には普段はそこまでオーバーロードのメソッドを自分で作ることは少ない印象です。
+        // メソッドを補完しててもメソッド名が同じで引数が違うってわかりづらいところあるんですね。
+        // (StringBuilderのようなクラスであればよいのですが)
     }
 
     private void helpMethodArgumentMethodcall(StringBuilder sea, int land) {
@@ -220,6 +272,7 @@ public class Step01VariableTest extends PlainTestCase {
         helpMethodArgumentVariable(sea, land);
         log(sea); // your answer? => harbor 正解
         // ヘルパー内ではseaに新しく代入しており、引数として渡しているseaとは別のインスタンスを指定していると予想
+        // TODO fujisawa [いいね] yes, new していれば100%別インスタンスですからね by jflute (2025/07/22)
     }
 
     private void helpMethodArgumentVariable(StringBuilder sea, int land) {
@@ -270,6 +323,7 @@ public class Step01VariableTest extends PlainTestCase {
      * _/_/_/_/_/_/_/_/_/_/
      * </pre>
      */
+    @SuppressWarnings("unused") // ちょっとIDE上で警告でちゃってノイズになるので
     private String s1 = "abcde";
     private String s2 = "fghij";
 
@@ -279,4 +333,6 @@ public class Step01VariableTest extends PlainTestCase {
         log(s1 + "," + s2); // => ?
     }
     // 自分でやってみましたが、メソッド内ではローカル変数が優先されます。
+    // TODO fujisawa [いいね] そうですね、イメージとしては近いほうが優先されるみたいな by jflute (2025/07/22)
+    // もうちょい丁寧に言うと、スコープが短いほうが優先されます。変数の隠蔽ですね。
 }
