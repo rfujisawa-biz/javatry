@@ -26,7 +26,7 @@ import org.docksidestage.unit.PlainTestCase;
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
  * (javadocの通りにエクササイズを実施。質問形式の場合はテストを実行する前に考えて答えを書いてみましょう)
  * @author jflute
- * @author your_name_here
+ * @author rfujisawa-biz
  */
 public class Step03DataTypeTest extends PlainTestCase {
 
@@ -45,16 +45,36 @@ public class Step03DataTypeTest extends PlainTestCase {
         Boolean dstore = true;
         BigDecimal amba = new BigDecimal("9.4");
 
-        piari = piari.plusDays(1);
-        land = piari.getYear();
-        bonvo = bonvo.plusMonths(1);
-        land = bonvo.getMonthValue();
-        land--;
-        if (dstore) {
-            BigDecimal addedDecimal = amba.add(new BigDecimal(land));
+        piari = piari.plusDays(1); // piari 2001-09-05
+        land = piari.getYear(); // land 2001
+        bonvo = bonvo.plusMonths(1); // bonvo 2001-10-4_12-34-56
+        land = bonvo.getMonthValue(); // land 10
+        land--; // landの型が何か、、、mutableなら1引かれた数値
+        // [考えたこと] landの定義はIntegerだからimmutableなんじゃないか
+        // [下のプログラムで検証] IntegerのTYPEはint, intにwrapされてる？
+        // そうしたら、land = 9
+        if (dstore) { // ここには入る
+            BigDecimal addedDecimal = amba.add(new BigDecimal(land)); // addedDecimal 18.4
             sea = String.valueOf(addedDecimal);
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 18.4 一応正解
+        // [考えたこと] 正解したけど、いまいちよくわかってない。
+        // [geminiに投げてみた結果] どうやらJavaのオートアンボクシング、オートボクシングという機能らしい
+        // 
+    }
+
+    public void test_datatype_basicType2() {
+        Integer land = 416;
+        log(land);
+        log(land.TYPE); // Integerでもintになってる
+        int tmp = 417;
+        land = tmp;
+        log(land);
+        log(land.TYPE); // landはint
+        Integer tmp2 = 418;
+        land = tmp2;
+        log(land);
+        log(land.TYPE);
     }
 
     // ===================================================================================
@@ -69,20 +89,49 @@ public class Step03DataTypeTest extends PlainTestCase {
         float dstore = 1.1f;
         double amba = 2.3d;
         char miraco = 'a';
-        boolean dohotel = miraco == 'a';
-        if (dohotel && dstore >= piari) {
-            bonvo = sea;
-            land = (short) bonvo;
-            bonvo = piari;
-            sea = (byte) land;
-            if (amba == 2.3D) {
-                sea = (byte) amba;
+        boolean dohotel = miraco == 'a'; // true
+        if (dohotel && dstore >= piari) { // dstore 1.1f > piari 1;
+            // floatとintが比較できるかどうか、流石にできるでしょ
+            bonvo = sea; // bonvo 127
+            log("bonvo1", bonvo);
+            land = (short) bonvo; // 別の型にキャストされても最大値内なら問題ない予想 land = 127
+            log("land", land);
+            bonvo = piari; // bonvo 1
+            log("bonvo2", bonvo);
+            sea = (byte) land; // sea 127
+            log("sea1", sea);
+            if (amba == 2.3D) { // true
+                sea = (byte) amba; // doubleをbyteにしたら整数部分が取り出される？ sea = 2
             }
         }
-        if ((int) dstore > piari) {
+        if ((int) dstore > piari) { // キャストしたら流石に1に丸められると思い、ここには入らない予想
             sea = 0;
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 2 正解
+        // [考えたこと] 正解はしたが、いまいち腑に落ちないというか、正しい考え方かどうかが分からない。
+        // とりあえず途中経過を全部出力してみる -> 途中経過は一応問題ない
+        // 最大値をバイトサイズがおさまっていない別の型にキャストしたらどうなるかテスト -> 全部-1になった
+        // 最大値+1をバイトサイズがおさまっていない別の型にキャストしたらどうなるかテスト -> 最大値+1の-1倍になった。
+        // （この辺で自分が何を確認したかったのかよく分からなくなってくる。）
+        // [geminiに聞いてみた結果] 2の補数表現、上位ビットが切り捨てられて下位ビットが取り出される挙動
+        // そういえばそうだったなと言われて思い出した
+    }
+
+    public void test_datatype_primitive2() {
+        short land = 32767; // max
+        long bonvo = 9223372036854775807L; // max
+        land = (byte) land;
+        log(land);
+        short bonvo2 = (short) bonvo;
+        log(bonvo2);
+        byte bonvo3 = (byte) bonvo;
+        log(bonvo3);
+        bonvo = 32768;
+        bonvo = (short) bonvo;
+        log(bonvo);
+        bonvo = 128;
+        bonvo = (byte) bonvo;
+        log(bonvo);
     }
 
     // ===================================================================================
@@ -92,7 +141,9 @@ public class Step03DataTypeTest extends PlainTestCase {
     public void test_datatype_object() {
         St3ImmutableStage stage = new St3ImmutableStage("hangar");
         String sea = stage.getStageName();
-        log(sea); // your answer? => 
+        log(sea); // your answer? => hangar 正解
+        // [考えたこと] hangarがコンストラクタに渡されて、stageクラスのstageName属性の値がhangarになっている
+        // getStageNameで、stage.stageNameにアクセスして値を取り出している。
     }
 
     private static class St3ImmutableStage {
