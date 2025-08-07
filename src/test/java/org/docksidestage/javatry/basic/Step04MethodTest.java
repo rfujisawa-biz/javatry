@@ -178,8 +178,8 @@ public class Step04MethodTest extends PlainTestCase {
         return replaced;
     }
 
-    public String quote(String str, String quota) {
-        String quoted = quota + str + quota;
+    public String quote(String str, String quote) {
+        String quoted = quote + str + quote;
         return quoted;
     }
 
