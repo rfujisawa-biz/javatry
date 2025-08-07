@@ -60,7 +60,12 @@ public class Step03DataTypeTest extends PlainTestCase {
         log(sea); // your answer? => 18.4 一応正解
         // [考えたこと] 正解したけど、いまいちよくわかってない。
         // [geminiに投げてみた結果] どうやらJavaのオートアンボクシング、オートボクシングという機能らしい
-        // 
+        // 1. オートアンボクシング: Integer型の変数landから、プリミティブ型のintを取り出す
+        // 2. intを減産する
+        // 3. 計算結果のintを使って、新しいIntegerオブジェクトが生成される（Integer.valueOf())
+        // 4. 再代入: 新しく生成されたIntegerオブジェクトを変数landに代入する
+        // よく考えたら、immutableの挙動そのものっぽい？新しい値を代入しようとすると、新たなインスタンスが作成されてそれが代入される
+        // land-- -> land = land - 1なので、そのような挙動になってるのか？
     }
 
     public void test_datatype_basicType2() {
