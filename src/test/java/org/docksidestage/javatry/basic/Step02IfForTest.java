@@ -25,7 +25,7 @@ import org.docksidestage.unit.PlainTestCase;
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
  * (javadocの通りにエクササイズを実施。質問形式の場合はテストを実行する前に考えて答えを書いてみましょう)
  * @author jflute
- * @author your_name_here
+ * @author rfujisawa-biz
  */
 public class Step02IfForTest extends PlainTestCase {
 
@@ -42,6 +42,7 @@ public class Step02IfForTest extends PlainTestCase {
             sea = 2001;
         }
         log(sea); // your answer? => 2001
+        // seaは904以上かつintなので、seaに2001が代入される
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -52,7 +53,8 @@ public class Step02IfForTest extends PlainTestCase {
         } else {
             sea = 7;
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 7 正解
+        // seaは904より大きいので、else句に入る
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -67,7 +69,8 @@ public class Step02IfForTest extends PlainTestCase {
         } else {
             sea = 9;
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 7 正解
+        // seaは904より大きく、904以上のため一つ目のelse if句に入り、7が代入される
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -78,9 +81,9 @@ public class Step02IfForTest extends PlainTestCase {
             sea = 2001;
         } else if (land && sea >= 904) {
             sea = 7;
-        } else if (sea >= 903 || land) {
+        } else if (sea >= 903 || land) { // ここに入る
             sea = 8;
-            if (!land) {
+            if (!land) { // ここに入る
                 land = true;
             } else if (sea <= 903) {
                 sea++;
@@ -91,13 +94,14 @@ public class Step02IfForTest extends PlainTestCase {
         } else {
             sea = 9;
         }
-        if (sea >= 9 || (sea > 7 && sea < 9)) {
+        if (sea >= 9 || (sea > 7 && sea < 9)) { // sea = 8, land = true 入る
             sea--;
         }
-        if (land) {
+        if (land) { // ここも入る
             sea = 10;
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 10 正解
+        // 命令型を追いかけました。
     }
 
     // ===================================================================================
@@ -105,57 +109,61 @@ public class Step02IfForTest extends PlainTestCase {
     //                                                                       =============
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_for_inti_basic() {
-        List<String> stageList = prepareStageList();
+        List<String> stageList = prepareStageList(); // stageList = ["broadway", "dockside", "hangar", "magiclamp"]
         String sea = null;
         for (int i = 0; i < stageList.size(); i++) {
-            String stage = stageList.get(i);
+            String stage = stageList.get(i); // stageListのi番目からstage変数を作る
             if (i == 1) {
-                sea = stage;
+                sea = stage; // i = 1の時のstageの参照をseaに代入する
             }
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => dockside 正解
+        // i = 1の時にstageに代入される
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_for_foreach_basic() {
-        List<String> stageList = prepareStageList();
+        List<String> stageList = prepareStageList(); // stageList = ["broadway", "dockside", "hangar", "magiclamp"]
         String sea = null;
         for (String stage : stageList) {
             sea = stage;
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => magiclamp 正解
+        // seaにstageList内のstageの参照代入され続け、最後のmagiclampが代入された状態で終了する。
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_for_foreach_continueBreak() {
-        List<String> stageList = prepareStageList();
+        List<String> stageList = prepareStageList(); // stageList = ["broadway", "dockside", "hangar", "magiclamp"]
         String sea = null;
         for (String stage : stageList) {
-            if (stage.startsWith("br")) {
+            if (stage.startsWith("br")) { // "br"から始まる場合はスキップされる
                 continue;
             }
-            sea = stage;
-            if (stage.contains("ga")) {
+            sea = stage; // stageの参照を渡す
+            if (stage.contains("ga")) { // "ga"が含まれる場合は打ち切り
                 break;
             }
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => hangar 正解
+        // 愚直に追いかけました
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_for_listforeach_basic() {
-        List<String> stageList = prepareStageList();
+        List<String> stageList = prepareStageList(); // stageList = ["broadway", "dockside", "hangar", "magiclamp"]
         StringBuilder sb = new StringBuilder();
-        stageList.forEach(stage -> {
+        stageList.forEach(stage -> { // 関数指向的に書いてるだけ？
             if (sb.length() > 0) {
                 return;
             }
-            if (stage.contains("i")) {
+            if (stage.contains("i")) { // iが入ってたらsbに追加
                 sb.append(stage);
             }
         });
         String sea = sb.toString();
-        log(sea); // your answer? => 
+        log(sea); // your answer? => dockside 正解
+        // 他の言語と同様に、forEachは単純にstageList内の要素に対して処理を行っているだけだと予想
     }
 
     // ===================================================================================
@@ -167,6 +175,12 @@ public class Step02IfForTest extends PlainTestCase {
      */
     public void test_iffor_making() {
         // write if-for here
+        List<String> stageList = prepareStageList();
+        stageList.forEach(stage -> {
+            if (stage.contains("a")) {
+                log(stage);
+            }
+        });
     }
 
     // ===================================================================================
@@ -176,8 +190,33 @@ public class Step02IfForTest extends PlainTestCase {
      * Change foreach statement to List's forEach() (keep result after fix) <br>
      * (foreach文をforEach()メソッドへの置き換えてみましょう (修正前と修正後で実行結果が同じになるように))
      */
+    // 解答
     public void test_iffor_refactor_foreach_to_forEach() {
-        List<String> stageList = prepareStageList();
+        //        List<String> stageList = prepareStageList();
+        List<String> stageList = new ArrayList<>();
+        stageList.add("brskla");
+        stageList.add("srkejigaklw");
+        stageList.add("gal;kjwer");
+
+        StringBuilder sea = new StringBuilder();
+        stageList.forEach(stage -> {
+            if (!stage.startsWith("br") && stage.contains("ga")) {
+                if (sea.length() > 0) {
+                    return;
+                }
+                sea.append(stage);
+            }
+        });
+
+        log(sea); // should be same as before-fix
+    }
+
+    // 元の実装
+    public void test_iffor_refactor_foreach_to_forEach_test() {
+        List<String> stageList = new ArrayList<>();
+        stageList.add("brskla");
+        stageList.add("srkejigaklw");
+        stageList.add("gal;kjwer");
         String sea = null;
         for (String stage : stageList) {
             if (stage.startsWith("br")) {
@@ -188,7 +227,20 @@ public class Step02IfForTest extends PlainTestCase {
                 break;
             }
         }
-        log(sea); // should be same as before-fix
+
+        log(sea);
+    }
+
+    // stream APIを使ってみた実装
+    public void test_iffor_refactor_foreach_to_forEach_with_stream() {
+        List<String> stageList = new ArrayList<>();
+        stageList.add("brskla");
+        stageList.add("srkejigaklw");
+        stageList.add("gal;kjwer");
+
+        StringBuilder sea = new StringBuilder();
+        stageList.stream().filter(stage -> !stage.startsWith("br") && stage.contains("ga")).findFirst().ifPresent(sea::append);
+        log(sea);
     }
 
     /**
@@ -197,12 +249,21 @@ public class Step02IfForTest extends PlainTestCase {
      * <pre>
      * _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
      * your question here (ここにあなたの質問を):
-     * 
+     * stageListの各要素に関して、文字の長さが8文字以上の文字列を連結した文字列を出力してください。
+     * 文字列はリストに格納されている順に結合されます。
+     * forEachを用いて記述してください。
      * _/_/_/_/_/_/_/_/_/_/
      * </pre>
      */
     public void test_iffor_yourExercise() {
-        // write your code here
+        //        List<String> stageList = prepareStageList();
+        //        StringBuilder result = new StringBuilder();
+        //        stageList.forEach(stage -> {
+        //            if (stage.length() >= 8) {
+        //                result.append(stage);
+        //            }
+        //        });
+        //        log(result);
     }
 
     // ===================================================================================

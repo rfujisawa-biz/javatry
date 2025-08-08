@@ -22,7 +22,7 @@ import org.docksidestage.unit.PlainTestCase;
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
  * (javadocの通りにエクササイズを実施。質問形式の場合はテストを実行する前に考えて答えを書いてみましょう)
  * @author jflute
- * @author your_name_here
+ * @author rfujisawa-biz
  */
 public class Step04MethodTest extends PlainTestCase {
 
@@ -35,19 +35,22 @@ public class Step04MethodTest extends PlainTestCase {
      */
     public void test_method_call_basic() {
         String sea = supplySomething();
-        log(sea); // your answer? =>
+        log(sea); // your answer? => over 正解
+        // supplySomethingは、overをreturnしている
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_method_call_many() {
-        String sea = functionSomething("mystic");
+        String sea = functionSomething("mystic"); // sea: mysmys
         consumeSomething(supplySomething());
         runnableSomething();
-        log(sea); // your answer? => 
+        log(sea); // your answer? => mysmys 正解
+        // functionSomethingは、ticをmysに置き換えた文字列を返す
+        // それ以外は、関数の返した値を代入していないため、seaの値は変わらず
     }
 
     private String functionSomething(String name) {
-        String replaced = name.replace("tic", "mys");
+        String replaced = name.replace("tic", "mys"); // mystic -> mysmys
         log("in function: {}", replaced);
         return replaced;
     }
@@ -72,17 +75,18 @@ public class Step04MethodTest extends PlainTestCase {
         St4MutableStage mutable = new St4MutableStage();
         int sea = 904;
         boolean land = false;
-        helloMutable(sea - 4, land, mutable);
-        if (!land) {
-            sea = sea + mutable.getStageName().length();
+        helloMutable(sea - 4, land, mutable); // mutable.stageName = "mystic"
+        if (!land) { // land = falseなので入る
+            sea = sea + mutable.getStageName().length(); // sea: 904, mutable.stageName.length()は6 sea = 910
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 910 正解
+        // [考えたこと] 特に迷うことなく、愚直にプログラムを読み進めました。
     }
 
-    private int helloMutable(int sea, Boolean land, St4MutableStage piari) {
+    private int helloMutable(int sea, Boolean land, St4MutableStage piari) { // sea, landは引数に触ってるだけなので関数外には関係ない
         sea++;
         land = true;
-        piari.setStageName("mystic");
+        piari.setStageName("mystic"); // ここだけは、piariのstageName属性に触っている & stageName属性はfinalがついてないのでmutable
         return sea;
     }
 
@@ -109,13 +113,14 @@ public class Step04MethodTest extends PlainTestCase {
     public void test_method_instanceVariable() {
         hasAnnualPassport = true;
         int sea = inParkCount;
-        offAnnualPassport(hasAnnualPassport);
+        offAnnualPassport(hasAnnualPassport); // 関数内では引数のhasAnnualPassportをいじっているだけなのでtrueのまま
         for (int i = 0; i < 100; i++) {
-            goToPark();
+            goToPark(); // i=0からi=99まで, inParkCount = 100
         }
-        ++sea;
-        sea = inParkCount;
-        log(sea); // your answer? => 
+        ++sea; // seaはseaが定義されたときのinParkCountの値を持っているはずなので、ここではsea = 1
+        sea = inParkCount; // inParkCount = 100で上書きされてsea = 100
+        log(sea); // your answer? => 100 正解
+        // [考えたこと] ここも特に悩むことなく愚直にコードを読み進めました。
     }
 
     private void offAnnualPassport(boolean hasAnnualPassport) {
@@ -150,14 +155,40 @@ public class Step04MethodTest extends PlainTestCase {
      * o showSea(): 一つのString引数、戻り値なし、引数をlog()で表示する
      * </pre>
      */
+
+    private boolean availableLogging = true;
+
     public void test_method_making() {
         // use after making these methods
-        //String replaced = replaceCwithB(replaceAwithB("ABC"));
-        //String sea = quote(replaced, "'");
-        //if (isAvailableLogging()) {
-        //    showSea(sea);
-        //}
+        String replaced = replaceCwithB(replaceAwithB("ABC"));
+        String sea = quote(replaced, "'");
+        if (isAvailableLogging()) {
+            showSea(sea);
+        }
     }
 
     // write methods here
+    public String replaceAwithB(String str) {
+        String replaced = str.replace("A", "B");
+        return replaced;
+    }
+
+    public String replaceCwithB(String str) {
+        String replaced = str.replace("C", "B");
+        return replaced;
+    }
+
+    public String quote(String str, String quote) {
+        String quoted = quote + str + quote;
+        return quoted;
+    }
+
+    public boolean isAvailableLogging() {
+        return availableLogging;
+    }
+
+    public void showSea(String str) {
+        log(str);
+    }
+
 }
