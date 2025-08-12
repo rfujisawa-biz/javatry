@@ -66,20 +66,21 @@ public class Step03DataTypeTest extends PlainTestCase {
         // 4. 再代入: 新しく生成されたIntegerオブジェクトを変数landに代入する
         // よく考えたら、immutableの挙動そのものっぽい？新しい値を代入しようとすると、新たなインスタンスが作成されてそれが代入される
         // land-- -> land = land - 1なので、そのような挙動になってるのか？
+        // #1on1 ↑一緒に踏み込んで考えてみた (2025/08/12)
     }
 
     public void test_datatype_basicType2() {
         Integer land = 416;
         log(land);
-        log(land.TYPE); // Integerでもintになってる
+        log(Integer.TYPE); // Integerでもintになってる
         int tmp = 417;
         land = tmp;
         log(land);
-        log(land.TYPE); // landはint
+        log(Integer.TYPE); // landはint
         Integer tmp2 = 418;
         land = tmp2;
         log(land);
-        log(land.TYPE);
+        log(Integer.TYPE);
     }
 
     // ===================================================================================
@@ -120,6 +121,7 @@ public class Step03DataTypeTest extends PlainTestCase {
         // （この辺で自分が何を確認したかったのかよく分からなくなってくる。）
         // [geminiに聞いてみた結果] 2の補数表現、上位ビットが切り捨てられて下位ビットが取り出される挙動
         // そういえばそうだったなと言われて思い出した
+        // #1on1: Javaのレアな文法知識が必要になるようなコードを書くと読みづらいという教訓 (2025/08/12)
     }
 
     public void test_datatype_primitive2() {

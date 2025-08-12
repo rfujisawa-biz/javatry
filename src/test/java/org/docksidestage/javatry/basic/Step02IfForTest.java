@@ -102,6 +102,8 @@ public class Step02IfForTest extends PlainTestCase {
         }
         log(sea); // your answer? => 10 正解
         // 命令型を追いかけました。
+        // #1on1: 漠然読みして構造を把握して、当てをつけてフォーカス読み (2025/08/12)
+        // (BigDecimalのときから2回目)
     }
 
     // ===================================================================================
@@ -164,6 +166,9 @@ public class Step02IfForTest extends PlainTestCase {
         String sea = sb.toString();
         log(sea); // your answer? => dockside 正解
         // 他の言語と同様に、forEachは単純にstageList内の要素に対して処理を行っているだけだと予想
+        // 1on1: 拡張for文と比べて、どう便利か？
+        // できないが不便なのか？できないが便利なのか？
+        // ストレートなループだったら、他の世界に影響を与えない、トリッキーなループができない方が安全/安心。
     }
 
     // ===================================================================================
@@ -209,6 +214,8 @@ public class Step02IfForTest extends PlainTestCase {
         });
 
         log(sea); // should be same as before-fix
+        // TODO fujisawa 修行++: もし、gaが含まれてないstageListだったときでも、結果が変わらないように by jflute (2025/08/12)
+        // つまり、stageListが動的に値が変わっても、元の実装と結果が変わらないようにしたい。
     }
 
     // 元の実装
