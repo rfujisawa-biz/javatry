@@ -200,17 +200,21 @@ public class Step02IfForTest extends PlainTestCase {
         //        List<String> stageList = prepareStageList();
         List<String> stageList = new ArrayList<>();
         stageList.add("brskla");
-        stageList.add("srkejigaklw");
         stageList.add("gal;kjwer");
+        stageList.add("srkejigaklw");
+
+//        stageList.add("asdfjkl");
+//        stageList.add("cnjkdsl");
 
         StringBuilder sea = new StringBuilder();
         stageList.forEach(stage -> {
-            if (!stage.startsWith("br") && stage.contains("ga")) {
-                if (sea.length() > 0) {
-                    return;
-                }
-                sea.append(stage);
+            String temp = sea.toString();
+            if (!temp.startsWith("br") && temp.contains("ga")) {
+                return;
+            } else {
+                sea.setLength(0);
             }
+            sea.append(stage);
         });
 
         log(sea); // should be same as before-fix
@@ -222,8 +226,10 @@ public class Step02IfForTest extends PlainTestCase {
     public void test_iffor_refactor_foreach_to_forEach_test() {
         List<String> stageList = new ArrayList<>();
         stageList.add("brskla");
-        stageList.add("srkejigaklw");
-        stageList.add("gal;kjwer");
+//        stageList.add("srkejigaklw");
+//        stageList.add("gal;kjwer");
+        stageList.add("asdfjkl");
+        stageList.add("cnjkdsl");
         String sea = null;
         for (String stage : stageList) {
             if (stage.startsWith("br")) {
