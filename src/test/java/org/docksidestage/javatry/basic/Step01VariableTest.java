@@ -59,6 +59,8 @@ public class Step01VariableTest extends PlainTestCase {
         // 逆に、JavaScriptはnullだけじゃなくundefinedとかまで表示されたりもします。
         // 些細な言語の挙動に違いではありますが、こういうところそれぞれ思想があって違いが生まれるのかもですね。
         // #1on1: Pythonだと空文字だったかも!?、C# だと空文字
+
+        // TODO fujisawa [不思議だよね] ちゃんと正直に答えててえらいです！ by shiny (2025/08/13)
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
