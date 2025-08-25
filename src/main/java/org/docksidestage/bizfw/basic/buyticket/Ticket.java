@@ -15,6 +15,8 @@
  */
 package org.docksidestage.bizfw.basic.buyticket;
 
+import java.time.LocalDateTime;
+
 /**
  * @author jflute
  */
@@ -25,12 +27,21 @@ public class Ticket {
     //                                                                           =========
     private final int displayPrice; // written on ticket, park guest can watch this
     private boolean alreadyIn; // true means this ticket is unavailable
+    private final String ticketType;
+    private int availableDays;
+    private LocalDateTime lastUsed;
 
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
-    public Ticket(int displayPrice) {
+    public Ticket(int displayPrice, String ticketType) {
         this.displayPrice = displayPrice;
+        this.ticketType = ticketType;
+        if ("OneDay".equals(ticketType)) {
+            availableDays = 1;
+        } else if ("TwoDay".equals(ticketType)) {
+            availableDays = 2;
+        }
     }
 
     // ===================================================================================
@@ -53,4 +64,8 @@ public class Ticket {
     public boolean isAlreadyIn() {
         return alreadyIn;
     }
+
+    public int getAvailableDays() { return availableDays; }
+
+    public String getTicketType() { return ticketType; }
 }
