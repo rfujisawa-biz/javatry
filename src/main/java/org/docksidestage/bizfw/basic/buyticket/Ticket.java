@@ -25,6 +25,7 @@ public class Ticket {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
+    // TODO fujisawa インスタンス変数の定義順序、コアな固定の属性と、mutableな状態コントロールの変数を分けるといい by jflute (2025/08/26)
     private final int displayPrice; // written on ticket, park guest can watch this
     private boolean alreadyIn; // true means this ticket is unavailable
     private final String ticketType;

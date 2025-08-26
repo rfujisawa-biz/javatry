@@ -21,6 +21,7 @@ import org.docksidestage.bizfw.basic.buyticket.TicketBooth.TicketShortMoneyExcep
 import org.docksidestage.bizfw.basic.buyticket.TicketBuyResult;
 import org.docksidestage.unit.PlainTestCase;
 
+// TODO fujisawa authorお願いします by jflute (2025/08/26)
 /**
  * The test of class. <br>
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
@@ -226,6 +227,14 @@ public class Step05ClassTest extends PlainTestCase {
 
     // uncomment when you implement this exercise
     private void showTicketIfNeeds(Ticket ticket) {
+        // #1on1: 思考エクササイズ、MaxDaysだとダメな理由
+        //if (ticket.getMaxDays() == 2) {
+        // TODO jflute もうちょい進んだらもっかい聞きます (2025/08/26)
+        
+        // TODO fujisawa java的なれびゅー、文字列の == がダメ by jflute (2025/08/26)
+        // (まあここは普段Java書いてなければ忘れやすいところなのでしょうがない)
+        // TODO fujisawa ここに "TwoDay" と文字列をハードコードしているのをどうにかしたい by jflute (2025/08/26)
+        // スペルミスもそうですし、表現が変わった時に自動で追従されるように
         if (ticket.getTicketType() == "TwoDay") { // write determination for two-day passport
             log("two-day passport");
         } else {
@@ -265,6 +274,19 @@ public class Step05ClassTest extends PlainTestCase {
      * (Ticketクラスのpublicなクラス/コンストラクター/メソッドに、気の利いたJavaDocコメントを本気で書いてみましょう)
      */
     public void test_class_moreFix_yourSuperJavaDoc() {
+        // your confirmation code here
+    }
+
+    // ===================================================================================
+    //                                                                         Devil Stage
+    //                                                                         ===========
+    /**
+     * If your specification is to share inventory (quantity) between OneDay/TwoDay/...,
+     * change the specification to separate inventory for each OneDay/TwoDay/.... <br>
+     * (もし、OneDay/TwoDay/...で在庫(quantity)を共有する仕様になってたら、
+     * OneDay/TwoDay/...ごとに在庫を分ける仕様に変えてみましょう)
+     */
+    public void test_class_moreFix_zonedQuantity() {
         // your confirmation code here
     }
 }

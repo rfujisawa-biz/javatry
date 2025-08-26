@@ -221,7 +221,7 @@ public class Step02IfForTest extends PlainTestCase {
         });
 
         log(sea); // should be same as before-fix
-        // TODO fujisawa 修行++: もし、gaが含まれてないstageListだったときでも、結果が変わらないように by jflute (2025/08/12)
+        // done fujisawa 修行++: もし、gaが含まれてないstageListだったときでも、結果が変わらないように by jflute (2025/08/12)
         // つまり、stageListが動的に値が変わっても、元の実装と結果が変わらないようにしたい。
     }
 

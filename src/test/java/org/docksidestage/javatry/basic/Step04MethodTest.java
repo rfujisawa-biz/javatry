@@ -92,6 +92,9 @@ public class Step04MethodTest extends PlainTestCase {
         // TODO fujisawa 直接的に関係ないけど、finalっていうキーワードでimmutabilityって難しいよねということをふと思ったので共有 by shiny (2025/08/13)
         // 参照先のオブジェクトは変更できないが、要素の変更可能って直感的にちょっとわかりにくかったりする
         // 変更検知ベースの実装とかすると、Mutateしてるけどしてない（伝われ）というhackyなことができなくもないので、どう可読性を保ちつつ実装するかが悩ましい
+        
+        // #1on1: shinyさんの言葉を元に immutability の難しさ/ジレンマについて話した。(2025/08/26)
+        // そして、shinyさんの使う言葉が難しくて勉強になるねという話。
     }
 
     private static class St4MutableStage {
@@ -127,6 +130,8 @@ public class Step04MethodTest extends PlainTestCase {
         // [考えたこと] ここも特に悩むことなく愚直にコードを読み進めました。
     }
 
+    // #1on1: mutableなインスタンス変数を引数で渡したり直接使ったりが混ざってるとわかりにくい(既存コード) (2025/08/26)
+    // 徹底してimmutable寄りにするか、逆に状態を変化させるメソッドという統一的な実装をするか？
     private void offAnnualPassport(boolean hasAnnualPassport) {
         hasAnnualPassport = false;
     }
@@ -172,16 +177,16 @@ public class Step04MethodTest extends PlainTestCase {
     }
 
     // write methods here
+    // done fujisawa [いいね] privateメソッドの定義順序が呼び出しと一致してて直感的 by jflute (2025/08/26)
+    // #1on1: クラスの一番下におじゃまします感でメソッド追加がナンバーワンパターンとして多いが...
+    // 途中で修正する人でもクラスの全体バランスを考えて積上げていかないと、将来キメラのようなクラスになる。
+    // #1on1: authorの話にもつなげて
     public String replaceAwithB(String str) {
         String replaced = str.replace("A", "B");
         return replaced;
     }
 
-    public String replaceCwithB(String str) {
-        String replaced = str.replace("C", "B");
-        return replaced;
-    }
-
+    // done fujisawa [いいね] 第二引数 quote がわかりやすい by jflute (2025/08/26)
     public String quote(String str, String quote) {
         String quoted = quote + str + quote;
         return quoted;
@@ -189,6 +194,11 @@ public class Step04MethodTest extends PlainTestCase {
 
     public boolean isAvailableLogging() {
         return availableLogging;
+    }
+    
+    public String replaceCwithB(String str) {
+        String replaced = str.replace("C", "B");
+        return replaced;
     }
 
     public void showSea(String str) {

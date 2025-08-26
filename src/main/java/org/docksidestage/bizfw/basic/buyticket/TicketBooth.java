@@ -54,6 +54,7 @@ public class TicketBooth {
     // * @throws TicketSoldOutException ブース内のチケットが売り切れだったら
     // * @throws TicketShortMoneyException 買うのに金額が足りなかったら
     // */
+    // TODO fujisawa [事務連絡] 既存コード、問題なければ削除しちゃってOKです by jflute (2025/08/26)
     /**
      * Buy one-day passport, method for park guest.
      * @param handedMoney The money (amount) handed over from park guest. (NotNull, NotMinus)
@@ -96,9 +97,16 @@ public class TicketBooth {
         if (hasTicket(ticketType) && hasSufficientMoney(handedMoney, ticketType)) {
             return sellTicket(handedMoney, ticketType);
         }
+        // TODO fujisawa ここに来ること絶対にない？ (hasメソッドが例外 or trueなので) by jflute (2025/08/26)
+        // #1on1: 超少なくとも、一言「ここには来ないのでダミー」みたいなコメント欲しい。
+        // #1on1: 一方で、hasの違和感を修正したら、自動的にここも解決するかも
         return null;
     }
 
+    // TODO fujisawa hasメソッドで、true or 例外は一般的ではないので... by jflute (2025/08/26)
+    // hasなら、true or false に限定して、呼び出し側で例外をthrow
+    // もしくは、assertTicketExists() みたいなメソッドにしてダメなとき例外
+    // のどっちか。
     private boolean hasTicket(String ticketType) {
         int quantity = 0;
         if ("OneDay".equals(ticketType)) {
