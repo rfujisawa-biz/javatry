@@ -105,8 +105,9 @@ public class Step02IfForTest extends PlainTestCase {
         // #1on1: 漠然読みして構造を把握して、当てをつけてフォーカス読み (2025/08/12)
         // (BigDecimalのときから2回目)
 
-        // TODO fujisawa 個人的には、業務を初めて約一年経つけど、もはや漠然よみが一番助けになってることのひとつかも！ by shiny (2025/08/13)
+        // TODO done fujisawa 個人的には、業務を初めて約一年経つけど、もはや漠然よみが一番助けになってることのひとつかも！ by shiny (2025/08/13)
         // 結局プログラマーはコードを読んでる時間が一番長いもんね、、新しい実装する時、リファクタする時、コードレビューする時、など全てでいかに構造を早く把握できるかがアウトプットの量と質に直結してるなと感じます！
+        // TODO shiny まだ漠然読みより先に手が動いてlogを出力し出してしまうので、意識しないとですね by hal (2025/08/27)
     }
 
     // ===================================================================================
@@ -258,7 +259,8 @@ public class Step02IfForTest extends PlainTestCase {
         stageList.stream().filter(stage -> !stage.startsWith("br") && stage.contains("ga")).findFirst().ifPresent(sea::append);
         log(sea);
 
-        // TODO fujisawa ようこそStream APIの沼へ！笑（Stream APIにハマる時期が果たしてやってくるのか、、笑） by shiny (2025/08/13)
+        // TODO done fujisawa ようこそStream APIの沼へ！笑（Stream APIにハマる時期が果たしてやってくるのか、、笑） by shiny (2025/08/13)
+        // TODO shiny kotlinとか触ってると、Stream APIを一回噛ませるってのが謎ですね（後から追加された機能だから？） by hal (2025/08/27)
     }
 
     /**

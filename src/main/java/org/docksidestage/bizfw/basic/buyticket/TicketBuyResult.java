@@ -1,6 +1,10 @@
 package org.docksidestage.bizfw.basic.buyticket;
 
-// TODO fujisawa クラスjavadocお願いします by jflute (2025/08/26)
+// TODO done fujisawa クラスjavadocお願いします by jflute (2025/08/26)
+
+/**
+ * @author rfujisawa-biz
+ */
 public class TicketBuyResult {
 
     private final Ticket ticket;

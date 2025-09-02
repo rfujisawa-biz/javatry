@@ -89,12 +89,14 @@ public class Step04MethodTest extends PlainTestCase {
         piari.setStageName("mystic"); // ここだけは、piariのstageName属性に触っている & stageName属性はfinalがついてないのでmutable
         return sea;
 
-        // TODO fujisawa 直接的に関係ないけど、finalっていうキーワードでimmutabilityって難しいよねということをふと思ったので共有 by shiny (2025/08/13)
+        // TODO done fujisawa 直接的に関係ないけど、finalっていうキーワードでimmutabilityって難しいよねということをふと思ったので共有 by shiny (2025/08/13)
         // 参照先のオブジェクトは変更できないが、要素の変更可能って直感的にちょっとわかりにくかったりする
         // 変更検知ベースの実装とかすると、Mutateしてるけどしてない（伝われ）というhackyなことができなくもないので、どう可読性を保ちつつ実装するかが悩ましい
         
         // #1on1: shinyさんの言葉を元に immutability の難しさ/ジレンマについて話した。(2025/08/26)
         // そして、shinyさんの使う言葉が難しくて勉強になるねという話。
+        
+        // TODO shiny Mutateしてるけどしてない（伝わりました） by hal (2025/08/27)
     }
 
     private static class St4MutableStage {

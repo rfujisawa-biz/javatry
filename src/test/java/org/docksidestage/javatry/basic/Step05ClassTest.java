@@ -15,13 +15,16 @@
  */
 package org.docksidestage.javatry.basic;
 
+import java.time.LocalDateTime;
+
 import org.docksidestage.bizfw.basic.buyticket.Ticket;
 import org.docksidestage.bizfw.basic.buyticket.TicketBooth;
 import org.docksidestage.bizfw.basic.buyticket.TicketBooth.TicketShortMoneyException;
 import org.docksidestage.bizfw.basic.buyticket.TicketBuyResult;
+import org.docksidestage.bizfw.basic.buyticket.TicketType;
 import org.docksidestage.unit.PlainTestCase;
 
-// TODO fujisawa authorお願いします by jflute (2025/08/26)
+// TODO done fujisawa authorお願いします by jflute (2025/08/26)
 /**
  * The test of class. <br>
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
@@ -31,7 +34,7 @@ import org.docksidestage.unit.PlainTestCase;
  * (要件が曖昧なところがあれば、適切だと思われる仕様を決めても良いです)
  * 
  * @author jflute
- * @author your_name_here
+ * @author rfujisawa-biz
  */
 public class Step05ClassTest extends PlainTestCase {
 
@@ -39,27 +42,27 @@ public class Step05ClassTest extends PlainTestCase {
     //                                                                          How to Use
     //                                                                          ==========
     /**
-     * What string is sea variable at the method end? <br>
-     * (メソッド終了時の変数 sea の中身は？)
+     * What string is oneDayQuantity variable at the method end? <br>
+     * (メソッド終了時の変数 oneDayQuantity の中身は？)
      */
     public void test_class_howToUse_basic() {
         TicketBooth booth = new TicketBooth();
-//        booth.buyOneDayPassport(7400); // quantity = 9
-        String ticketType = "OneDay";
+        TicketType ticketType = TicketType.ONE_DAY;
         booth.buyPassport(7400, ticketType);
-        int sea = booth.getOneDayQuantity(); // return quantity
-        log(sea); // your answer? => 9 正解
+        int oneDayQuantity = booth.getOneDayQuantity(); // return quantity
+        log(oneDayQuantity); // your answer? => 9 正解
+        assertEquals(9, oneDayQuantity);
         // [考えたこと] これ、支払いする前にチケット渡してる。。。お釣りも返してない？
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_class_howToUse_overpay() {
         TicketBooth booth = new TicketBooth();
-//        booth.buyOneDayPassport(10000);
-        String ticketType = "OneDay";
+        TicketType ticketType = TicketType.ONE_DAY;
         booth.buyPassport(10000, ticketType);
-        Integer sea = booth.getSalesProceeds();
-        log(sea); // your answer? => 10000 正解
+        Integer salesProceeds = booth.getSalesProceeds();
+        log(salesProceeds); // your answer? => 10000 正解
+        assertEquals(7400, salesProceeds);
         // プログラムを読んで回答しただけ
         // 修正後 answer => 7400 正解
     }
@@ -67,27 +70,27 @@ public class Step05ClassTest extends PlainTestCase {
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_class_howToUse_nosales() {
         TicketBooth booth = new TicketBooth();
-        Integer sea = booth.getSalesProceeds();
-        log(sea); // your answer? => null 正解
+        Integer salesProceeds = booth.getSalesProceeds();
+        log(salesProceeds); // your answer? => null 正解
+        assertNull(salesProceeds);
         // プログラムを読んで回答しただけ
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_class_howToUse_wrongQuantity() {
-        Integer sea = doTest_class_ticket_wrongQuantity();
-        log(sea); // your answer? => 9 正解
+        Integer quantity = doTest_class_ticket_wrongQuantity();
+        log(quantity); // your answer? => 9 正解
         // [考えたこと] 最初に実装を見た時に思ったように、代金支払い前にチケットは渡してしまっている
         // 修正後 answer => 10 正解
+        assertEquals(10, quantity);
     }
 
     private Integer doTest_class_ticket_wrongQuantity() {
         TicketBooth booth = new TicketBooth();
         int handedMoney = 7399;
-        String ticketType = "OneDay";
+        TicketType ticketType = TicketType.ONE_DAY;
         try {
-//            booth.buyOneDayPassport(handedMoney);
             booth.buyPassport(handedMoney, ticketType);
-            fail("always exception but none");
         } catch (TicketShortMoneyException continued) {
             log("Failed to buy one-day passport: money=" + handedMoney, continued);
         }
@@ -102,9 +105,10 @@ public class Step05ClassTest extends PlainTestCase {
      * (お金不足でもチケットが減る問題をクラスを修正して解決しましょう (以前のエクササイズのanswerの修正を忘れずに))
      */
     public void test_class_letsFix_ticketQuantityReduction() {
-        Integer sea = doTest_class_ticket_wrongQuantity();
-        log(sea); // should be max quantity, visual check here
+        Integer quantity = doTest_class_ticket_wrongQuantity();
+        log(quantity); // should be max quantity, visual check here
         // MAX_QUANTITYになっているので問題なし
+        assertEquals(10, quantity);
     }
 
     /**
@@ -113,12 +117,12 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_letsFix_salesProceedsIncrease() {
         TicketBooth booth = new TicketBooth();
-        String ticketType = "OneDay";
-//        booth.buyOneDayPassport(10000);
+        TicketType ticketType = TicketType.ONE_DAY;
         booth.buyPassport(10000, ticketType);
-        Integer sea = booth.getSalesProceeds();
-        log(sea); // should be same as one-day price, visual check here
+        Integer salesProceeds = booth.getSalesProceeds();
+        log(salesProceeds); // should be same as one-day price, visual check here
         // ONE_DAY_PRICEになっているので問題なし
+        assertEquals(7400, salesProceeds);
     }
 
     /**
@@ -129,20 +133,18 @@ public class Step05ClassTest extends PlainTestCase {
         // uncomment after making the method
         TicketBooth booth = new TicketBooth();
         int money = 14000;
-        String ticketType = "TwoDay";
-//        int change = booth.buyTwoDayPassport(money);
-//        int change = booth.buyPassport(money, ticketType);
-//        Ticket twoDayPassport = booth.buyPassport(money, ticketType);
+        TicketType ticketType = TicketType.TWO_DAY;
         TicketBuyResult buyResult = booth.buyPassport(money, ticketType);
-//        int change = booth.getChange();
         int change = buyResult.getChange();
-        Integer sea = booth.getSalesProceeds() + change;
-        log(sea); // should be same as money
-        // output => 14000 OK
+        Integer totalAmount = booth.getSalesProceeds() + change;
+        log(totalAmount); // should be same as money
+        assertEquals(money, totalAmount);
 
         // and show two-day passport quantity here
-        log(booth.getTwoDayQuantity());
+        int twoDayQuantity = booth.getTwoDayQuantity();
+        log(twoDayQuantity);
         // output => 9 OK
+        assertEquals(9, twoDayQuantity);
     }
 
     /**
@@ -151,8 +153,7 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_letsFix_refactor_recycle() {
         TicketBooth booth = new TicketBooth();
-        String ticketType = "OneDay";
-//        booth.buyOneDayPassport(10000);\
+        TicketType ticketType = TicketType.ONE_DAY;
         booth.buyPassport(10000, ticketType);
         log(booth.getOneDayQuantity(), booth.getSalesProceeds()); // should be same as before-fix
     }
@@ -167,16 +168,17 @@ public class Step05ClassTest extends PlainTestCase {
     public void test_class_moreFix_return_ticket() {
         // uncomment out after modifying the method
         TicketBooth booth = new TicketBooth();
-        String ticketType = "OneDay";
+        TicketType ticketType = TicketType.ONE_DAY;
         int handedMoney = 10000;
-//        Ticket oneDayPassport = booth.buyOneDayPassport(10000);
-//        Ticket oneDayPassport = booth.buyPassport(handedMoney, ticketType);
         TicketBuyResult buyResult = booth.buyPassport(handedMoney, ticketType);
         Ticket oneDayPassport = buyResult.getTicket();
         log(oneDayPassport.getDisplayPrice()); // should be same as one-day price
         log(oneDayPassport.isAlreadyIn()); // should be false
+        assertFalse(oneDayPassport.isAlreadyIn());
         oneDayPassport.doInPark();
         log(oneDayPassport.isAlreadyIn()); // should be true
+        assertTrue(oneDayPassport.isAlreadyIn());
+        assertEquals(0, oneDayPassport.getAvailableDays());
     }
 
     /**
@@ -187,11 +189,12 @@ public class Step05ClassTest extends PlainTestCase {
 //         uncomment after modifying the method
         TicketBooth booth = new TicketBooth();
         int handedMoney = 20000;
-//        TicketBuyResult buyResult = booth.buyTwoDayPassport(handedMoney);
-        TicketBuyResult buyResult = booth.buyPassport(handedMoney, "TwoDay");
+        TicketType ticketType = TicketType.TWO_DAY;
+        TicketBuyResult buyResult = booth.buyPassport(handedMoney, ticketType);
         Ticket twoDayPassport = buyResult.getTicket();
         int change = buyResult.getChange();
         log(twoDayPassport.getDisplayPrice() + change); // should be same as money
+        assertEquals(handedMoney, twoDayPassport.getDisplayPrice() + change);
     }
 
     /**
@@ -202,10 +205,12 @@ public class Step05ClassTest extends PlainTestCase {
         // your confirmation code here
         int oneDayPrice = 7400;
         int twoDayPrice = 13200;
-        Ticket oneDayPassport = new Ticket(oneDayPrice, "OneDay");
-        Ticket twoDayPassport = new Ticket(twoDayPrice, "TwoDay");
+        Ticket oneDayPassport = new Ticket(oneDayPrice, TicketType.ONE_DAY);
+        Ticket twoDayPassport = new Ticket(twoDayPrice, TicketType.TWO_DAY);
         log("oneDayPassport: " + oneDayPassport.getAvailableDays());
         log("twoDayPassport: " + twoDayPassport.getAvailableDays());
+        assertEquals(1, oneDayPassport.getAvailableDays());
+        assertEquals(2, twoDayPassport.getAvailableDays());
     }
 
     /**
@@ -215,14 +220,14 @@ public class Step05ClassTest extends PlainTestCase {
     public void test_class_moreFix_whetherTicketType() {
         // uncomment when you implement this exercise
         TicketBooth booth = new TicketBooth();
-//        Ticket oneDayPassport = booth.buyOneDayPassport(10000);
-        TicketBuyResult buyResultOneDay = booth.buyPassport(10000, "OneDay");
+        TicketBuyResult buyResultOneDay = booth.buyPassport(10000, TicketType.ONE_DAY);
         Ticket oneDayPassport = buyResultOneDay.getTicket();
         showTicketIfNeeds(oneDayPassport);
-//        TicketBuyResult buyResult = booth.buyTwoDayPassport(10000);
-        TicketBuyResult buyResultTwoDay = booth.buyPassport(20000, "TwoDay");
+        TicketBuyResult buyResultTwoDay = booth.buyPassport(20000, TicketType.TWO_DAY);
         Ticket twoDayPassport = buyResultTwoDay.getTicket();
         showTicketIfNeeds(twoDayPassport);
+        assertEquals(TicketType.ONE_DAY, oneDayPassport.getTicketType());
+        assertEquals(TicketType.TWO_DAY, twoDayPassport.getTicketType());
     }
 
     // uncomment when you implement this exercise
@@ -231,11 +236,12 @@ public class Step05ClassTest extends PlainTestCase {
         //if (ticket.getMaxDays() == 2) {
         // TODO jflute もうちょい進んだらもっかい聞きます (2025/08/26)
         
-        // TODO fujisawa java的なれびゅー、文字列の == がダメ by jflute (2025/08/26)
+        // TODO done fujisawa java的なれびゅー、文字列の == がダメ by jflute (2025/08/26)
         // (まあここは普段Java書いてなければ忘れやすいところなのでしょうがない)
-        // TODO fujisawa ここに "TwoDay" と文字列をハードコードしているのをどうにかしたい by jflute (2025/08/26)
+        // TODO done fujisawa ここに "TwoDay" と文字列をハードコードしているのをどうにかしたい by jflute (2025/08/26)
         // スペルミスもそうですし、表現が変わった時に自動で追従されるように
-        if (ticket.getTicketType() == "TwoDay") { // write determination for two-day passport
+        // TODO jflute enumを使ってリファクタリングしました by fujisawa (2025/08/29)
+        if (ticket.getTicketType() == TicketType.TWO_DAY) { // write determination for two-day passport
             log("two-day passport");
         } else {
             log("other");
@@ -251,6 +257,21 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_moreFix_wonder_four() {
         // your confirmation code here
+        // とりあえず、8/28現在の実装で進めていく
+        // と思ったけど、Ticketのリファクタリングがめんどくさくなりそうなので、一回1on1のコメントを受けてのリファクタリングをしてから進めることを決意
+        // enumを使ってTicketTypeを定義した
+        // チケットの料金を、Ticketが決めるべきか、TicketBoothが決めるべきかを悩んだが、
+        // 「TicketBoothが決めた料金をチケットが持つ」の方がチケット料金の変更に柔軟な気がしたので、そのままにした
+        // 例: チケットの料金がある時点で変更になった時に、TicketBoothで料金を決めていれば、基準日前の料金を持ったチケットと、基準日後の料金を持ったチケットが作れる
+
+        TicketBooth booth = new TicketBooth();
+        int handedMoney = 30000;
+        TicketType ticketType = TicketType.FOUR_DAY;
+        TicketBuyResult buyResult = booth.buyPassport(handedMoney, ticketType);
+        Ticket fourDayPassport = buyResult.getTicket();
+        int change = buyResult.getChange();
+        log(fourDayPassport.getDisplayPrice() + change); // should be same as money
+        assertEquals(handedMoney, fourDayPassport.getDisplayPrice() + change);
     }
 
     /**
@@ -259,6 +280,19 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_moreFix_wonder_night() {
         // your confirmation code here
+        // 間違えて夜にしか買えないチケットを作るとこでした笑
+
+        TicketBooth booth = new TicketBooth();
+        int handedMoney = 22400;
+        TicketType ticketType = TicketType.NIGHT_ONLY_TWO_DAY;
+        TicketBuyResult buyResult = booth.buyPassport(handedMoney, ticketType);
+        Ticket nightOnlyTwoDayPassport = buyResult.getTicket();
+        int change = buyResult.getChange();
+        log(nightOnlyTwoDayPassport.getDisplayPrice() + change); // should be same as money
+        assertEquals(handedMoney, nightOnlyTwoDayPassport.getDisplayPrice() + change);
+        log(nightOnlyTwoDayPassport.getTicketType());
+//        nightOnlyTwoDayPassport.doInPark(); // ここは18-22時以外に実行すれば例外が投げられるはず
+        // テストするのが難しい設計になりましたね
     }
 
     /**
@@ -267,6 +301,11 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_moreFix_yourRefactoring() {
         // your confirmation code here
+        // リファクタリングどこまでやるか問題
+        // 自作のクラスはリファクタリングされてるつもりなので、testクラスのリファクタリングもします
+        // assert文を書いて、変数の名前を変更した（問題文の書き換えは流石にめんどくさかったので許してください！）
+        // いらないコメントアウトも削除
+        // リファクタリングとは関係ないけど、退園処理の実装があったらいいですね
     }
 
     /**
@@ -275,6 +314,7 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_moreFix_yourSuperJavaDoc() {
         // your confirmation code here
+        // done!
     }
 
     // ===================================================================================
@@ -288,5 +328,6 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_moreFix_zonedQuantity() {
         // your confirmation code here
+        // rfujisawa-biz already implemented
     }
 }

@@ -25,17 +25,38 @@ public class TicketBooth {
     //                                                                          ==========
     private static final int ONE_DAY_MAX_QUANTITY = 10; // OneDayPassport
     private static final int TWO_DAY_MAX_QUANTITY = 10; // TwoDayPassport OneDayPassport同様10
+    private static final int FOUR_DAY_MAX_QUANTITY = 10;
+    private static final int NIGHT_ONLY_TWO_DAY_MAX_QUANTITY = 10;
     private static final int ONE_DAY_PRICE = 7400; // when 2019/06/15
     private static final int TWO_DAY_PRICE = 13200;
+    private static final int FOUR_DAY_PRICE = 22400;
+    private static final int NIGHT_ONLY_TWO_DAY_PRICE = 7400;
 
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
     private int oneDayQuantity = ONE_DAY_MAX_QUANTITY;
     private int twoDayQuantity = TWO_DAY_MAX_QUANTITY;
+    private int fourDayQuantity = FOUR_DAY_MAX_QUANTITY;
+    private int nightOnlyTwoDayQuantity = NIGHT_ONLY_TWO_DAY_MAX_QUANTITY;
     private Integer salesProceeds; // null allowed: until first purchase
     // salesProceedsの初期値0にして、余計なnullチェック無くしたい。。。
 //    private Integer change;
+
+    public static int getPrice(TicketType ticketType) {
+        switch (ticketType) {
+            case ONE_DAY:
+                return ONE_DAY_PRICE;
+            case TWO_DAY:
+                return TWO_DAY_PRICE;
+            case FOUR_DAY:
+                return FOUR_DAY_PRICE;
+            case NIGHT_ONLY_TWO_DAY:
+                return NIGHT_ONLY_TWO_DAY_PRICE;
+            default:
+                return 0;
+        }
+    }
 
     // ===================================================================================
     //                                                                         Constructor
@@ -54,103 +75,79 @@ public class TicketBooth {
     // * @throws TicketSoldOutException ブース内のチケットが売り切れだったら
     // * @throws TicketShortMoneyException 買うのに金額が足りなかったら
     // */
-    // TODO fujisawa [事務連絡] 既存コード、問題なければ削除しちゃってOKです by jflute (2025/08/26)
+    // TODO fujisawa done [事務連絡] 既存コード、問題なければ削除しちゃってOKです by jflute (2025/08/26)
+
     /**
-     * Buy one-day passport, method for park guest.
-     * @param handedMoney The money (amount) handed over from park guest. (NotNull, NotMinus)
-     * @throws TicketSoldOutException When ticket in booth is sold out.
-     * @throws TicketShortMoneyException When the specified money is short for purchase.
+     * パスポートを買うメソッド
+     * @param handedMoney 所持金
+     * @param ticketType チケットの種類
+     * @throws TicketSoldOutException ブース内のチケットが売り切れ
+     * @throws TicketShortMoneyException 買うのに金額が足りない
+     * @return TicketBuyResult チケット購入結果(チケットとお釣り)
      */
-    public void buyOneDayPassport(Integer handedMoney) {
-        if (oneDayQuantity <= 0) {
+
+    public TicketBuyResult buyPassport(int handedMoney, TicketType ticketType) {
+        if (!hasTicket(ticketType)) {
             throw new TicketSoldOutException("Sold out");
         }
-        if (handedMoney < ONE_DAY_PRICE) {
+        if (!hasSufficientMoney(handedMoney, ticketType)) {
             throw new TicketShortMoneyException("Short money: " + handedMoney);
         }
-        --oneDayQuantity; // 所持金を確認してからチケットを減らす
-        if (salesProceeds != null) { // second or more purchase
-            salesProceeds = salesProceeds + ONE_DAY_PRICE; // ONE_DAY_PRICEを加算するように修正
-        } else { // first purchase
-            salesProceeds = ONE_DAY_PRICE; // ONE_DAY_PRICEを加算するように修正
-        }
-    }
-
-//     とりあえず、buyOneDayPassportと同様に実装したbuyTwoDayPassportメソッド
-    public int buyTwoDayPassport(Integer handedMoney) {
-        if (twoDayQuantity <= 0) {
-            throw new TicketSoldOutException("Sold out");
-        }
-        if (handedMoney < TWO_DAY_PRICE) {
-            throw new TicketShortMoneyException("Short money: " + handedMoney);
-        }
-        --twoDayQuantity;
-        if (salesProceeds != null) {
-            salesProceeds = salesProceeds + TWO_DAY_PRICE;
-        } else {
-            salesProceeds = TWO_DAY_PRICE;
-        }
-        return handedMoney - TWO_DAY_PRICE;
-    }
-
-    public TicketBuyResult buyPassport(int handedMoney, String ticketType) {
-        if (hasTicket(ticketType) && hasSufficientMoney(handedMoney, ticketType)) {
-            return sellTicket(handedMoney, ticketType);
-        }
-        // TODO fujisawa ここに来ること絶対にない？ (hasメソッドが例外 or trueなので) by jflute (2025/08/26)
+        return sellTicket(handedMoney, ticketType);
+        //if (hasTicket(ticketType) && hasSufficientMoney(handedMoney, ticketType)) {
+        //    return sellTicket(handedMoney, ticketType);
+        //}
+        // TODO done fujisawa ここに来ること絶対にない？ (hasメソッドが例外 or trueなので) by jflute (2025/08/26)
         // #1on1: 超少なくとも、一言「ここには来ないのでダミー」みたいなコメント欲しい。
         // #1on1: 一方で、hasの違和感を修正したら、自動的にここも解決するかも
-        return null;
+        //return null;
+        // TODOが解決したのを確認するために、コメントアウトでコード残してます
     }
 
-    // TODO fujisawa hasメソッドで、true or 例外は一般的ではないので... by jflute (2025/08/26)
+    // TODO done fujisawa hasメソッドで、true or 例外は一般的ではないので... by jflute (2025/08/26)
     // hasなら、true or false に限定して、呼び出し側で例外をthrow
     // もしくは、assertTicketExists() みたいなメソッドにしてダメなとき例外
     // のどっちか。
-    private boolean hasTicket(String ticketType) {
+    private boolean hasTicket(TicketType ticketType) {
         int quantity = 0;
-        if ("OneDay".equals(ticketType)) {
-            quantity = oneDayQuantity;
-        } else if ("TwoDay".equals(ticketType)) {
-            quantity = twoDayQuantity;
+        switch (ticketType) {
+            case ONE_DAY:
+                quantity = oneDayQuantity;
+                break;
+            case TWO_DAY:
+                quantity = twoDayQuantity;
+                break;
+            case FOUR_DAY:
+                quantity = fourDayQuantity;
+                break;
+            case  NIGHT_ONLY_TWO_DAY:
+                quantity = nightOnlyTwoDayQuantity;
+                break;
         }
-        if (quantity <= 0) {
-            throw new TicketSoldOutException("Sold out");
-        } else {
-            return true;
-        }
+        return quantity > 0;
     }
 
-    private boolean hasSufficientMoney(int handedMoney, String ticketType) {
-        int price = 0;
-        if ("OneDay".equals(ticketType)) {
-            price = ONE_DAY_PRICE;
-        }  else if ("TwoDay".equals(ticketType)) {
-            price = TWO_DAY_PRICE;
-        }
-        if (handedMoney < price) {
-            throw new TicketShortMoneyException("Short money: " + handedMoney);
-        } else {
-            return true;
-        }
+    private boolean hasSufficientMoney(int handedMoney, TicketType ticketType) {
+        int price = TicketBooth.getPrice(ticketType);
+        return handedMoney >= price;
     }
 
-    private TicketBuyResult sellTicket(int handedMoney, String ticketType) {
-        int price = 0;
-        if ("OneDay".equals(ticketType)) {
-            --oneDayQuantity;
-            price = ONE_DAY_PRICE;
-        } else if ("TwoDay".equals(ticketType)) {
-            --twoDayQuantity;
-            price = TWO_DAY_PRICE;
+    private TicketBuyResult sellTicket(int handedMoney, TicketType ticketType) {
+        int price = TicketBooth.getPrice(ticketType);
+        switch (ticketType) {
+            case ONE_DAY:
+                --oneDayQuantity;
+            case  TWO_DAY:
+                --twoDayQuantity;
+            case FOUR_DAY:
+                --fourDayQuantity;
         }
+        Ticket ticket = new Ticket(price, ticketType);
         if (salesProceeds != null) {
             salesProceeds = salesProceeds + price;
         } else {
             salesProceeds = price;
         }
-//        return handedMoney - price;
-        Ticket ticket = new Ticket(price, ticketType);
         int change = handedMoney - price;
         return new TicketBuyResult(ticket, change);
     }
@@ -184,11 +181,11 @@ public class TicketBooth {
         return twoDayQuantity;
     }
 
+    public int getFourDayQuantity() {
+        return fourDayQuantity;
+    }
+
     public Integer getSalesProceeds() {
         return salesProceeds;
     }
-
-//    public Integer getChange() {
-//        return change;
-//    }
 }
