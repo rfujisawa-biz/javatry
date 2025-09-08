@@ -28,7 +28,7 @@ public class Ticket {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    // TODO done fujisawa インスタンス変数の定義順序、コアな固定の属性と、mutableな状態コントロールの変数を分けるといい by jflute (2025/08/26)
+    // done fujisawa インスタンス変数の定義順序、コアな固定の属性と、mutableな状態コントロールの変数を分けるといい by jflute (2025/08/26)
     private final int displayPrice; // written on ticket, park guest can watch this
     private final TicketType ticketType;
 
@@ -36,6 +36,7 @@ public class Ticket {
     private int availableDays;
     private LocalDate lastUsed;
 
+    // TODO fujisawa static final はインスタンス変数よりも上に定義する慣習がある by jflute (2025/09/08)
     private static final int ONE_DAY_MAX_AVAILABLE_DAYS = 1;
     private static final int TWO_DAY_MAX_AVAILABLE_DAYS = 2;
     private static final int FOUR_DAY_MAX_AVAILABLE_DAYS = 4;
@@ -43,7 +44,7 @@ public class Ticket {
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
-
+    // TODO fujisawa @param に : が入ってると名前が一致しなくなっちゃう by jflute (2025/09/08)
     /**
      * Ticketクラス
      * @param displayPrice: TicketBoothで示されるチケットの料金
@@ -53,6 +54,7 @@ public class Ticket {
         this.displayPrice = displayPrice;
         this.ticketType = ticketType;
 
+        // TODO fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
         switch (ticketType) {
         case ONE_DAY:
             availableDays = ONE_DAY_MAX_AVAILABLE_DAYS;
@@ -90,6 +92,10 @@ public class Ticket {
         }
     }
 
+    // #1on1: 利用者がチケットの有効性を判断できても良いだろうということでpublic (2025/09/08)
+    // 現時点でpublicとして使ってる人がいないのであれば、コメントでpublicの理由があるといいかも。
+    // 2パターン: 概念的に最初からpublicにするパターン、必要になってからpublicにするパターン
+    // 業務のコードの話とOSSのコードの話の例。
     /**
      * チケットが利用可能かどうかを検証する
      * @param dateTime チケットを利用する日時
@@ -109,6 +115,7 @@ public class Ticket {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
+    // TODO fujisawa ここは説明は省略して、@return だけ書くでもOK by jflute (2025/09/08)
     /**
      * チケット料金を取得
      * @return

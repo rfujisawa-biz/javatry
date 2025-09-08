@@ -1,6 +1,6 @@
 package org.docksidestage.bizfw.basic.buyticket;
 
-// TODO done fujisawa クラスjavadocお願いします by jflute (2025/08/26)
+// done fujisawa クラスjavadocお願いします by jflute (2025/08/26)
 
 /**
  * @author rfujisawa-biz

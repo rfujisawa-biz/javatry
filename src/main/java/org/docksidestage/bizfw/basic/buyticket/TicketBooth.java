@@ -15,6 +15,7 @@
  */
 package org.docksidestage.bizfw.basic.buyticket;
 
+// #1on1: IntelliJのフォーマッターの話。.ideaの話。
 /**
  * @author jflute
  */
@@ -43,6 +44,7 @@ public class TicketBooth {
     // salesProceedsの初期値0にして、余計なnullチェック無くしたい。。。
 //    private Integer change;
 
+    // TODO fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
     public static int getPrice(TicketType ticketType) {
         switch (ticketType) {
             case ONE_DAY:
@@ -75,7 +77,7 @@ public class TicketBooth {
     // * @throws TicketSoldOutException ブース内のチケットが売り切れだったら
     // * @throws TicketShortMoneyException 買うのに金額が足りなかったら
     // */
-    // TODO fujisawa done [事務連絡] 既存コード、問題なければ削除しちゃってOKです by jflute (2025/08/26)
+    // fujisawa done [事務連絡] 既存コード、問題なければ削除しちゃってOKです by jflute (2025/08/26)
 
     /**
      * パスポートを買うメソッド
@@ -97,18 +99,19 @@ public class TicketBooth {
         //if (hasTicket(ticketType) && hasSufficientMoney(handedMoney, ticketType)) {
         //    return sellTicket(handedMoney, ticketType);
         //}
-        // TODO done fujisawa ここに来ること絶対にない？ (hasメソッドが例外 or trueなので) by jflute (2025/08/26)
+        // done fujisawa ここに来ること絶対にない？ (hasメソッドが例外 or trueなので) by jflute (2025/08/26)
         // #1on1: 超少なくとも、一言「ここには来ないのでダミー」みたいなコメント欲しい。
         // #1on1: 一方で、hasの違和感を修正したら、自動的にここも解決するかも
         //return null;
         // TODOが解決したのを確認するために、コメントアウトでコード残してます
     }
 
-    // TODO done fujisawa hasメソッドで、true or 例外は一般的ではないので... by jflute (2025/08/26)
+    // done fujisawa hasメソッドで、true or 例外は一般的ではないので... by jflute (2025/08/26)
     // hasなら、true or false に限定して、呼び出し側で例外をthrow
     // もしくは、assertTicketExists() みたいなメソッドにしてダメなとき例外
     // のどっちか。
     private boolean hasTicket(TicketType ticketType) {
+        // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
         int quantity = 0;
         switch (ticketType) {
             case ONE_DAY:
@@ -134,6 +137,8 @@ public class TicketBooth {
 
     private TicketBuyResult sellTicket(int handedMoney, TicketType ticketType) {
         int price = TicketBooth.getPrice(ticketType);
+
+        // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
         switch (ticketType) {
             case ONE_DAY:
                 --oneDayQuantity;

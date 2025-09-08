@@ -22,9 +22,10 @@ import org.docksidestage.bizfw.basic.buyticket.TicketBooth;
 import org.docksidestage.bizfw.basic.buyticket.TicketBooth.TicketShortMoneyException;
 import org.docksidestage.bizfw.basic.buyticket.TicketBuyResult;
 import org.docksidestage.bizfw.basic.buyticket.TicketType;
+import org.docksidestage.bizfw.basic.buyticket.TicketTypeXxx;
 import org.docksidestage.unit.PlainTestCase;
 
-// TODO done fujisawa authorお願いします by jflute (2025/08/26)
+// done fujisawa authorお願いします by jflute (2025/08/26)
 /**
  * The test of class. <br>
  * Operate exercise as javadoc. If it's question style, write your answer before test execution. <br>
@@ -234,13 +235,13 @@ public class Step05ClassTest extends PlainTestCase {
     private void showTicketIfNeeds(Ticket ticket) {
         // #1on1: 思考エクササイズ、MaxDaysだとダメな理由
         //if (ticket.getMaxDays() == 2) {
-        // TODO jflute もうちょい進んだらもっかい聞きます (2025/08/26)
+        // done jflute もうちょい進んだらもっかい聞きます (2025/08/26)
         
-        // TODO done fujisawa java的なれびゅー、文字列の == がダメ by jflute (2025/08/26)
+        // done fujisawa java的なれびゅー、文字列の == がダメ by jflute (2025/08/26)
         // (まあここは普段Java書いてなければ忘れやすいところなのでしょうがない)
-        // TODO done fujisawa ここに "TwoDay" と文字列をハードコードしているのをどうにかしたい by jflute (2025/08/26)
+        // done fujisawa ここに "TwoDay" と文字列をハードコードしているのをどうにかしたい by jflute (2025/08/26)
         // スペルミスもそうですし、表現が変わった時に自動で追従されるように
-        // TODO jflute enumを使ってリファクタリングしました by fujisawa (2025/08/29)
+        // done jflute enumを使ってリファクタリングしました by fujisawa (2025/08/29)
         if (ticket.getTicketType() == TicketType.TWO_DAY) { // write determination for two-day passport
             log("two-day passport");
         } else {

@@ -2,16 +2,17 @@ package org.docksidestage.bizfw.basic.buyticket;
 
 import java.time.LocalDateTime;
 
+// #1on1: enumの仕組み的な本質、実はほぼ単なるクラス。
+
 /**
  * @author rfujisawa-biz
  */
-
 public enum TicketType {
     ONE_DAY,
     TWO_DAY,
     FOUR_DAY,
     NIGHT_ONLY_TWO_DAY;
-
+    
     /**
      * チケットが指定された日時に利用可能か判定する
      * @param dateTime 現在の日時
