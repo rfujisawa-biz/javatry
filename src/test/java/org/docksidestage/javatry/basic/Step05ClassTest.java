@@ -15,14 +15,11 @@
  */
 package org.docksidestage.javatry.basic;
 
-import java.time.LocalDateTime;
-
 import org.docksidestage.bizfw.basic.buyticket.Ticket;
 import org.docksidestage.bizfw.basic.buyticket.TicketBooth;
 import org.docksidestage.bizfw.basic.buyticket.TicketBooth.TicketShortMoneyException;
 import org.docksidestage.bizfw.basic.buyticket.TicketBuyResult;
 import org.docksidestage.bizfw.basic.buyticket.TicketType;
-import org.docksidestage.bizfw.basic.buyticket.TicketTypeXxx;
 import org.docksidestage.unit.PlainTestCase;
 
 // done fujisawa authorお願いします by jflute (2025/08/26)
