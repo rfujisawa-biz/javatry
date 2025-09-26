@@ -201,10 +201,8 @@ public class Step05ClassTest extends PlainTestCase {
      */
     public void test_class_moreFix_usePluralDays() {
         // your confirmation code here
-        int oneDayPrice = 7400;
-        int twoDayPrice = 13200;
-        Ticket oneDayPassport = new Ticket(oneDayPrice, TicketType.ONE_DAY);
-        Ticket twoDayPassport = new Ticket(twoDayPrice, TicketType.TWO_DAY);
+        Ticket oneDayPassport = new Ticket(TicketType.ONE_DAY);
+        Ticket twoDayPassport = new Ticket(TicketType.TWO_DAY);
         log("oneDayPassport: " + oneDayPassport.getAvailableDays());
         log("twoDayPassport: " + twoDayPassport.getAvailableDays());
         assertEquals(1, oneDayPassport.getAvailableDays());

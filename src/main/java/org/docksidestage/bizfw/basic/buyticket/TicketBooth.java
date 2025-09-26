@@ -28,10 +28,6 @@ public class TicketBooth {
     private static final int TWO_DAY_MAX_QUANTITY = 10; // TwoDayPassport OneDayPassport同様10
     private static final int FOUR_DAY_MAX_QUANTITY = 10;
     private static final int NIGHT_ONLY_TWO_DAY_MAX_QUANTITY = 10;
-    private static final int ONE_DAY_PRICE = 7400; // when 2019/06/15
-    private static final int TWO_DAY_PRICE = 13200;
-    private static final int FOUR_DAY_PRICE = 22400;
-    private static final int NIGHT_ONLY_TWO_DAY_PRICE = 7400;
 
     // ===================================================================================
     //                                                                           Attribute
@@ -44,21 +40,22 @@ public class TicketBooth {
     // salesProceedsの初期値0にして、余計なnullチェック無くしたい。。。
 //    private Integer change;
 
-    // TODO fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
-    public static int getPrice(TicketType ticketType) {
-        switch (ticketType) {
-            case ONE_DAY:
-                return ONE_DAY_PRICE;
-            case TWO_DAY:
-                return TWO_DAY_PRICE;
-            case FOUR_DAY:
-                return FOUR_DAY_PRICE;
-            case NIGHT_ONLY_TWO_DAY:
-                return NIGHT_ONLY_TWO_DAY_PRICE;
-            default:
-                return 0;
-        }
-    }
+    // TODO done fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
+    // TODO jflute TicketTypeに価格と最大使用可能日数をぶら下げることにしたので、ここは不要になりました
+//    public static int getPrice(TicketType ticketType) {
+//        switch (ticketType) {
+//            case ONE_DAY:
+//                return ONE_DAY_PRICE;
+//            case TWO_DAY:
+//                return TWO_DAY_PRICE;
+//            case FOUR_DAY:
+//                return FOUR_DAY_PRICE;
+//            case NIGHT_ONLY_TWO_DAY:
+//                return NIGHT_ONLY_TWO_DAY_PRICE;
+//            default:
+//                return 0;
+//        }
+//    }
 
     // ===================================================================================
     //                                                                         Constructor
@@ -131,12 +128,12 @@ public class TicketBooth {
     }
 
     private boolean hasSufficientMoney(int handedMoney, TicketType ticketType) {
-        int price = TicketBooth.getPrice(ticketType);
+        int price = ticketType.getPrice();
         return handedMoney >= price;
     }
 
     private TicketBuyResult sellTicket(int handedMoney, TicketType ticketType) {
-        int price = TicketBooth.getPrice(ticketType);
+        int price = ticketType.getPrice();
 
         // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
         switch (ticketType) {
@@ -147,7 +144,7 @@ public class TicketBooth {
             case FOUR_DAY:
                 --fourDayQuantity;
         }
-        Ticket ticket = new Ticket(price, ticketType);
+        Ticket ticket = new Ticket(ticketType);
         if (salesProceeds != null) {
             salesProceeds = salesProceeds + price;
         } else {

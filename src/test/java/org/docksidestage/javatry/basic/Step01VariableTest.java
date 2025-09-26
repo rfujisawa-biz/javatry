@@ -60,7 +60,7 @@ public class Step01VariableTest extends PlainTestCase {
         // 些細な言語の挙動に違いではありますが、こういうところそれぞれ思想があって違いが生まれるのかもですね。
         // #1on1: Pythonだと空文字だったかも!?、C# だと空文字
 
-        // TODO done fujisawa [不思議だよね] ちゃんと正直に答えててえらいです！ by shiny (2025/08/13)
+        // done fujisawa [不思議だよね] ちゃんと正直に答えててえらいです！ by shiny (2025/08/13)
         // TODO shiny 正直なところを売りにしてます！ by hal (2025/08/27)
     }
 

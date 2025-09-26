@@ -370,6 +370,8 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
         // what is difference?
         // TODO fujisawa あとでやる by fujisawa (2025/09/02)
+        // 抽象クラスは、継承を前提に抽象的なクラスとして存在している？
+        // インターフェースは、クラスに対して汎用的な機能を付加するために存在する？
         // _/_/_/_/_/_/_/_/_/_/
     }
 
@@ -383,6 +385,8 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     public void test_objectOriented_polymorphism_makeConcrete() {
         // your confirmation code here
         // コンクリートクラス...？というところから。抽象クラスの対義語だろうけど
+        // コンクリートクラス: インスタンス化できるクラス
+        // Fishクラスを実装
     }
 
     /**
@@ -391,6 +395,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
      */
     public void test_objectOriented_polymorphism_makeInterface() {
         // your confirmation code here
+        // swimインターフェースを作成
     }
 
     // ===================================================================================
