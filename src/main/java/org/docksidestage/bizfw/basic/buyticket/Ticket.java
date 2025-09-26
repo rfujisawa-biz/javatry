@@ -19,6 +19,8 @@ import java.awt.font.FontRenderContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime; // NightOnlyのために、時間も必要かも
 
+// TODO fujisawa ↑ unused の import があるので削除で by jflute (2025/09/26)
+
 /**
  * @author jflute
  * @author rfujisawa-biz
@@ -36,8 +38,8 @@ public class Ticket {
     private int availableDays;
     private LocalDate lastUsed;
 
-    // TODO done fujisawa static final はインスタンス変数よりも上に定義する慣習がある by jflute (2025/09/08)
-    // TODO jflute TicketTypeが管理するようになったので不要になりました
+    // done fujisawa static final はインスタンス変数よりも上に定義する慣習がある by jflute (2025/09/08)
+    // done jflute TicketTypeが管理するようになったので不要になりました
 //    private static final int ONE_DAY_MAX_AVAILABLE_DAYS = 1;
 //    private static final int TWO_DAY_MAX_AVAILABLE_DAYS = 2;
 //    private static final int FOUR_DAY_MAX_AVAILABLE_DAYS = 4;
@@ -45,7 +47,7 @@ public class Ticket {
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
-    // TODO done fujisawa @param に : が入ってると名前が一致しなくなっちゃう by jflute (2025/09/08)
+    // done fujisawa @param に : が入ってると名前が一致しなくなっちゃう by jflute (2025/09/08)
     /**
      * Ticketクラス
      * @param ticketType チケットの種別
@@ -53,8 +55,8 @@ public class Ticket {
     public Ticket(TicketType ticketType) {
         this.ticketType = ticketType;
 
-        // TODO fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
-        // TODO jflute availabeDaysはticketTypeから取得 by fujisawa (2025/09/11)
+        // done fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
+        // done jflute availabeDaysはticketTypeから取得 by fujisawa (2025/09/11)
         this.availableDays = ticketType.getMaxAvailableDays();
 //        switch (ticketType) {
 //        case ONE_DAY:
@@ -97,6 +99,7 @@ public class Ticket {
     // 現時点でpublicとして使ってる人がいないのであれば、コメントでpublicの理由があるといいかも。
     // 2パターン: 概念的に最初からpublicにするパターン、必要になってからpublicにするパターン
     // 業務のコードの話とOSSのコードの話の例。
+    // TODO fujisawa publicになっているが、privateでもいいかなと by jflute (2025/09/26)
     /**
      * チケットが利用可能かどうかを検証する
      * @param dateTime チケットを利用する日時
@@ -109,6 +112,7 @@ public class Ticket {
             throw new InvalidTicketUsageException("This ticket is no longer valid as its usage limit has been reached.");
         }
         if (!ticketType.canBeUsedAt(dateTime)) {
+            // TODO fujisawa 業務例外でもデバッグすることはあるので、チケット種別くらいはメッセージに入れておきましょう by jflute (2025/09/26)
             throw new InvalidTicketUsageException("This ticket is not valid at the current time.");
         }
     }
@@ -116,7 +120,7 @@ public class Ticket {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
-    // TODO done fujisawa ここは説明は省略して、@return だけ書くでもOK by jflute (2025/09/08)
+    // done fujisawa ここは説明は省略して、@return だけ書くでもOK by jflute (2025/09/08)
     /**
      * @return チケット料金
      */
@@ -141,6 +145,8 @@ public class Ticket {
      */
     public TicketType getTicketType() { return ticketType; }
 
+    // TODO fujisawa 定義位置、使ってるvalidateTicketUsage()直下あたりでいいかなと by jflute (2025/09/26)
+    // (ここは、Accessor 領域なので)
     /**
      * チケットの不適切な仕様に対する例外
      */

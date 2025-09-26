@@ -40,8 +40,8 @@ public class TicketBooth {
     // salesProceedsの初期値0にして、余計なnullチェック無くしたい。。。
 //    private Integer change;
 
-    // TODO done fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
-    // TODO jflute TicketTypeに価格と最大使用可能日数をぶら下げることにしたので、ここは不要になりました
+    // done fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
+    // done jflute TicketTypeに価格と最大使用可能日数をぶら下げることにしたので、ここは不要になりました
 //    public static int getPrice(TicketType ticketType) {
 //        switch (ticketType) {
 //            case ONE_DAY:
@@ -84,7 +84,6 @@ public class TicketBooth {
      * @throws TicketShortMoneyException 買うのに金額が足りない
      * @return TicketBuyResult チケット購入結果(チケットとお釣り)
      */
-
     public TicketBuyResult buyPassport(int handedMoney, TicketType ticketType) {
         if (!hasTicket(ticketType)) {
             throw new TicketSoldOutException("Sold out");
@@ -109,6 +108,12 @@ public class TicketBooth {
     // のどっちか。
     private boolean hasTicket(TicketType ticketType) {
         // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
+        // <del>↑ こっちは、良い方法かどうかは置いておいて、そんなに難しくなく解決はできるかな。</del>
+        // いやいや、public のbuyOneDayPassport()たちがもういないスタイルなのでダメだった。
+        // e.g.
+        //  public TicketBuyResult buyOneDayPassport(int handedMoney) {
+        //      return buyPassport(handedMoney, TicketType.ONE_DAY, oneDayQuantity);
+        //  }
         int quantity = 0;
         switch (ticketType) {
             case ONE_DAY:

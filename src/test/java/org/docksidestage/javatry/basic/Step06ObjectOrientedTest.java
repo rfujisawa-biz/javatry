@@ -76,7 +76,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // [ticket info]
         //
         // simulation: actually these variables should be more wide scope
-        int displayPrice = quantity;
+        int displayPrice = oneDayPrice;
         boolean alreadyIn = false;
 
         // other processes here...
@@ -88,10 +88,12 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         //
         // simulation: actually this process should be called by other trigger
         if (alreadyIn) {
-            throw new IllegalStateException("Already in park by this ticket: displayPrice=" + quantity);
+            throw new IllegalStateException("Already in park by this ticket: displayPrice=" + displayPrice);
         }
         alreadyIn = true;
 
+        // TODO fujisawa あと4箇所間違いがある by jflute (2025/09/26)
+        // #1on1: その場で一つ見つけた(変数)、さらに見つけた(例外)、残り2箇所 (2025/09/26)
         //
         // [final process]
         //
@@ -204,6 +206,8 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     // 処理や属性を、分類ごとにまとめるもの
     // 責務が分離されたクラスごとの振る舞いを追いかければ良いため、プログラムの流れが理解しやすくなる
     // _/_/_/_/_/_/_/_/_/_/
+    // #1on1: このエクササイズを作った背景の話、オブジェクトとは？を意識することの大切さ。
+    // TODO jflute 間違い探しが全部終わってからさらに深堀り (2025/09/26)
 
     // ===================================================================================
     //                                                              Polymorphism Beginning
@@ -304,6 +308,8 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // 今回の場合では、Animalに該当するものは、鳴き声を発し、体力を消費するという共通の機能を持っている
         // 同じ処理をまとめて扱えることで、コードの再利用性が高まり、保守性も向上する
         // _/_/_/_/_/_/_/_/_/_/
+        // #1on1: 現実の世界でも似たような抽象化して(便利に)取り扱うってことはよくやっている (2025/09/26)
+        // それをプログラミングの中でも使いたいだけ、と考えると自然なことと思えるかも。
     }
 
     // ===================================================================================
@@ -323,6 +329,22 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // 後半もなんじゃこりゃ、と思ったので、barkWordが帰ってくると予想をした
         // キャストしてなんかしてる
         // [調べたこと] TODO fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // #1on1: ((Zombie) loudable) ダウンキャストと呼ぶ。
+        // e.g. Dog dog = (Dog)animal;
+        // ダウンキャストは基本的には危険な行為。ギャンブルに負ければ、ClassCastExceptionになる。
+        // なので、実際ダウンキャストするときは、他の要因から「絶対にこれでしょ」といい切れるときだけやる。
+        // もしくは、こういう風に、ifで分岐させてダウンキャスト:
+        //  if (animal instanceof Dog) {
+        //      Dog dog = (Dog)animal;
+        //      dog.ote();
+        //  }
+        /* ダウンキャストの例、step11より
+Object content = boxSpace.getContent();
+if (content instanceof String) {
+    int length = ((String) content).length();
+    
+}
+         */
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -373,6 +395,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // 抽象クラスは、継承を前提に抽象的なクラスとして存在している？
         // インターフェースは、クラスに対して汎用的な機能を付加するために存在する？
         // _/_/_/_/_/_/_/_/_/_/
+        // #1on1: まず、文法の違いは互いに色々と持っているが...
+        // ポリモーフィズムで抽象化して取り扱うって面ではめっちゃ似てる。
+        // TODO jflute 次回1on1にて (2025/09/26)
     }
 
     // ===================================================================================
