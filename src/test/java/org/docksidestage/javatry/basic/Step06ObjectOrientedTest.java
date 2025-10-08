@@ -332,7 +332,14 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // return bark().getBarkWord();なので、barkWordが返ってくる
         // 後半もなんじゃこりゃ、と思ったので、barkWordが帰ってくると予想をした
         // キャストしてなんかしてる
-        // [調べたこと] TODO fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // [調べたこと] TODO done fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // https://qiita.com/tukine_T/items/4461cb75adc36fa4c0b6
+        // > 各インスタンスにしかない関数を使いたい時にダウンキャストは使用される
+        // ここ大事そう
+        // 親クラスで定義された変数に、子クラスを代入した場合は、子クラスで特有に定義されているメソッドを呼んだりできない。
+        // 親クラスにそんなメソッドは定義されていないから。
+        // そのような時に、ダウンキャストして子クラスとしてメソッドを呼べるようにする
+
         // #1on1: ((Zombie) loudable) ダウンキャストと呼ぶ。
         // e.g. Dog dog = (Dog)animal;
         // ダウンキャストは基本的には危険な行為。ギャンブルに負ければ、ClassCastExceptionになる。
@@ -373,7 +380,20 @@ if (content instanceof String) {
         // 正解
         // わからん、インターフェースのインスタンスというのか、、、？
         // 1/2で回答
-        // TODO fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // TODO done fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // geminiへの質問
+        // javaで、X instanceOf Yとしたときに、YがクラスでもインターフェースでもXがYのインスタンスのときはtrueになりますね。
+        // インターフェースのインスタンスってのが気持ち悪い気もしますが、そういうもん、だと思うしかないのか。
+
+        // geminiの回答の抜粋
+        // > 考え方のポイント
+        // > instanceof は、そのオブジェクトが特定の「契約」や「振る舞い」を持っているかどうかをチェックする仕組みです。
+        // > クラスの場合: neko instanceof Animal
+        // >   これは「nekoオブジェクトはAnimalクラスから作られましたか（またはそのサブクラスから作られましたか）？」という問いです。これは直感的ですね。
+        // > インターフェースの場合: neko instanceof Runnable
+        // >   これは「nekoオブジェクトはRunnableという契約を守っていますか（Runnableインターフェースを実装したクラスから作られましたか）？」という問いになります。
+        // >   nekoオブジェクトはRunnableインターフェースが定めるrun()メソッドを持っているため、「Runnableという型（役割）として扱うことができる」わけです。
+        // > instanceofは、メモリ上にある実際のオブジェクトが、指定された型（クラスまたはインターフェース）に代入可能かどうかを調べている、と考えると良いでしょう。
     }
 
     /**
