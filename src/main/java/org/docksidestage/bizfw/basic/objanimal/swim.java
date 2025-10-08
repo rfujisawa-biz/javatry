@@ -1,9 +1,9 @@
 package org.docksidestage.bizfw.basic.objanimal;
 
 /**
- * @author rfujisawa-bix
+ * @author rfujisawa-biz
  */
 
 public interface swim {
-    String swim();
+    String doSwim();
 }

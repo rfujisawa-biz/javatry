@@ -15,11 +15,10 @@
  */
 package org.docksidestage.bizfw.basic.buyticket;
 
-import java.awt.font.FontRenderContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime; // NightOnlyのために、時間も必要かも
 
-// TODO fujisawa ↑ unused の import があるので削除で by jflute (2025/09/26)
+// TODO done fujisawa ↑ unused の import があるので削除で by jflute (2025/09/26)
 
 /**
  * @author jflute
@@ -99,12 +98,12 @@ public class Ticket {
     // 現時点でpublicとして使ってる人がいないのであれば、コメントでpublicの理由があるといいかも。
     // 2パターン: 概念的に最初からpublicにするパターン、必要になってからpublicにするパターン
     // 業務のコードの話とOSSのコードの話の例。
-    // TODO fujisawa publicになっているが、privateでもいいかなと by jflute (2025/09/26)
+    // TODO done fujisawa publicになっているが、privateでもいいかなと by jflute (2025/09/26)
     /**
      * チケットが利用可能かどうかを検証する
      * @param dateTime チケットを利用する日時
      */
-    public void validateTicketUsage(LocalDateTime dateTime) {
+    private void validateTicketUsage(LocalDateTime dateTime) {
         if (alreadyIn) {
             throw new IllegalStateException("This ticket is currently in use.");
         }
@@ -112,8 +111,21 @@ public class Ticket {
             throw new InvalidTicketUsageException("This ticket is no longer valid as its usage limit has been reached.");
         }
         if (!ticketType.canBeUsedAt(dateTime)) {
-            // TODO fujisawa 業務例外でもデバッグすることはあるので、チケット種別くらいはメッセージに入れておきましょう by jflute (2025/09/26)
-            throw new InvalidTicketUsageException("This ticket is not valid at the current time.");
+            // TODO done fujisawa 業務例外でもデバッグすることはあるので、チケット種別くらいはメッセージに入れておきましょう by jflute (2025/09/26)
+            throw new InvalidTicketUsageException("This ticket is not valid at the current time.: " + ticketType);
+        }
+    }
+
+    // TODO done fujisawa 定義位置、使ってるvalidateTicketUsage()直下あたりでいいかなと by jflute (2025/09/26)
+    // (ここは、Accessor 領域なので)
+    /**
+     * チケットの不適切な仕様に対する例外
+     */
+    public static class InvalidTicketUsageException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        public InvalidTicketUsageException(String msg) {
+            super(msg);
         }
     }
 
@@ -144,17 +156,4 @@ public class Ticket {
      * @return チケット種別
      */
     public TicketType getTicketType() { return ticketType; }
-
-    // TODO fujisawa 定義位置、使ってるvalidateTicketUsage()直下あたりでいいかなと by jflute (2025/09/26)
-    // (ここは、Accessor 領域なので)
-    /**
-     * チケットの不適切な仕様に対する例外
-     */
-    public static class InvalidTicketUsageException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public InvalidTicketUsageException(String msg) {
-            super(msg);
-        }
-    }
 }

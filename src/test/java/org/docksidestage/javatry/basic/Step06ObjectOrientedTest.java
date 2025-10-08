@@ -19,14 +19,14 @@ import org.docksidestage.bizfw.basic.buyticket.Ticket;
 import org.docksidestage.bizfw.basic.buyticket.TicketBooth;
 import org.docksidestage.bizfw.basic.buyticket.TicketBuyResult;
 import org.docksidestage.bizfw.basic.buyticket.TicketType;
-import org.docksidestage.bizfw.basic.objanimal.Animal;
-import org.docksidestage.bizfw.basic.objanimal.BarkedSound;
-import org.docksidestage.bizfw.basic.objanimal.Cat;
-import org.docksidestage.bizfw.basic.objanimal.Dog;
-import org.docksidestage.bizfw.basic.objanimal.Zombie;
+import org.docksidestage.bizfw.basic.objanimal.*;
 import org.docksidestage.bizfw.basic.objanimal.loud.AlarmClock;
 import org.docksidestage.bizfw.basic.objanimal.loud.Loudable;
 import org.docksidestage.bizfw.basic.objanimal.runner.FastRunner;
+import org.docksidestage.javatry.basic.st6.dbms.St6MySql;
+import org.docksidestage.javatry.basic.st6.dbms.St6PostgreSql;
+import org.docksidestage.javatry.basic.st6.dbms.St6Sql;
+import org.docksidestage.javatry.basic.st6.os.*;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -92,12 +92,13 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         }
         alreadyIn = true;
 
-        // TODO fujisawa あと4箇所間違いがある by jflute (2025/09/26)
+        // TODO done fujisawa あと4箇所間違いがある by jflute (2025/09/26)
         // #1on1: その場で一つ見つけた(変数)、さらに見つけた(例外)、残り2箇所 (2025/09/26)
         //
         // [final process]
         //
-        saveBuyingHistory(quantity, displayPrice, salesProceeds, alreadyIn);
+//        saveBuyingHistory(quantity, displayPrice, salesProceeds, alreadyIn); // 順番違う
+        saveBuyingHistory(quantity, salesProceeds, displayPrice, alreadyIn);
     }
 
     // メソッドが全ての変数の状態を保持しなきゃいけないから大変（書くのも読むのも）
@@ -105,8 +106,11 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     private void saveBuyingHistory(int quantity, Integer salesProceeds, int displayPrice, boolean alreadyIn) {
         if (alreadyIn) {
             // simulation: only logging here (normally e.g. DB insert)
-            showTicketBooth(displayPrice, salesProceeds);
-            showYourTicket(quantity, alreadyIn);
+            // 引数違う
+//            showTicketBooth(displayPrice, salesProceeds);
+//            showYourTicket(quantity, alreadyIn);
+            showTicketBooth(quantity, salesProceeds);
+            showYourTicket(displayPrice, alreadyIn);
         }
     }
 
@@ -412,6 +416,9 @@ if (content instanceof String) {
         // コンクリートクラス...？というところから。抽象クラスの対義語だろうけど
         // コンクリートクラス: インスタンス化できるクラス
         // Fishクラスを実装
+        Animal fish = new Fish();
+        BarkedSound sound = fish.bark();
+        assertEquals("...(I cannot bark)", sound.getBarkWord());
     }
 
     /**
@@ -421,6 +428,9 @@ if (content instanceof String) {
     public void test_objectOriented_polymorphism_makeInterface() {
         // your confirmation code here
         // swimインターフェースを作成
+        Fish fish = new Fish();
+        String swimming = fish.doSwim();
+        assertEquals("...(I am swimming)", swimming);
     }
 
     // ===================================================================================
@@ -431,7 +441,15 @@ if (content instanceof String) {
      * (St6MySql, St6PostgreSql (basic.st6.dbms) から抽象クラスを抽出してみましょう (スーパークラスとサブクラスの関係に))
      */
     public void test_objectOriented_writing_generalization_extractToAbstract() {
-        // your confirmation code here
+        St6Sql st6MySql = new St6MySql();
+        St6Sql st6PostgreSql = new St6PostgreSql();
+        int pageSize = 10;
+        int pageNumber = 10;
+        String actualSt6MySql = "limit 90, 10";
+        String actualSt6PostgreSql = "offset 90 limit 10";
+
+        assertEquals(actualSt6MySql, st6MySql.buildPagingQuery(pageSize, pageNumber));
+        assertEquals(actualSt6PostgreSql, st6PostgreSql.buildPagingQuery(pageSize, pageNumber));
     }
 
     /**
@@ -439,7 +457,25 @@ if (content instanceof String) {
      * (St6OperationSystem (basic.st6.os) からコンクリートクラスを抽出してみましょう (スーパークラスとサブクラスの関係に))
      */
     public void test_objectOriented_writing_specialization_extractToConcrete() {
-        // your confirmation code here
+        String osType = "Mac"; // Mac, Windows, OldWindows, Other
+        String loginId = "rfujisawa-biz";
+        String relativePath = "/Downloads/sea.jpg";
+        St6OperationSystemAbstract os;
+        if ("Mac".equals(osType)) {
+            os = new St6MacOs(loginId);
+       } else if ("Windows".equals(osType)) {
+            os = new St6WindowsOs(loginId);
+        } else if ("OldWindows".equals(osType)) {
+            os = new St6OldWindowsOs(loginId);
+        } else {
+            os = new St6UnknownOs(osType, loginId);
+        }
+        String actual = os.buildUserResourcePath(relativePath);
+        String expectValue = "/Users/rfujisawa-biz/" + relativePath;
+        String expect = expectValue; // Macの場合
+//        String expect = expectValue.replace("/", "\\"); // Windowsの場合
+//        String expect = expectValue.replace("/Users/", "/Documents and Settings/").replace("/", "\\"); // OldWindowsの場合
+        assertEquals(expect, actual);
     }
 
     // ===================================================================================

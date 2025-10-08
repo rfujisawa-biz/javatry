@@ -37,25 +37,6 @@ public class TicketBooth {
     private int fourDayQuantity = FOUR_DAY_MAX_QUANTITY;
     private int nightOnlyTwoDayQuantity = NIGHT_ONLY_TWO_DAY_MAX_QUANTITY;
     private Integer salesProceeds; // null allowed: until first purchase
-    // salesProceedsの初期値0にして、余計なnullチェック無くしたい。。。
-//    private Integer change;
-
-    // done fujisawa ここのswitchに関しては、ちょっと頑張れば解消すると思います by jflute (2025/09/08)
-    // done jflute TicketTypeに価格と最大使用可能日数をぶら下げることにしたので、ここは不要になりました
-//    public static int getPrice(TicketType ticketType) {
-//        switch (ticketType) {
-//            case ONE_DAY:
-//                return ONE_DAY_PRICE;
-//            case TWO_DAY:
-//                return TWO_DAY_PRICE;
-//            case FOUR_DAY:
-//                return FOUR_DAY_PRICE;
-//            case NIGHT_ONLY_TWO_DAY:
-//                return NIGHT_ONLY_TWO_DAY_PRICE;
-//            default:
-//                return 0;
-//        }
-//    }
 
     // ===================================================================================
     //                                                                         Constructor
@@ -92,14 +73,9 @@ public class TicketBooth {
             throw new TicketShortMoneyException("Short money: " + handedMoney);
         }
         return sellTicket(handedMoney, ticketType);
-        //if (hasTicket(ticketType) && hasSufficientMoney(handedMoney, ticketType)) {
-        //    return sellTicket(handedMoney, ticketType);
-        //}
         // done fujisawa ここに来ること絶対にない？ (hasメソッドが例外 or trueなので) by jflute (2025/08/26)
         // #1on1: 超少なくとも、一言「ここには来ないのでダミー」みたいなコメント欲しい。
         // #1on1: 一方で、hasの違和感を修正したら、自動的にここも解決するかも
-        //return null;
-        // TODOが解決したのを確認するために、コメントアウトでコード残してます
     }
 
     // done fujisawa hasメソッドで、true or 例外は一般的ではないので... by jflute (2025/08/26)
@@ -144,10 +120,18 @@ public class TicketBooth {
         switch (ticketType) {
             case ONE_DAY:
                 --oneDayQuantity;
+                break;
             case  TWO_DAY:
                 --twoDayQuantity;
+                break;
             case FOUR_DAY:
                 --fourDayQuantity;
+                break;
+            case NIGHT_ONLY_TWO_DAY:
+                --nightOnlyTwoDayQuantity;
+                break;
+            default:
+                throw new IllegalStateException("Unknown ticket type: " + ticketType);
         }
         Ticket ticket = new Ticket(ticketType);
         if (salesProceeds != null) {
