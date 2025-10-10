@@ -92,7 +92,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         }
         alreadyIn = true;
 
-        // TODO done fujisawa あと4箇所間違いがある by jflute (2025/09/26)
+        // done fujisawa あと4箇所間違いがある by jflute (2025/09/26)
         // #1on1: その場で一つ見つけた(変数)、さらに見つけた(例外)、残り2箇所 (2025/09/26)
         //
         // [final process]
@@ -102,7 +102,15 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     }
 
     // メソッドが全ての変数の状態を保持しなきゃいけないから大変（書くのも読むのも）
-
+    
+    // #1on1: まずは、オブジェクト指向のオブジェクトを導入することで、こういったint,int,int問題を回避 (2025/10/10)
+    // 一方で...
+    // 呼び出す時、すでにこうなってる場合、開発者としてできるだけミスを起こさないようにする。
+    // 指差し確認してるか？してないか？
+    // 書いた直後の5秒の振り返りをやるか？書き終わった後に振り返るか？
+    //
+    // それをやるためには、危ないポイントを知ってるかどうか？(見つけられるかどうか？)
+    // さらに、自分が間違いやすいポイントを知ってるかどうか？(経験から)
     private void saveBuyingHistory(int quantity, Integer salesProceeds, int displayPrice, boolean alreadyIn) {
         if (alreadyIn) {
             // simulation: only logging here (normally e.g. DB insert)
@@ -211,7 +219,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     // 責務が分離されたクラスごとの振る舞いを追いかければ良いため、プログラムの流れが理解しやすくなる
     // _/_/_/_/_/_/_/_/_/_/
     // #1on1: このエクササイズを作った背景の話、オブジェクトとは？を意識することの大切さ。
-    // TODO jflute 間違い探しが全部終わってからさらに深堀り (2025/09/26)
+    // done jflute 間違い探しが全部終わってからさらに深堀り (2025/09/26)
 
     // ===================================================================================
     //                                                              Polymorphism Beginning
@@ -421,7 +429,12 @@ if (content instanceof String) {
         // _/_/_/_/_/_/_/_/_/_/
         // #1on1: まず、文法の違いは互いに色々と持っているが...
         // ポリモーフィズムで抽象化して取り扱うって面ではめっちゃ似てる。
-        // TODO jflute 次回1on1にて (2025/09/26)
+        // done jflute 次回1on1にて (2025/09/26)
+        // オブジェクト指向のコンセプトの話
+        // インターフェースのコンセプトの話
+        // Javaでできないオブジェクト指向は？ → 多重継承できない
+        // 多重継承できる言語: C++, Ruby, Python (rustはinterfaceのみ)
+        // TODO jflute 次回1on1では、さらにinterfaceの応用編 (2025/10/10)
     }
 
     // ===================================================================================

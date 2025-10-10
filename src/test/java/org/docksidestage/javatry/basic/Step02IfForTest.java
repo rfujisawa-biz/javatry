@@ -260,8 +260,31 @@ public class Step02IfForTest extends PlainTestCase {
         stageList.stream().filter(stage -> !stage.startsWith("br") && stage.contains("ga")).findFirst().ifPresent(sea::append);
         log(sea);
 
-        // TODO done fujisawa ようこそStream APIの沼へ！笑（Stream APIにハマる時期が果たしてやってくるのか、、笑） by shiny (2025/08/13)
-        // TODO shiny kotlinとか触ってると、Stream APIを一回噛ませるってのが謎ですね（後から追加された機能だから？） by hal (2025/08/27)
+        // done fujisawa ようこそStream APIの沼へ！笑（Stream APIにハマる時期が果たしてやってくるのか、、笑） by shiny (2025/08/13)
+        // done shiny kotlinとか触ってると、Stream APIを一回噛ませるってのが謎ですね（後から追加された機能だから？） by hal (2025/08/27)
+        // #1on1: 一つは、その通り互換性を気にしたと思う (2025/10/10)
+        //
+        // もう一つ、中間処理、終端処理を分けることによる配慮をしているので、Streamクラスが必要になる。
+        // Optional<String> found = stageList.stream() // 100万件
+        //        .filter(stage -> !stage.startsWith("br")) // brを除外 (3件)
+        //        .findFirst(); // 99万9997件の最初の1件
+        //
+        // [仮の世界: リストを戻すStreamだったら]
+        // ... = stageList // 100万件
+        //        .filter(stage -> !stage.startsWith("br")) // brを除外 (3件)
+        //        .findFirst(); // 99万9997件の最初の1件 (filterが先に実行されている)
+        // 実際には、brじゃないものの1個目が見つかった時点でfindFirst()されてreturnされる
+        // 
+        // Eclipse Collections というOSSがあって...
+        // Optional<String> found = stageList // 100万件
+        //        .(オプションでStream API的に挙動にすることもできる)
+        //        .select(stage -> !stage.startsWith("br")) // brを除外 (3件)
+        //        .findFirst(); // 99万9997件の最初の1件
+        //
+        // メソッド拡張のお話
+        //StreamExtension.filter(stageList);
+        // ↓
+        //stageList.filter();
     }
 
     /**
