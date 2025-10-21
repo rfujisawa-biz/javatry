@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
  * The object for fish(魚).
  * @author rfujisawa-biz
  */
-
 public class Fish extends Animal implements swim {
+    // TODO fujisawa unusedの警告が出ています by jflute (2025/10/21)
     private static final Logger logger = LoggerFactory.getLogger(Fish.class);
 
     public Fish() {

@@ -493,6 +493,8 @@ if (content instanceof String) {
         String osType = "Mac"; // Mac, Windows, OldWindows, Other
         String loginId = "rfujisawa-biz";
         String relativePath = "/Downloads/sea.jpg";
+        
+        // #1on1: osTypeの粒度と、クラスの単位は厳密には別のなので、osTypeの役割がしっかりある (2025/10/21)
         St6OperationSystemAbstract os;
         if ("Mac".equals(osType)) {
             os = new St6MacOs(loginId);
@@ -509,6 +511,27 @@ if (content instanceof String) {
 //        String expect = expectValue.replace("/", "\\"); // Windowsの場合
 //        String expect = expectValue.replace("/Users/", "/Documents and Settings/").replace("/", "\\"); // OldWindowsの場合
         assertEquals(expect, actual);
+
+        // #1on1: Mac/Windowsで "/Users/" + loginId が一緒だけど、再利用メソッドを作るか？ (2025/10/21)
+        // File Separatorは解決されるので再利用してもいいかも？ by fujisawaさん
+        // 再利用するとしたらメソッド名どうする？
+        // メソッド:
+        //     protected String getUserDirectoryTemplate() // for Mac, Windows
+        //
+        //     protected String getUserDirectoryTemplate?() // for other1, other2
+        // ここまで来たら汎用的なロジックで切り出すような形にしたい by fujisawaさん
+        //
+        // MacでUserDirectoryが変わるってなったら？Windowsも変わるか？ => 変わらないだろう
+        //
+        // 「コードが同じでも再利用するとは限らない、意味が同じなら再利用したい」 (2025/10/21)
+        //
+        // 概念化ができるかどうか？概念化できたら、意味を同じにすることができるので再利用しやすい。
+        // (自然なメソッド名が作れるかどうか？)
+        //
+        // 切り出せそうだったらとりあえず切り出して自分は引数で制御するタイプ by fujisawaさん
+        // 再利用しないよりはしておいたほうが良いだろうコンセプト。
+        //
+        // ぴったり最適な再利用率で実装するのはほぼ不可能 by jflute
     }
 
     // ===================================================================================

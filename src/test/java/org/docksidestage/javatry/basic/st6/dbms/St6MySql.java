@@ -28,6 +28,15 @@ package org.docksidestage.javatry.basic.st6.dbms;
 //}
 
 public class St6MySql extends St6Sql {
+    // TODO fujisawa その1: offsetの導出ロジックは、PostgreSQLと同じなので再利用してみましょう by jflute (2025/10/21)
+    // TODO fujisawa その2: (全体的に)offsetの導出とquery文字列の生成の間に追加処理を入れることになったら... by jflute (2025/10/21)
+    // e.g.
+    //  int offset = pageSize * (pageNumber - 1);
+    //  xxxxxxxxxxxxx(); // 追加処理
+    //  return "limit " + offset + ", " + pageSize;
+    // この場合に、現状だとサブクラスごとに修正を追加しないといけないので、
+    // 一箇所直せば(追加すれば)修正が済むようにしてみましょう。
+    // (現状、2stepの流れが再利用できない。なので、流れを再利用したい)
     @Override
     public String buildPagingQuery(int pageSize, int pageNumber) {
         int offset = pageSize * (pageNumber - 1);
