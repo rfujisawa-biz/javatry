@@ -340,7 +340,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // return bark().getBarkWord();なので、barkWordが返ってくる
         // 後半もなんじゃこりゃ、と思ったので、barkWordが帰ってくると予想をした
         // キャストしてなんかしてる
-        // [調べたこと] TODO done fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // [調べたこと] done fujisawa あとで調べてください by fujisawa (2025/09/02)
         // https://qiita.com/tukine_T/items/4461cb75adc36fa4c0b6
         // > 各インスタンスにしかない関数を使いたい時にダウンキャストは使用される
         // ここ大事そう
@@ -388,7 +388,7 @@ if (content instanceof String) {
         // 正解
         // わからん、インターフェースのインスタンスというのか、、、？
         // 1/2で回答
-        // TODO done fujisawa あとで調べてください by fujisawa (2025/09/02)
+        // done fujisawa あとで調べてください by fujisawa (2025/09/02)
         // geminiへの質問
         // javaで、X instanceOf Yとしたときに、YがクラスでもインターフェースでもXがYのインスタンスのときはtrueになりますね。
         // インターフェースのインスタンスってのが気持ち悪い気もしますが、そういうもん、だと思うしかないのか。
@@ -423,7 +423,7 @@ if (content instanceof String) {
         // write your memo here:
         // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
         // what is difference?
-        // TODO fujisawa あとでやる by fujisawa (2025/09/02)
+        // done fujisawa あとでやる by fujisawa (2025/09/02)
         // 抽象クラスは、継承を前提に抽象的なクラスとして存在している？
         // インターフェースは、クラスに対して汎用的な機能を付加するために存在する？
         // _/_/_/_/_/_/_/_/_/_/
