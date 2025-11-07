@@ -16,6 +16,9 @@ public class BarkingProcess {
     }
 
     // TODO fujisawa downHitPointの処理
+    // #1on1: AnimalのdownHitPoint()をここで呼びたくない...けど、
+    // その気持ち悪さの感覚は、とても正しいです。(カプセル化が壊れちゃう)
+    // TODO fujisawa 修行++: downHitPoint()のprotectedを崩さず、実現したいところ by jflute (2025/11/07)
     protected void breatheIn(Animal animal) { // actually depends on barking
         logger.debug("...Breathing in for barking"); // dummy implementation
         animal.downHitPoint();

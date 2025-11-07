@@ -7,7 +7,7 @@ import org.docksidestage.bizfw.basic.objanimal.swimmer.Swimmer;
  * @author rfujisawa-biz
  */
 public class Fish extends Animal implements Swimmer {
-    // TODO done fujisawa unusedの警告が出ています by jflute (2025/10/21)
+    // done fujisawa unusedの警告が出ています by jflute (2025/10/21)
 
     public Fish() {
     }

@@ -127,6 +127,16 @@ public class Step07ExceptionTest extends PlainTestCase {
         log(sea); // your answer? => false
         // ThrowableはExceptionを継承していないので
     }
+    
+    // #1on1: ErrorとExceptionの違い
+    //
+    // Error: 検知した瞬間にシステムエラーが確定
+    //        (throwした瞬間にダメだということが確定(基本的に))
+    //
+    // Exception: 止めないといけないか、リカバリができるか、どっちもありえる
+    //            (throwした瞬間は(厳密には)まだダメかわからず、catchしてどっちか確定する(基本的に))
+    //
+    // Javaの例、TypeScript, Pythonの例
 
     // ===================================================================================
     //                                                                         NullPointer
@@ -177,7 +187,9 @@ public class Step07ExceptionTest extends PlainTestCase {
         } catch (NullPointerException e) {
             log(e);
         }
+        // #1on1: java17とかだと、NullPoの例外メッセージで変数を教えてくれるようになった (2025/11/07)
     }
+    // TODO jflute 1on1ふぉろーここまでやった (2025/11/07)
 
     // ===================================================================================
     //                                                                   Checked Exception
