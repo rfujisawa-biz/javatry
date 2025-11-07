@@ -20,12 +20,13 @@ import org.docksidestage.bizfw.basic.buyticket.TicketBooth;
 import org.docksidestage.bizfw.basic.buyticket.TicketBuyResult;
 import org.docksidestage.bizfw.basic.buyticket.TicketType;
 import org.docksidestage.bizfw.basic.objanimal.*;
+import org.docksidestage.bizfw.basic.objanimal.barking.BarkedSound;
 import org.docksidestage.bizfw.basic.objanimal.loud.AlarmClock;
 import org.docksidestage.bizfw.basic.objanimal.loud.Loudable;
 import org.docksidestage.bizfw.basic.objanimal.runner.FastRunner;
-import org.docksidestage.javatry.basic.st6.dbms.St6MySql;
-import org.docksidestage.javatry.basic.st6.dbms.St6PostgreSql;
-import org.docksidestage.javatry.basic.st6.dbms.St6Sql;
+import org.docksidestage.javatry.basic.st6.dbms.St6MySqlDbms;
+import org.docksidestage.javatry.basic.st6.dbms.St6PostgreSqlDbms;
+import org.docksidestage.javatry.basic.st6.dbms.St6Dbms;
 import org.docksidestage.javatry.basic.st6.os.*;
 import org.docksidestage.unit.PlainTestCase;
 
@@ -462,7 +463,7 @@ if (content instanceof String) {
         // your confirmation code here
         // swimインターフェースを作成
         Fish fish = new Fish();
-        String swimming = fish.doSwim();
+        String swimming = fish.swim();
         assertEquals("...(I am swimming)", swimming);
     }
 
@@ -474,15 +475,15 @@ if (content instanceof String) {
      * (St6MySql, St6PostgreSql (basic.st6.dbms) から抽象クラスを抽出してみましょう (スーパークラスとサブクラスの関係に))
      */
     public void test_objectOriented_writing_generalization_extractToAbstract() {
-        St6Sql st6MySql = new St6MySql();
-        St6Sql st6PostgreSql = new St6PostgreSql();
+        St6Dbms st6MySqlDbms = new St6MySqlDbms();
+        St6Dbms st6PostgreSqlDbms = new St6PostgreSqlDbms();
         int pageSize = 10;
         int pageNumber = 10;
         String actualSt6MySql = "limit 90, 10";
         String actualSt6PostgreSql = "offset 90 limit 10";
 
-        assertEquals(actualSt6MySql, st6MySql.buildPagingQuery(pageSize, pageNumber));
-        assertEquals(actualSt6PostgreSql, st6PostgreSql.buildPagingQuery(pageSize, pageNumber));
+        assertEquals(actualSt6MySql, st6MySqlDbms.buildPagingQuery(pageSize, pageNumber));
+        assertEquals(actualSt6PostgreSql, st6PostgreSqlDbms.buildPagingQuery(pageSize, pageNumber));
     }
 
     /**

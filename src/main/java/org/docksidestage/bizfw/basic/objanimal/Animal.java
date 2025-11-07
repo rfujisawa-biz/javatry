@@ -15,6 +15,7 @@
  */
 package org.docksidestage.bizfw.basic.objanimal;
 
+import org.docksidestage.bizfw.basic.objanimal.barking.BarkedSound;
 import org.docksidestage.bizfw.basic.objanimal.loud.Loudable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public abstract class Animal implements Loudable {
         downHitPoint();
     }
 
-    protected abstract String getBarkWord();
+    public abstract String getBarkWord();
 
     protected BarkedSound doBark(String barkWord) {
         downHitPoint();
