@@ -12,7 +12,7 @@ public class Fish extends Animal implements Swimmer {
     public Fish() {
     }
 
-    protected String getBarkWord() {
+    public String getBarkWord() {
         return "...(I cannot bark)";
     }
 

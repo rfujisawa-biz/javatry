@@ -565,6 +565,17 @@ if (content instanceof String) {
      */
     public void test_objectOriented_writing_withPackageRefactoring() {
         // your confirmation code here
+        Animal dog = new Dog();
+        log(dog.getHitPoint());
+        BarkedSound sound = dog.bark();
+        assertEquals("wan", sound.getBarkWord());
+        assertEquals(5, dog.getHitPoint());
+        // TODO fujisawa DogのdownHitPointがCatと同様の実装になってたけど、なんでこんなことになってるんだ？
+
+        Animal cat = new Cat();
+        sound = cat.bark();
+        assertEquals("nya-", sound.getBarkWord());
+        assertEquals(5, cat.getHitPoint());
     }
 
     /**

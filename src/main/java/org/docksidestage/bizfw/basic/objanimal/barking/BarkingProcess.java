@@ -7,30 +7,43 @@ import org.slf4j.LoggerFactory;
 public class BarkingProcess {
     private static final Logger logger = LoggerFactory.getLogger(BarkingProcess.class);
 
-    public BarkedSound bark(Animal animal) {
-        breatheIn(animal);
-        prepareAbdominalMuscle(animal);
+    private final Animal animal;
+    private final Runnable hitPointDowner;
+
+    public BarkingProcess(Animal animal, Runnable hitPointDowner) {
+        this.animal = animal;
+        this.hitPointDowner = hitPointDowner;
+    }
+
+    public BarkedSound bark() {
+        breatheIn();
+        prepareAbdominalMuscle();
         String barkWord = animal.getBarkWord();
-        BarkedSound barkedSound = doBark(barkWord, animal);
+        logger.debug("4: {}", animal.getHitPoint());
+        BarkedSound barkedSound = doBark(barkWord);
+        logger.debug("5: {}", animal.getHitPoint());
         return barkedSound;
     }
 
-    // TODO fujisawa downHitPointの処理
+    // TODO done fujisawa downHitPointの処理
     // #1on1: AnimalのdownHitPoint()をここで呼びたくない...けど、
     // その気持ち悪さの感覚は、とても正しいです。(カプセル化が壊れちゃう)
-    // TODO fujisawa 修行++: downHitPoint()のprotectedを崩さず、実現したいところ by jflute (2025/11/07)
-    protected void breatheIn(Animal animal) { // actually depends on barking
+    // TODO done fujisawa 修行++: downHitPoint()のprotectedを崩さず、実現したいところ by jflute (2025/11/07)
+    // AIに聞いて提案してもらった実装
+    // 処理を渡してそれを実行する、というやり方らしい。
+    // downHitPointをラムダ式で渡して、runが呼ばれたらそれが実行される。
+    protected void breatheIn() { // actually depends on barking
         logger.debug("...Breathing in for barking"); // dummy implementation
-        animal.downHitPoint();
+        hitPointDowner.run();
     }
 
-    protected void prepareAbdominalMuscle(Animal animal) { // also actually depends on barking
+    protected void prepareAbdominalMuscle() { // also actually depends on barking
         logger.debug("...Using my abdominal muscle for barking"); // dummy implementation
-        animal.downHitPoint();
+        hitPointDowner.run();
     }
 
-    protected BarkedSound doBark(String barkWord, Animal animal) {
-        animal.downHitPoint();
+    protected BarkedSound doBark(String barkWord) {
+        hitPointDowner.run();
         return new BarkedSound(barkWord);
     }
 }

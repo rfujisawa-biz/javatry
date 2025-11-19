@@ -15,6 +15,9 @@
  */
 package org.docksidestage.javatry.basic;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.docksidestage.bizfw.basic.supercar.SupercarClient;
 import org.docksidestage.javatry.basic.st7.St7BasicExceptionThrower;
 import org.docksidestage.javatry.basic.st7.St7ConstructorChallengeException;
@@ -198,8 +201,14 @@ public class Step07ExceptionTest extends PlainTestCase {
      * Show canonical path of new java.io.File(".") by log(), and if I/O error, show message and stack-trace instead <br>
      * (new java.io.File(".") の canonical path を取得してログに表示、I/Oエラーの時はメッセージとスタックトレースを代わりに表示)
      */
-    // TODO fujisawa あとで
     public void test_exception_checkedException_basic() {
+        try {
+            String currentDirectoryPath = new File(".").getCanonicalPath();
+            log(currentDirectoryPath);
+        } catch (IOException e) {
+            log(e.getMessage());
+            log(e);
+        }
     }
 
     // ===================================================================================
@@ -210,6 +219,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * And What is exception class name displayed at the last "Caused By:" of stack trace? <br>
      * (catchブロックの変数 sea, land の中身は？また、スタックトレースの最後の "Caused By:" で表示されている例外クラス名は？)
      */
+    // TODO fujisawa あとで
     public void test_exception_cause_basic() {
         String sea = "mystic";
         String land = "oneman";
@@ -269,8 +279,8 @@ public class Step07ExceptionTest extends PlainTestCase {
             // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
             // What happens? Write situation and cause here. (何が起きた？状況と原因をここに書いてみましょう)
             // - - - - - - - - - -
-            //
-            //
+            //　車の設計をしている際に、ハンドルの固定のために、特注のネジを用意しようとした。
+            //　ネジの設定で、`kawaii face`を選択しようとしたが、サポート切れであり、選択することができなかった。
             //
             // _/_/_/_/_/_/_/_/_/_/
         }
@@ -281,6 +291,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * by only exception information as far as possible. <br>
      * できるだけ例外情報だけでその状況が理解できるように、Supercarのクラスたちの例外ハンドリングを改善しましょう。
      */
+    // TODO fujisawa 途中まで
     public void test_exception_translation_improveChallenge() {
         try {
             new SupercarClient().buySupercar(); // you can fix the classes
@@ -297,6 +308,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * Fix terrible (YABAI in Japanese) exception handling. (you can modify exception class) <br>
      * (やばい例外ハンドリングがあるので修正しましょう (例外クラスを修正してOK))
      */
+    // とりあえずメッセージを渡すようにした
     public void test_exception_writing_constructorChallenge() {
         try {
             helpSurprisedYabaiCatch();
@@ -309,7 +321,7 @@ public class Step07ExceptionTest extends PlainTestCase {
         try {
             helpThrowIllegalState();
         } catch (IllegalStateException e) {
-            throw new St7ConstructorChallengeException("Failed to do something.");
+            throw new St7ConstructorChallengeException(e.getMessage());
         }
     }
 
@@ -331,8 +343,8 @@ public class Step07ExceptionTest extends PlainTestCase {
         // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
         // Write here. (ここに書いてみましょう)
         // - - - - - - - - - -
-        //
-        //
+        // Errorは、発生したらすぐに停止する必要がある。
+        // Exceptionは、発生したら、すぐに停止する必要があるかどうかの確認が必要。すぐに停止する必要がある場合は、そのExceptionはErrorと同様の処理をする。
         //
         // _/_/_/_/_/_/_/_/_/_/
     }

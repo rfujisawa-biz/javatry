@@ -32,7 +32,9 @@ public class SupercarDealer {
         } else if (clientRequirement.contains("steering wheel has many shop")) {
             return supercarManufacturer.makeSupercar("piari");
         } else {
-            throw new IllegalStateException("Cannot understand the client requirement: " + clientRequirement);
+            throw new IllegalStateException("Can't make steering wheel as your order: "
+                    + clientRequirement + "\n"
+                    + "Please include following sentence in the requirement:\n1. steering wheel is like sea\n2. steering wheel is useful on land\n3. steering wheel has many shop");
         }
     }
 
