@@ -25,10 +25,10 @@ public class BarkingProcess {
         return barkedSound;
     }
 
-    // TODO done fujisawa downHitPointの処理
+    // done fujisawa downHitPointの処理
     // #1on1: AnimalのdownHitPoint()をここで呼びたくない...けど、
     // その気持ち悪さの感覚は、とても正しいです。(カプセル化が壊れちゃう)
-    // TODO done fujisawa 修行++: downHitPoint()のprotectedを崩さず、実現したいところ by jflute (2025/11/07)
+    // done fujisawa 修行++: downHitPoint()のprotectedを崩さず、実現したいところ by jflute (2025/11/07)
     // AIに聞いて提案してもらった実装
     // 処理を渡してそれを実行する、というやり方らしい。
     // downHitPointをラムダ式で渡して、runが呼ばれたらそれが実行される。

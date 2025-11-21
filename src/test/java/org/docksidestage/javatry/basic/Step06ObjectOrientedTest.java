@@ -435,7 +435,11 @@ if (content instanceof String) {
         // インターフェースのコンセプトの話
         // Javaでできないオブジェクト指向は？ → 多重継承できない
         // 多重継承できる言語: C++, Ruby, Python (rustはinterfaceのみ)
-        // TODO jflute 次回1on1では、さらにinterfaceの応用編 (2025/10/10)
+        // done jflute 次回1on1では、さらにinterfaceの応用編 (2025/10/10)
+        // ColorBoxのinterfaceの話。List interfaceも
+        //  1. 単純に呼べるメソッド一覧になってわかりやすい
+        //  2. 内部の人用publicメソッドを隠すことができる
+        // 外交と内政、外交はinterfaceお任せ、抽象クラスは内政に集中する。(くぼ例え)
     }
 
     // ===================================================================================
@@ -571,6 +575,7 @@ if (content instanceof String) {
         assertEquals("wan", sound.getBarkWord());
         assertEquals(5, dog.getHitPoint());
         // TODO fujisawa DogのdownHitPointがCatと同様の実装になってたけど、なんでこんなことになってるんだ？
+        // TODO fujisawa [ふぉろー] downHitPoint()を間違ってコピペしてきてしまったので削除で by jflute (2025/11/21)
 
         Animal cat = new Cat();
         sound = cat.bark();
@@ -589,5 +594,6 @@ if (content instanceof String) {
         // Animalと同様の吠える、動作をするが、HPが減らない特有の仕様があり、
         // Animalとは別クラスのサブクラスとして扱う方が、Zombieの寿命？を扱うために自然かもしれない
         // _/_/_/_/_/_/_/_/_/_/
+        // TODO jflute 次回1on1にて (2025/11/21)
     }
 }

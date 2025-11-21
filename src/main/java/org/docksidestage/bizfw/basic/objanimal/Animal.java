@@ -59,6 +59,7 @@ public abstract class Animal implements Loudable {
 //        downHitPoint();
 //    }
 
+    // #1on1: ここはgetterだから、publicでも良いだろうという話 by ふじさわさん
     public abstract String getBarkWord();
 
 //    protected BarkedSound doBark(String barkWord) {

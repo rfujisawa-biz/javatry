@@ -53,6 +53,7 @@ public class Zombie extends Animal {
     // ===================================================================================
     //                                                                               Bark
     //                                                                              ======
+    // TODO fujisawa 修行++: Zombieの追加処理の互換性を維持するように by jflute (2025/11/21)
 //    @Override
 //    protected void breatheIn() {
 //        super.breatheIn();

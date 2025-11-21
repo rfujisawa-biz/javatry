@@ -35,7 +35,7 @@ import org.docksidestage.bizfw.colorbox.space.BoxSpace;
  * </pre>
  * @author jflute
  */
-public interface ColorBox {
+public interface ColorBox { // 使う人用のinterface
 
     /**
      * @return The object of color-box color, which has color information. (NotNull)
