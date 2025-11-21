@@ -20,6 +20,7 @@ import org.docksidestage.bizfw.basic.supercar.SupercarManufacturer.Supercar;
 /**
  * The dealer(販売業者) of supercar.
  * @author jflute
+ * @author rfujisawa-biz
  */
 public class SupercarDealer {
 

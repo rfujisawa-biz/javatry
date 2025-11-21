@@ -321,7 +321,7 @@ public class Step07ExceptionTest extends PlainTestCase {
         try {
             helpThrowIllegalState();
         } catch (IllegalStateException e) {
-            throw new St7ConstructorChallengeException(e.getMessage());
+            throw new St7ConstructorChallengeException(e.getMessage(), e);
         }
     }
 
