@@ -222,7 +222,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * And What is exception class name displayed at the last "Caused By:" of stack trace? <br>
      * (catchブロックの変数 sea, land の中身は？また、スタックトレースの最後の "Caused By:" で表示されている例外クラス名は？)
      */
-    // TODO fujisawa あとで
+    // TODO done fujisawa あとで
     public void test_exception_cause_basic() {
         String sea = "mystic";
         String land = "oneman";
@@ -233,9 +233,15 @@ public class Step07ExceptionTest extends PlainTestCase {
             Throwable cause = e.getCause();
             sea = cause.getMessage();
             land = cause.getClass().getSimpleName();
-            log(sea); // your answer? => ここはわからなかった
-            log(land); // your answer? =>
-            log(e); // your answer? => 
+            log(sea); // your answer? => Failed to call the third help method: symbol=-1
+            log(land); // your answer? => IllegalArgumentException
+            log(e); // your answer? => 最後に表示されているクラス: java.lang.NumberFormatException: For input string: "piari"
+
+            // わからないので実行
+            // sea = cause.getMessageでは、throwCauseThirdLevelを呼んだ時の例外のメッセージが入っている
+            // land = cause.getClass().getSimpleName()では、throwCauseThirdLevelを読んだ時の例外クラスが入っている
+            // NumberFormatExceptionがCaused byで最後に表示されている
+            // 内側の処理に入っていって、valueOfにStringのpiariを入れたときの例外がCausedByの最後に表示されている
         }
     }
 
@@ -294,7 +300,6 @@ public class Step07ExceptionTest extends PlainTestCase {
      * by only exception information as far as possible. <br>
      * できるだけ例外情報だけでその状況が理解できるように、Supercarのクラスたちの例外ハンドリングを改善しましょう。
      */
-    // TODO fujisawa 途中まで
     public void test_exception_translation_improveChallenge() {
         try {
             new SupercarClient().buySupercar(); // you can fix the classes

@@ -45,12 +45,4 @@ public class Dog extends Animal implements FastRunner {
         logger.debug("...Running now");
         downHitPoint();
     };
-
-    @Override
-    protected void downHitPoint() {
-        super.downHitPoint();
-        if (hitPoint % 2 == 0) {
-            super.downHitPoint();
-        }
-    }
 }

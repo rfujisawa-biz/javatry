@@ -68,7 +68,8 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         log("...Executing lambda expression style callback");
         helpCallbackConsumer(stage -> log(stage + ": " + title));
 
-        // your answer? => 
+        // your answer? => yes
+        // わからないけど、記法が違うだけのはず
 
         // cannot reassign because it is used at callback process
         //title = "wave";
@@ -84,7 +85,16 @@ public class Step08Java8FunctionTest extends PlainTestCase {
             log(stage);
         });
         log("lost river");
-        // your answer? => 
+        // your answer? => harbor, broadway, dockside, hanger, lost river 正解
+        // 正解したが、stage -> {log(stage);} のところがよくわからない
+        // stage -> {log(stage);}で渡した内容が、acceptのところで実行される。引数がdocksideだから、
+        // helpCallbackConsumerのところは
+        //     private void helpCallbackConsumer() {
+        //        log("broadway");
+        //        log("dockside");
+        //        log("hangar");
+        //    }
+        // これと同値か
     }
 
     private class St8BasicConsumer implements Consumer<String> {
@@ -116,9 +126,12 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         String sea = helpCallbackFunction(number -> {
             return label + ": " + number;
         });
-        log(sea); // your answer? => 
+        log(sea); // your answer? => number: 7 正解
+        // returnしてるし、代入されるでしょと思って足し合わせた文字列で回答
+        // 久しぶりだったので、Integerと文字列ってそのまま足せるんだっけ？となりました
     }
 
+    // TODO fujisawa 次ここから
     private String helpCallbackFunction(Function<Integer, String> oneArgLambda) {
         return oneArgLambda.apply(7);
     }

@@ -15,6 +15,9 @@
  */
 package org.docksidestage.bizfw.basic.objanimal;
 
+import org.docksidestage.bizfw.basic.objanimal.barking.BarkedSound;
+import org.docksidestage.bizfw.basic.objanimal.barking.BarkingProcess;
+
 /**
  * The object for zombie(ゾンビ).
  * @author jflute
@@ -53,12 +56,22 @@ public class Zombie extends Animal {
     // ===================================================================================
     //                                                                               Bark
     //                                                                              ======
-    // TODO fujisawa 修行++: Zombieの追加処理の互換性を維持するように by jflute (2025/11/21)
+    // TODO done fujisawa 修行++: Zombieの追加処理の互換性を維持するように by jflute (2025/11/21)
 //    @Override
 //    protected void breatheIn() {
 //        super.breatheIn();
 //        zombieDiary.countBreatheIn();
 //    }
+    @Override public BarkedSound bark() {
+        BarkingProcess process = new BarkingProcess(this, () -> downHitPoint()) {;
+            @Override
+            protected void breatheIn() {
+                super.breatheIn();
+                zombieDiary.countBreatheIn();
+            }
+        };
+        return process.bark();
+    }
 
     @Override
     public String getBarkWord() {

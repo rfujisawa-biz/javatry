@@ -573,14 +573,9 @@ if (content instanceof String) {
         log(dog.getHitPoint());
         BarkedSound sound = dog.bark();
         assertEquals("wan", sound.getBarkWord());
-        assertEquals(5, dog.getHitPoint());
-        // TODO fujisawa DogのdownHitPointがCatと同様の実装になってたけど、なんでこんなことになってるんだ？
-        // TODO fujisawa [ふぉろー] downHitPoint()を間違ってコピペしてきてしまったので削除で by jflute (2025/11/21)
-
-        Animal cat = new Cat();
-        sound = cat.bark();
-        assertEquals("nya-", sound.getBarkWord());
-        assertEquals(5, cat.getHitPoint());
+        assertEquals(7, dog.getHitPoint());
+        // TODO done fujisawa DogのdownHitPointがCatと同様の実装になってたけど、なんでこんなことになってるんだ？
+        // TODO done fujisawa [ふぉろー] downHitPoint()を間違ってコピペしてきてしまったので削除で by jflute (2025/11/21)
     }
 
     /**
