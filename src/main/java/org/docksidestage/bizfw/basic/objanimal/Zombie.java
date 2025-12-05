@@ -56,7 +56,7 @@ public class Zombie extends Animal {
     // ===================================================================================
     //                                                                               Bark
     //                                                                              ======
-    // TODO done fujisawa 修行++: Zombieの追加処理の互換性を維持するように by jflute (2025/11/21)
+    // done fujisawa 修行++: Zombieの追加処理の互換性を維持するように by jflute (2025/11/21)
 //    @Override
 //    protected void breatheIn() {
 //        super.breatheIn();
@@ -72,6 +72,20 @@ public class Zombie extends Animal {
         };
         return process.bark();
     }
+    
+    // #1on1: オーバーライドを最低限の範囲でやるとなったらこんな感じ
+    // (LastaFluteのcreateメソッドの話や、TomcatBootのオーバーライドのエピソード)
+    //@Override
+    //protected BarkingProcess createBarkingProcess(Runnable hitPointDowner) {
+    //    return new BarkingProcess(this, hitPointDowner) {
+    //        @Override
+    //        protected void breatheIn() {
+    //            super.breatheIn();
+    //            zombieDiary.countBreatheIn();
+    //        }
+    //    };
+    //}
+    
 
     @Override
     public String getBarkWord() {

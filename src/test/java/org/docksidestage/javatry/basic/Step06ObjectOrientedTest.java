@@ -574,8 +574,8 @@ if (content instanceof String) {
         BarkedSound sound = dog.bark();
         assertEquals("wan", sound.getBarkWord());
         assertEquals(7, dog.getHitPoint());
-        // TODO done fujisawa DogのdownHitPointがCatと同様の実装になってたけど、なんでこんなことになってるんだ？
-        // TODO done fujisawa [ふぉろー] downHitPoint()を間違ってコピペしてきてしまったので削除で by jflute (2025/11/21)
+        // done fujisawa DogのdownHitPointがCatと同様の実装になってたけど、なんでこんなことになってるんだ？
+        // done fujisawa [ふぉろー] downHitPoint()を間違ってコピペしてきてしまったので削除で by jflute (2025/11/21)
     }
 
     /**
@@ -589,6 +589,8 @@ if (content instanceof String) {
         // Animalと同様の吠える、動作をするが、HPが減らない特有の仕様があり、
         // Animalとは別クラスのサブクラスとして扱う方が、Zombieの寿命？を扱うために自然かもしれない
         // _/_/_/_/_/_/_/_/_/_/
-        // TODO jflute 次回1on1にて (2025/11/21)
+        // done jflute 次回1on1にて (2025/11/21)
+        // ゾンビを状態として捉えるケース、ゾンビをそのまま動物として捉えるケース。
+        // Creature クラスを導入するイメージ by ふじさわさん
     }
 }

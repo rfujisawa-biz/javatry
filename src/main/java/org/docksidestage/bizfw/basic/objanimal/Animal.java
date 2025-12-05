@@ -29,7 +29,7 @@ public abstract class Animal implements Loudable {
     //                                                                           Attribute
     //                                                                           =========
     protected int hitPoint; // is HP
-
+    
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========

@@ -222,7 +222,8 @@ public class Step07ExceptionTest extends PlainTestCase {
      * And What is exception class name displayed at the last "Caused By:" of stack trace? <br>
      * (catchブロックの変数 sea, land の中身は？また、スタックトレースの最後の "Caused By:" で表示されている例外クラス名は？)
      */
-    // TODO done fujisawa あとで
+    // done fujisawa あとで
+    // #1on1: 例外の翻訳についてじっくり
     public void test_exception_cause_basic() {
         String sea = "mystic";
         String land = "oneman";
@@ -301,6 +302,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * できるだけ例外情報だけでその状況が理解できるように、Supercarのクラスたちの例外ハンドリングを改善しましょう。
      */
     public void test_exception_translation_improveChallenge() {
+        // TODO fujisawa 例外の翻訳をしてみましょう。 by jflute (2025/12/05)
         try {
             new SupercarClient().buySupercar(); // you can fix the classes
             fail("always exception but none");
