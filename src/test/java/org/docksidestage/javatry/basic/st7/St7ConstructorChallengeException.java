@@ -22,10 +22,8 @@ package org.docksidestage.javatry.basic.st7;
 public class St7ConstructorChallengeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-    private static Exception error = null;
 
     public St7ConstructorChallengeException(String msg, Exception e) {
-        super(msg);
-        error = e;
+        super(msg, e);
     }
 }

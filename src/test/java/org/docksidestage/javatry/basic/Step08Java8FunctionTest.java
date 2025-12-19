@@ -73,8 +73,11 @@ public class Step08Java8FunctionTest extends PlainTestCase {
 
         // cannot reassign because it is used at callback process
         //title = "wave";
+        
+        // #1on1: コールバックの話 (2025/12/19)
     }
 
+    // TODO jflute 次回1on1ふぉろーここから (2025/12/19)
     /**
      * What is order of strings by log(). (write answer as comma-separated) <br>
      * (ログに出力される文字列の順番は？ (カンマ区切りで書き出しましょう))
