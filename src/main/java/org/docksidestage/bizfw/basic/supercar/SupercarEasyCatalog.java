@@ -35,7 +35,8 @@ public class SupercarEasyCatalog {
 
     public Integer findSteeringWheelSpecId(String catalogKey) {
         if (!steeringWheelCatalogMap.containsKey(catalogKey)) {
-            throw new IllegalArgumentException("Unknown catalog key: " + catalogKey + "\nChoose catalog key from: " + steeringWheelCatalogMap.keySet());
+            throw new IllegalArgumentException("Unknown catalog key for steering wheel: " + catalogKey
+                + ". Available keys: " + steeringWheelCatalogMap.keySet());
         }
         return steeringWheelCatalogMap.get(catalogKey);
     }

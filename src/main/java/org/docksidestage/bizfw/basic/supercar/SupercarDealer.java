@@ -26,16 +26,20 @@ public class SupercarDealer {
 
     public Supercar orderSupercar(String clientRequirement) {
         SupercarManufacturer supercarManufacturer = createSupercarManufacturer();
-        if (clientRequirement.contains("steering wheel is like sea")) {
-            return supercarManufacturer.makeSupercar("piari");
-        } else if (clientRequirement.contains("steering wheel is useful on land")) {
-            return supercarManufacturer.makeSupercar("land");
-        } else if (clientRequirement.contains("steering wheel has many shop")) {
-            return supercarManufacturer.makeSupercar("piari");
-        } else {
-            throw new IllegalStateException("Can't make steering wheel as your order: "
-                    + clientRequirement + "\n"
-                    + "Please include following sentence in the requirement:\n1. steering wheel is like sea\n2. steering wheel is useful on land\n3. steering wheel has many shop");
+        try {
+            if (clientRequirement.contains("steering wheel is like sea")) {
+                return supercarManufacturer.makeSupercar("piari");
+            } else if (clientRequirement.contains("steering wheel is useful on land")) {
+                return supercarManufacturer.makeSupercar("land");
+            } else if (clientRequirement.contains("steering wheel has many shop")) {
+                return supercarManufacturer.makeSupercar("piari");
+            } else {
+                throw new IllegalStateException("Can't make steering wheel as your order: "
+                        + clientRequirement + "\n"
+                        + "Please include following sentence in the requirement:\n1. steering wheel is like sea\n2. steering wheel is useful on land\n3. steering wheel has many shop");
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to order supercar for requirement: " + clientRequirement, e);
         }
     }
 

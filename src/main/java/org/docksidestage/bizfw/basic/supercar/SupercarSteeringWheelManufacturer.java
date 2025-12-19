@@ -32,13 +32,17 @@ public class SupercarSteeringWheelManufacturer {
     }
 
     public SteeringWheel makeSteeringWheel(Integer steeringWheelId) {
-        String specText = componentDB.findClincherSpecText(steeringWheelId);
-        ScrewSpec screwSpec = new ScrewSpec(specText);
+        try {
+            String specText = componentDB.findClincherSpecText(steeringWheelId);
+            ScrewSpec screwSpec = new ScrewSpec(specText);
 
-        SpecialScrewManufacturer screwManufacturer = createSpecialScrewManufacturer();
-        SpecialScrew screw = screwManufacturer.makeSpecialScrew(screwSpec);
+            SpecialScrewManufacturer screwManufacturer = createSpecialScrewManufacturer();
+            SpecialScrew screw = screwManufacturer.makeSpecialScrew(screwSpec);
 
-        return new SteeringWheel(screw);
+            return new SteeringWheel(screw);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to make steering wheel for id: " + steeringWheelId, e);
+        }
     }
 
     protected SpecialScrewManufacturer createSpecialScrewManufacturer() {

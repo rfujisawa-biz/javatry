@@ -35,7 +35,8 @@ public class SupercarSteeringWheelComponentDB {
 
     public String findClincherSpecText(Integer clincherSpecId) {
         if (!clincherSpecMap.containsKey(clincherSpecId)) {
-            throw new IllegalArgumentException("Unknown clincher spec ID: " + clincherSpecId);
+            throw new IllegalArgumentException("Unknown clincher spec ID for steering wheel: " + clincherSpecId
+                + ". Available IDs: " + clincherSpecMap.keySet());
         }
         return clincherSpecMap.get(clincherSpecId);
     }

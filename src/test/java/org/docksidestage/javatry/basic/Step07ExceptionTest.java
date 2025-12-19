@@ -302,7 +302,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * できるだけ例外情報だけでその状況が理解できるように、Supercarのクラスたちの例外ハンドリングを改善しましょう。
      */
     public void test_exception_translation_improveChallenge() {
-        // TODO fujisawa 例外の翻訳をしてみましょう。 by jflute (2025/12/05)
+        // TODO done fujisawa 例外の翻訳をしてみましょう。 by jflute (2025/12/05)
         try {
             new SupercarClient().buySupercar(); // you can fix the classes
             fail("always exception but none");
@@ -319,6 +319,7 @@ public class Step07ExceptionTest extends PlainTestCase {
      * (やばい例外ハンドリングがあるので修正しましょう (例外クラスを修正してOK))
      */
     // とりあえずメッセージを渡すようにした
+    // TODO fujisawa ここまだ
     public void test_exception_writing_constructorChallenge() {
         try {
             helpSurprisedYabaiCatch();

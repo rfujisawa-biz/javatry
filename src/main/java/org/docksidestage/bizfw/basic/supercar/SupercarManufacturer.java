@@ -26,12 +26,16 @@ public class SupercarManufacturer {
     private final SupercarEasyCatalog catalog = new SupercarEasyCatalog();
 
     public Supercar makeSupercar(String catalogKey) {
-        Integer steeringWheelId = catalog.findSteeringWheelSpecId(catalogKey); // nullになりうる
+        try {
+            Integer steeringWheelId = catalog.findSteeringWheelSpecId(catalogKey); // nullになりうる
 
-        SupercarSteeringWheelManufacturer wheelManufacturer = createSupercarSteeringWheelManufacturer();
-        SteeringWheel steeringWheel = wheelManufacturer.makeSteeringWheel(steeringWheelId);
+            SupercarSteeringWheelManufacturer wheelManufacturer = createSupercarSteeringWheelManufacturer();
+            SteeringWheel steeringWheel = wheelManufacturer.makeSteeringWheel(steeringWheelId);
 
-        return new Supercar(steeringWheel);
+            return new Supercar(steeringWheel);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to make supercar for catalogKey: " + catalogKey, e);
+        }
     }
 
     protected SupercarSteeringWheelManufacturer createSupercarSteeringWheelManufacturer() {

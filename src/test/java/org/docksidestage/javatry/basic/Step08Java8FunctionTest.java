@@ -154,17 +154,27 @@ public class Step08Java8FunctionTest extends PlainTestCase {
      * </pre>
      */
     public void test_java8_lambda_convertStyle_basic() {
-        helpCallbackSupplier(new Supplier<String>() { // sea
-            public String get() {
-                return "broadway";
-            }
+//        helpCallbackSupplier(new Supplier<String>() { // sea
+//            public String get() {
+//                return "broadway";
+//            }
+//        });
+
+        helpCallbackSupplier(() -> {
+            return "bloadway";
         });
 
-        helpCallbackSupplier(() -> { // land
-            return "dockside";
-        });
+//        helpCallbackSupplier(() -> { // land
+//            return "dockside";
+//        });
 
-        helpCallbackSupplier(() -> "hangar"); // piari
+        helpCallbackSupplier(() -> "dockside");
+
+//        helpCallbackSupplier(() -> "hangar"); // piari
+
+        helpCallbackSupplier(() -> {
+            return "hangar";
+        });
     }
 
     private void helpCallbackSupplier(Supplier<String> oneArgLambda) {
@@ -182,14 +192,15 @@ public class Step08Java8FunctionTest extends PlainTestCase {
     public void test_java8_optional_concept() {
         St8Member oldmember = new St8DbFacade().oldselectMember(1);
         if (oldmember != null) {
-            log(oldmember.getMemberId(), oldmember.getMemberName());
+            log(oldmember.getMemberId(), oldmember.getMemberName()); // 1, broadway
         }
         Optional<St8Member> optMember = new St8DbFacade().selectMember(1);
         if (optMember.isPresent()) {
             St8Member member = optMember.get();
             log(member.getMemberId(), member.getMemberName());
         }
-        // your answer? => 
+        // your answer? => yes 正解
+        // Option<T>の文法だと予想
     }
 
     /**
@@ -205,9 +216,11 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         optMember.ifPresent(member -> {
             log(member.getMemberId(), member.getMemberName());
         });
-        // your answer? => 
+        // your answer? => yes 正解
+        // ifPresentが、コールバックを受け取って、値が存在する場合はコールバック中の処理を行う
     }
 
+    // TODO あとで
     /**
      * What string is sea, land, piari, bonvo, dstore, amba variables at the method end? <br>
      * (メソッド終了時の変数 sea, land, piari, bonvo, dstore, amba の中身は？)
@@ -218,12 +231,12 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         // traditional style
         St8Member oldmemberFirst = facade.oldselectMember(1);
         String sea;
-        if (oldmemberFirst != null) {
-            St8Withdrawal withdrawal = oldmemberFirst.oldgetWithdrawal();
-            if (withdrawal != null) {
-                sea = withdrawal.oldgetPrimaryReason();
+        if (oldmemberFirst != null) { // ここ
+            St8Withdrawal withdrawal = oldmemberFirst.oldgetWithdrawal(); // St8Withdrawal(11, "music")
+            if (withdrawal != null) { // ここ
+                sea = withdrawal.oldgetPrimaryReason(); // "music"
                 if (sea == null) {
-                    sea = "*no reason1: the PrimaryReason was null";
+                    sea = "*no reason1: the PrimaryReason was null"; // seaにはこれが入ってる
                 }
             } else {
                 sea = "*no reason2: the Withdrawal was null";
@@ -237,7 +250,7 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         // map style
         String land = optMemberFirst.map(mb -> mb.oldgetWithdrawal())
                 .map(wdl -> wdl.oldgetPrimaryReason())
-                .orElse("*no reason: someone was not present");
+                .orElse("*no reason: someone was not present"); // ここまでいく
 
         // flatMap style
         String piari = optMemberFirst.flatMap(mb -> mb.getWithdrawal())
@@ -279,18 +292,20 @@ public class Step08Java8FunctionTest extends PlainTestCase {
      * (メソッド終了時の変数 sea の中身は？)
      */
     public void test_java8_optional_orElseThrow() {
-        Optional<St8Member> optMember = new St8DbFacade().selectMember(2);
+        Optional<St8Member> optMember = new St8DbFacade().selectMember(2); // St8Member(memberId, "dockside", new St8Withdrawal(12, null));
         St8Member member = optMember.orElseThrow(() -> new IllegalStateException("over"));
         String sea = "the";
         try {
             String reason = member.getWithdrawal().map(wdl -> wdl.oldgetPrimaryReason()).orElseThrow(() -> {
-                return new IllegalStateException("wave");
+                return new IllegalStateException("wave"); // 例外になるはず
             });
             sea = reason;
         } catch (IllegalStateException e) {
             sea = e.getMessage();
         }
-        log(sea); // your answer? => 
+        log(sea); // your answer? => wave 正解
+        // reasonはnullなので、orElseThrowで例外を投げるはず
+        // catchした先で、seaにe.getMessage()が代入される
     }
 
     // ===================================================================================
@@ -305,18 +320,20 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         List<String> oldfilteredNameList = new ArrayList<>();
         for (St8Member member : memberList) {
             if (member.getWithdrawal().isPresent()) {
-                oldfilteredNameList.add(member.getMemberName());
+                oldfilteredNameList.add(member.getMemberName()); // withDrawalがnullの3以外が入る
             }
         }
-        String sea = oldfilteredNameList.toString();
-        log(sea); // your answer? => 
+        String sea = oldfilteredNameList.toString(); // broadwaydockside
+        log(sea); // your answer? => broadwaydockside
 
         List<String> filteredNameList = memberList.stream() //
                 .filter(mb -> mb.getWithdrawal().isPresent()) //
                 .map(mb -> mb.getMemberName()) //
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); // ["broadway", "dockside"]
         String land = filteredNameList.toString();
-        log(land); // your answer? => 
+        log(land); // your answer? => broadwaydockside
+        // toStringメソッドを知らなかっただけでした。
+        // joinみたいなメソッドだと予想してた。。。
     }
 
     /**
