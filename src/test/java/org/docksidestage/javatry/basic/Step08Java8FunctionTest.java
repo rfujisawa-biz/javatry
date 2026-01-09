@@ -134,7 +134,7 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         // 久しぶりだったので、Integerと文字列ってそのまま足せるんだっけ？となりました
     }
 
-    // TODO fujisawa 次ここから
+    // done fujisawa 次ここから
     private String helpCallbackFunction(Function<Integer, String> oneArgLambda) {
         return oneArgLambda.apply(7);
     }
@@ -157,11 +157,11 @@ public class Step08Java8FunctionTest extends PlainTestCase {
      * </pre>
      */
     public void test_java8_lambda_convertStyle_basic() {
-//        helpCallbackSupplier(new Supplier<String>() { // sea
-//            public String get() {
-//                return "broadway";
-//            }
-//        });
+        //helpCallbackSupplier(new Supplier<String>() { // sea
+        //    public String get() {
+        //        return "broadway";
+        //    }
+        //});
 
         helpCallbackSupplier(() -> {
             return "bloadway";
@@ -184,6 +184,8 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         String supplied = oneArgLambda.get();
         log(supplied);
     }
+    
+    // #1on1: コールバックの敷居の高さのヒアリング (2026/01/09)
 
     // ===================================================================================
     //                                                                            Optional
@@ -204,6 +206,13 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         }
         // your answer? => yes 正解
         // Option<T>の文法だと予想
+        
+        // #1on1: Optionalの一番根源的なメリットの話 (2026/01/09)
+        // ないかもしれないという概念を型にして、呼び出し側に意識と実装を矯正させる。
+        // Javaで入ったのが2015年とだいぶ遅い。
+        // そして、Optionalは文法ではなく、ただのクラス。
+        // 長年のnullチェックの慣れ、Optionalの方がもっさり(↑の書き方だと)
+        // そこでLambda式。
     }
 
     /**
@@ -221,6 +230,9 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         });
         // your answer? => yes 正解
         // ifPresentが、コールバックを受け取って、値が存在する場合はコールバック中の処理を行う
+        
+        // #1on1: kotlinのandroid話 (2026/01/09)
+        // #1on1: expression から block のパターン (2026/01/09)
     }
 
     /**
@@ -287,6 +299,9 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         log(dstore); // your answer? => *no reason: someone was not present
         log(amba); // your answer? => *no reason: someone was not present
         log(miraco); // your answer? => 12
+        
+        // #1on1: map() and flatMap() (2026/01/09)
+        // https://dbflute.seasar.org/ja/manual/topic/programming/java/java8/mapandflat.html
     }
 
     /**
