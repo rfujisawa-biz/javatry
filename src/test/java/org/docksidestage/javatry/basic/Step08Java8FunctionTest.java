@@ -223,7 +223,6 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         // ifPresentが、コールバックを受け取って、値が存在する場合はコールバック中の処理を行う
     }
 
-    // TODO あとで
     /**
      * What string is sea, land, piari, bonvo, dstore, amba variables at the method end? <br>
      * (メソッド終了時の変数 sea, land, piari, bonvo, dstore, amba の中身は？)
@@ -239,7 +238,7 @@ public class Step08Java8FunctionTest extends PlainTestCase {
             if (withdrawal != null) { // ここ
                 sea = withdrawal.oldgetPrimaryReason(); // "music"
                 if (sea == null) {
-                    sea = "*no reason1: the PrimaryReason was null"; // seaにはこれが入ってる
+                    sea = "*no reason1: the PrimaryReason was null";
                 }
             } else {
                 sea = "*no reason2: the Withdrawal was null";
@@ -252,42 +251,42 @@ public class Step08Java8FunctionTest extends PlainTestCase {
 
         // map style
         String land = optMemberFirst.map(mb -> mb.oldgetWithdrawal())
-                .map(wdl -> wdl.oldgetPrimaryReason())
-                .orElse("*no reason: someone was not present"); // ここまでいく
+                .map(wdl -> wdl.oldgetPrimaryReason()) // ここ music
+                .orElse("*no reason: someone was not present");
 
         // flatMap style
         String piari = optMemberFirst.flatMap(mb -> mb.getWithdrawal())
-                .flatMap(wdl -> wdl.getPrimaryReason())
+                .flatMap(wdl -> wdl.getPrimaryReason()) // ここ music
                 .orElse("*no reason: someone was not present");
 
         // flatMap and map style
         String bonvo = optMemberFirst.flatMap(mb -> mb.getWithdrawal())
-                .map(wdl -> wdl.oldgetPrimaryReason())
+                .map(wdl -> wdl.oldgetPrimaryReason()) // ここ music
                 .orElse("*no reason: someone was not present");
 
         String dstore = facade.selectMember(2)
                 .flatMap(mb -> mb.getWithdrawal())
                 .map(wdl -> wdl.oldgetPrimaryReason())
-                .orElse("*no reason: someone was not present");
+                .orElse("*no reason: someone was not present"); // ここ
 
         String amba = facade.selectMember(3)
                 .flatMap(mb -> mb.getWithdrawal())
                 .flatMap(wdl -> wdl.getPrimaryReason())
-                .orElse("*no reason: someone was not present");
+                .orElse("*no reason: someone was not present"); // ここ
 
         int defaultWithdrawalId = -1;
         Integer miraco = facade.selectMember(2)
                 .flatMap(mb -> mb.getWithdrawal())
-                .map(wdl -> wdl.getWithdrawalId()) // ID here
+                .map(wdl -> wdl.getWithdrawalId()) // ID here IDは12
                 .orElse(defaultWithdrawalId);
 
-        log(sea); // your answer? => 
-        log(land); // your answer? => 
-        log(piari); // your answer? => 
-        log(bonvo); // your answer? => 
-        log(dstore); // your answer? => 
-        log(amba); // your answer? => 
-        log(miraco); // your answer? => 
+        log(sea); // your answer? => music
+        log(land); // your answer? => music
+        log(piari); // your answer? => music
+        log(bonvo); // your answer? => music
+        log(dstore); // your answer? => *no reason: someone was not present
+        log(amba); // your answer? => *no reason: someone was not present
+        log(miraco); // your answer? => 12
     }
 
     /**
@@ -352,7 +351,10 @@ public class Step08Java8FunctionTest extends PlainTestCase {
                 .mapToInt(pur -> pur.getPurchasePrice())
                 .distinct()
                 .sum();
-        log(sea); // your answer? => 
+        log(sea); // your answer? => 600
+        // 退会情報があるメンバーの、購入リストを抽出する
+        // 購入IDが100より大きい111, 112, 133, 114を抽出する
+        // Priceをdistinctで合計して、100+200+300 = 600
     }
 
     // *Stream API will return at Step12 again, it's worth the wait!
