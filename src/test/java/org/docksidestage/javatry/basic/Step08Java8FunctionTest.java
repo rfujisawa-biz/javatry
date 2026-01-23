@@ -77,7 +77,7 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         // #1on1: コールバックの話 (2025/12/19)
     }
 
-    // TODO jflute 次回1on1ふぉろーここから (2025/12/19)
+    // done jflute 次回1on1ふぉろーここから (2025/12/19)
     /**
      * What is order of strings by log(). (write answer as comma-separated) <br>
      * (ログに出力される文字列の順番は？ (カンマ区切りで書き出しましょう))
@@ -309,8 +309,9 @@ public class Step08Java8FunctionTest extends PlainTestCase {
      * (メソッド終了時の変数 sea の中身は？)
      */
     public void test_java8_optional_orElseThrow() {
-        Optional<St8Member> optMember = new St8DbFacade().selectMember(2); // St8Member(memberId, "dockside", new St8Withdrawal(12, null));
-        St8Member member = optMember.orElseThrow(() -> new IllegalStateException("over"));
+        int memberId = 2;
+        Optional<St8Member> optMember = new St8DbFacade().selectMember(memberId); // St8Member(memberId, "dockside", new St8Withdrawal(12, null));
+        St8Member member = optMember.orElseThrow(() -> new IllegalStateException("会員がありmせんでした！"));
         String sea = "the";
         try {
             String reason = member.getWithdrawal().map(wdl -> wdl.oldgetPrimaryReason()).orElseThrow(() -> {
@@ -323,8 +324,42 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         log(sea); // your answer? => wave 正解
         // reasonはnullなので、orElseThrowで例外を投げるはず
         // catchした先で、seaにe.getMessage()が代入される
+        
+        // #1on1: 例えば、selectMember(2) が詳細画面の検索だったら？ (2026/01/23)
+        // すでの検索一覧画面で存在する2番を指定して詳細画面に来ているので...
+        // 万が一なかったら、もう落ちても良い。(戻り値というのは引数によって有無がニュアンスが変わってくる)
+        // そこで、orElseThrow() がある。
+        // 業務的に必ず存在するという場面での呼び出しだったら、
+        // orElseThrow()で自分でデバッグしやすいように throw してね、というコンセプト。
+        // 
+        // 一方で、ほとんど業務的に存在すると言っていいような場面だと、
+        // orElseThrow()だらけでちょっと面倒かも？という考え方も。
+        // かといって、例外メッセージを適当にすると...
+        // 
+        // St8Member member = optMember.orElseThrow(() -> new IllegalStateException());
+        // St8Member member = optMember.get();
+        //
+        // ↑の2行はほぼ等価。エラーが発生した時の情報量は何も変わらない。
+        // orElseThrow()で例外throwが貧弱だと、問答無用get()と何も変わらない。
+        //
+        // A. どんな場面でも、ちゃんとしたorElseThrow()を投げること (メッセージしっかり)
+        // B. 本当に業務的に存在する(存在しないことが確率低い)という場面なら問答無用get()でOK (さじ加減)
+        //
+        // なんにせよ、Java10から、引数なしorElseThrow() (=実質問答無用get()と同じ) が追加された。
+        // kotlinでの話、強制アンラップ(!!)という文法がある。
+        // 一方で、ふじさわさんの現場ではデフォルトのエルビス演算子を使う場面が多いので、
+        // あまりそのジレンマになることがない。(DB周りはまだ見る機会が少ない)
+        // やはりDB周りだとジレンマが発生しやすいかも。
+        //
+        // ちょこっとDBFluteの例、Optionalに例外情報を載せて戻すというやり方。 (2026/01/23)
     }
+    
+    // #1on1: AIコードの割合、ケースバイケース、半々 (2026/01/23)
+    // レビューする機会は増えて、レビューする力は強くなる!?
+    // 元々チームでセルフレビューする文化とても良い。
+    // ものができるのが楽しい、なのでAIを使おうが使わまいが楽しさは同じ。
 
+    // TODO jflute 次回1on1: Stream APIのふぉろー (2026/01/23)
     // ===================================================================================
     //                                                                          Stream API
     //                                                                          ==========
