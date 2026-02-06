@@ -16,11 +16,9 @@
 package org.docksidestage.javatry.colorbox;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.color.BoxColor;
-import org.docksidestage.bizfw.colorbox.space.BoxSpace;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
 
@@ -64,19 +62,6 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * (カラーボックスの中で、色の名前が一番長いものは？)
      */
     public void test_length_findMax_colorSize() {
-        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
-        if (!colorBoxList.isEmpty()) {
-            int maxLength = colorBoxList.stream()
-                    .mapToInt(box -> box.getColor().getColorName().length())
-                    .max()
-                    .getAsInt();
-
-            List<String> colorNamesWithMaxLength = colorBoxList.stream()
-                    .map(box -> box.getColor().getColorName())
-                    .filter(name -> name.length() == maxLength)
-                    .collect(Collectors.toList());
-            log(colorNamesWithMaxLength);
-        }
     }
 
     /**
@@ -84,26 +69,6 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * (カラーボックスに入ってる文字列の中で、一番長い文字列は？)
      */
     public void test_length_findMax_stringContent() {
-        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
-        if (!colorBoxList.isEmpty()) {
-            int maxLength = colorBoxList.stream()
-                    .mapToInt(box -> box.getSpaceList().stream()
-                            .mapToInt(space -> space.getContent().toString().length())
-                            .max()
-                            .getAsInt())
-                    .max()
-                    .getAsInt();
-
-            List<String> stringsWithMaxLength = colorBoxList.stream()
-                    .map(box -> box.getSpaceList().stream()
-                            .filter(space -> space.getContent().toString().length() == maxLength)
-                            .map(space -> space.getContent().toString())
-                            .collect(Collectors.toList()))
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-
-            log(stringsWithMaxLength);
-        }
     }
 
     /**

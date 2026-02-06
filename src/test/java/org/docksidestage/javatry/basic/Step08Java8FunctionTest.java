@@ -378,6 +378,9 @@ public class Step08Java8FunctionTest extends PlainTestCase {
         String sea = oldfilteredNameList.toString(); // broadwaydockside
         log(sea); // your answer? => broadwaydockside
 
+        // #1on1: JavaでのStreamAPIの導入経緯 (2026/02/06)
+        // 抽象度が一つ上がったプログラミング。
+        // StreamAPIの学習コストのジレンマ。
         List<String> filteredNameList = memberList.stream() //
                 .filter(mb -> mb.getWithdrawal().isPresent()) //
                 .map(mb -> mb.getMemberName()) //

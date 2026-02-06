@@ -92,7 +92,7 @@ public class TicketBooth {
     // もしくは、assertTicketExists() みたいなメソッドにしてダメなとき例外
     // のどっちか。
     private boolean hasTicket(TicketType ticketType) {
-        // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
+        // done fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
         // <del>↑ こっちは、良い方法かどうかは置いておいて、そんなに難しくなく解決はできるかな。</del>
         // いやいや、public のbuyOneDayPassport()たちがもういないスタイルなのでダメだった。
         // e.g.
@@ -127,7 +127,7 @@ public class TicketBooth {
     private TicketBuyResult sellTicket(int handedMoney, TicketType ticketType) {
 //        int price = ticketType.getPrice();
 //
-//        // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
+//        // done fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
 //        switch (ticketType) {
 //            case ONE_DAY:
 //                --oneDayQuantity;
@@ -153,7 +153,18 @@ public class TicketBooth {
 //        int change = handedMoney - price;
 //        return new TicketBuyResult(ticket, change);
         int price = ticketType.getPrice();
-        ticketQuantityMap.compute(ticketType, (k, quantity) -> {
+
+        // #1on1: ConcurrentHashMapのときのcompute()のコード少しだけ読んでみた (2026/02/06)
+        // マルチスレッド環境だと、このメソッドが大事になってくる。
+        // 下手にget/setしてしまうと、Mapでどんだけ頑張ってもダメなので、アプリでsynchronizedになっちゃう。
+        //synchronized (this) {
+        //    Integer quantity = ticketQuantityMap.get(ticketType);
+        //    if (quantity == null || quantity <= 0) {
+        //        throw new TicketSoldOutException("Sold out: " + ticketType);
+        //    }
+        //    ticketQuantityMap.put(ticketType, quantity - 1);
+        //}
+        ticketQuantityMap.compute(null, (k, quantity) -> {
             if (quantity == null || quantity <= 0) {
                 throw new TicketSoldOutException("Sold out: " + ticketType);
             }
@@ -191,6 +202,7 @@ public class TicketBooth {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
+    // TODO fujisawa getするところも、mapから取るようにしないと by jflute (2026/02/06)
     public int getOneDayQuantity() {
         return oneDayQuantity;
     }

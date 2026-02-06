@@ -16,6 +16,7 @@
 package org.docksidestage.javatry.colorbox;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
@@ -56,6 +57,25 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスの中で、色の名前が一番長いものは？)
      */
     public void test_length_findMax_colorSize() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (!colorBoxList.isEmpty()) {
+            int maxLength = colorBoxList.stream()
+                    .mapToInt(box -> box.getColor().getColorName().length())
+                    .max()
+                    .getAsInt();
+
+            // TODO fujisawa yellowが二つ出てきちゃう by jflute (2026/02/06)
+            List<String> colorNamesWithMaxLength = colorBoxList.stream()
+                    .map(box -> box.getColor().getColorName())
+                    .filter(name -> name.length() == maxLength)
+                    .collect(Collectors.toList());
+            log(colorNamesWithMaxLength);
+
+            // #1on1: 一本のstreamでできるか？思考トレーニング...だけどちょっと厳しそう (2026/02/06)
+            // 最初の1件とかであれば、ソートしてfirstを取るでいいけど、同率首位を綺麗に切り取るとなったら...
+            // やっぱり事前にmaxLengthが欲しくなるかな!?
+            // 超パフォーマンス求められる場面だと、ループ一回で済ませられるfor文if文が活躍することあるかも。
+        }
     }
 
     /**
@@ -63,6 +83,33 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる文字列の中で、一番長い文字列は？)
      */
     public void test_length_findMax_stringContent() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (!colorBoxList.isEmpty()) {
+            int maxLength = colorBoxList.stream()
+                    .mapToInt(box -> box.getSpaceList().stream()
+                            .mapToInt(space -> space.getContent().toString().length())
+                            .max()
+                            .getAsInt())
+                    .max()
+                    .getAsInt();
+
+            List<String> stringsWithMaxLength = colorBoxList.stream()
+                    .map(box -> box.getSpaceList().stream()
+                            .filter(space -> space.getContent().toString().length() == maxLength)
+                            .map(space -> space.getContent().toString())
+                            .collect(Collectors.toList()))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+
+            // #1on1: boxごとにspaceのfilterをするのではなく、spaceのflat一覧を作ってfilterの方が... (2026/02/06)
+            // streamが1本線になるので、見栄えはスッキリするかなと。
+            //List<String> collect = colorBoxList.stream()
+            //        .flatMap(box -> box.getSpaceList().stream())
+            //        .filter(space -> space.getContent().toString().length() == maxLength)
+            //        .map(space -> space.getContent().toString())
+            //        .collect(Collectors.toList());
+            log(stringsWithMaxLength);
+        }
     }
 
     /**
