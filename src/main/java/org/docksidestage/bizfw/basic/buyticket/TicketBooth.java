@@ -16,6 +16,10 @@
 package org.docksidestage.bizfw.basic.buyticket;
 
 // #1on1: IntelliJのフォーマッターの話。.ideaの話。
+
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
  * @author jflute
  */
@@ -37,11 +41,16 @@ public class TicketBooth {
     private int fourDayQuantity = FOUR_DAY_MAX_QUANTITY;
     private int nightOnlyTwoDayQuantity = NIGHT_ONLY_TWO_DAY_MAX_QUANTITY;
     private Integer salesProceeds; // null allowed: until first purchase
+    private final Map<TicketType, Integer> ticketQuantityMap = new EnumMap<>(TicketType.class);
 
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
     public TicketBooth() {
+        ticketQuantityMap.put(TicketType.ONE_DAY, ONE_DAY_MAX_QUANTITY);
+        ticketQuantityMap.put(TicketType.TWO_DAY, TWO_DAY_MAX_QUANTITY);
+        ticketQuantityMap.put(TicketType.FOUR_DAY, FOUR_DAY_MAX_QUANTITY);
+        ticketQuantityMap.put(TicketType.NIGHT_ONLY_TWO_DAY, NIGHT_ONLY_TWO_DAY_MAX_QUANTITY);
     }
 
     // ===================================================================================
@@ -90,22 +99,24 @@ public class TicketBooth {
         //  public TicketBuyResult buyOneDayPassport(int handedMoney) {
         //      return buyPassport(handedMoney, TicketType.ONE_DAY, oneDayQuantity);
         //  }
-        int quantity = 0;
-        switch (ticketType) {
-            case ONE_DAY:
-                quantity = oneDayQuantity;
-                break;
-            case TWO_DAY:
-                quantity = twoDayQuantity;
-                break;
-            case FOUR_DAY:
-                quantity = fourDayQuantity;
-                break;
-            case  NIGHT_ONLY_TWO_DAY:
-                quantity = nightOnlyTwoDayQuantity;
-                break;
-        }
-        return quantity > 0;
+//        int quantity = 0;
+//        switch (ticketType) {
+//            case ONE_DAY:
+//                quantity = oneDayQuantity;
+//                break;
+//            case TWO_DAY:
+//                quantity = twoDayQuantity;
+//                break;
+//            case FOUR_DAY:
+//                quantity = fourDayQuantity;
+//                break;
+//            case  NIGHT_ONLY_TWO_DAY:
+//                quantity = nightOnlyTwoDayQuantity;
+//                break;
+//        }
+//        return quantity > 0;
+        Integer quantity = ticketQuantityMap.get(ticketType);
+        return quantity != null && quantity > 0;
     }
 
     private boolean hasSufficientMoney(int handedMoney, TicketType ticketType) {
@@ -114,25 +125,41 @@ public class TicketBooth {
     }
 
     private TicketBuyResult sellTicket(int handedMoney, TicketType ticketType) {
+//        int price = ticketType.getPrice();
+//
+//        // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
+//        switch (ticketType) {
+//            case ONE_DAY:
+//                --oneDayQuantity;
+//                break;
+//            case  TWO_DAY:
+//                --twoDayQuantity;
+//                break;
+//            case FOUR_DAY:
+//                --fourDayQuantity;
+//                break;
+//            case NIGHT_ONLY_TWO_DAY:
+//                --nightOnlyTwoDayQuantity;
+//                break;
+//            default:
+//                throw new IllegalStateException("Unknown ticket type: " + ticketType);
+//        }
+//        Ticket ticket = new Ticket(ticketType);
+//        if (salesProceeds != null) {
+//            salesProceeds = salesProceeds + price;
+//        } else {
+//            salesProceeds = price;
+//        }
+//        int change = handedMoney - price;
+//        return new TicketBuyResult(ticket, change);
         int price = ticketType.getPrice();
+        ticketQuantityMap.compute(ticketType, (k, quantity) -> {
+            if (quantity == null || quantity <= 0) {
+                throw new TicketSoldOutException("Sold out: " + ticketType);
+            }
+            return quantity - 1;
+        });
 
-        // TODO fujisawa 修行++: ここのswitchに関しては、ちょいムズかもなので by jflute (2025/09/08)
-        switch (ticketType) {
-            case ONE_DAY:
-                --oneDayQuantity;
-                break;
-            case  TWO_DAY:
-                --twoDayQuantity;
-                break;
-            case FOUR_DAY:
-                --fourDayQuantity;
-                break;
-            case NIGHT_ONLY_TWO_DAY:
-                --nightOnlyTwoDayQuantity;
-                break;
-            default:
-                throw new IllegalStateException("Unknown ticket type: " + ticketType);
-        }
         Ticket ticket = new Ticket(ticketType);
         if (salesProceeds != null) {
             salesProceeds = salesProceeds + price;
