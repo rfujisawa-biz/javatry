@@ -31,7 +31,7 @@ import org.docksidestage.unit.PlainTestCase;
  * o don't fix the YourPrivateRoom class and color-box classes
  * </pre>
  * @author jflute
- * @author your_name_here
+ * @author rfujisawq-biz
  */
 public class Step12StreamStringTest extends PlainTestCase {
 
@@ -64,10 +64,11 @@ public class Step12StreamStringTest extends PlainTestCase {
                     .max()
                     .getAsInt();
 
-            // TODO fujisawa yellowが二つ出てきちゃう by jflute (2026/02/06)
+            // TODO done fujisawa yellowが二つ出てきちゃう by jflute (2026/02/06)
             List<String> colorNamesWithMaxLength = colorBoxList.stream()
                     .map(box -> box.getColor().getColorName())
                     .filter(name -> name.length() == maxLength)
+                    .distinct()
                     .collect(Collectors.toList());
             log(colorNamesWithMaxLength);
 

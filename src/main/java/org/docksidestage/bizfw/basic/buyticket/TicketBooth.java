@@ -164,7 +164,7 @@ public class TicketBooth {
         //    }
         //    ticketQuantityMap.put(ticketType, quantity - 1);
         //}
-        ticketQuantityMap.compute(null, (k, quantity) -> {
+        ticketQuantityMap.compute(ticketType, (k, quantity) -> {
             if (quantity == null || quantity <= 0) {
                 throw new TicketSoldOutException("Sold out: " + ticketType);
             }
@@ -202,18 +202,20 @@ public class TicketBooth {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
-    // TODO fujisawa getするところも、mapから取るようにしないと by jflute (2026/02/06)
+    // TODO done fujisawa getするところも、mapから取るようにしないと by jflute (2026/02/06)
     public int getOneDayQuantity() {
-        return oneDayQuantity;
+        return ticketQuantityMap.get(TicketType.ONE_DAY);
     }
 
     public int getTwoDayQuantity() {
-        return twoDayQuantity;
+        return ticketQuantityMap.get(TicketType.TWO_DAY);
     }
 
     public int getFourDayQuantity() {
-        return fourDayQuantity;
+        return ticketQuantityMap.get(TicketType.FOUR_DAY);
     }
+
+    public int getNightOnlyTwoDayQuantity() { return ticketQuantityMap.get(TicketType.NIGHT_ONLY_TWO_DAY); }
 
     public Integer getSalesProceeds() {
         return salesProceeds;
