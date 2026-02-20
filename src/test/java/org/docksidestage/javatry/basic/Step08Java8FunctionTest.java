@@ -359,7 +359,7 @@ public class Step08Java8FunctionTest extends PlainTestCase {
     // 元々チームでセルフレビューする文化とても良い。
     // ものができるのが楽しい、なのでAIを使おうが使わまいが楽しさは同じ。
 
-    // TODO jflute 次回1on1: Stream APIのふぉろー (2026/01/23)
+    // done jflute 次回1on1: Stream APIのふぉろー (2026/01/23)
     // ===================================================================================
     //                                                                          Stream API
     //                                                                          ==========

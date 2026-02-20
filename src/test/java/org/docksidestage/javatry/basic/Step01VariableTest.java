@@ -61,7 +61,7 @@ public class Step01VariableTest extends PlainTestCase {
         // #1on1: Pythonだと空文字だったかも!?、C# だと空文字
 
         // done fujisawa [不思議だよね] ちゃんと正直に答えててえらいです！ by shiny (2025/08/13)
-        // TODO shiny 正直なところを売りにしてます！ by hal (2025/08/27)
+        // done shiny 正直なところを売りにしてます！ by hal (2025/08/27)
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */

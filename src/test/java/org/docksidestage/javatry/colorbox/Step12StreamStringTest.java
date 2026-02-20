@@ -64,7 +64,7 @@ public class Step12StreamStringTest extends PlainTestCase {
                     .max()
                     .getAsInt();
 
-            // TODO done fujisawa yellowが二つ出てきちゃう by jflute (2026/02/06)
+            // done fujisawa yellowが二つ出てきちゃう by jflute (2026/02/06)
             List<String> colorNamesWithMaxLength = colorBoxList.stream()
                     .map(box -> box.getColor().getColorName())
                     .filter(name -> name.length() == maxLength)
@@ -84,6 +84,8 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる文字列の中で、一番長い文字列は？)
      */
     public void test_length_findMax_stringContent() {
+        // #1on1: StringAPI内でのinstanceofやgetContent()呼び出しの重複排除などの話 (2026/02/20)
+        // TODO fujisawa 落ちてるところ直してもらえればと by jflute (2026/02/20)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (!colorBoxList.isEmpty()) {
             int maxLength = colorBoxList.stream()

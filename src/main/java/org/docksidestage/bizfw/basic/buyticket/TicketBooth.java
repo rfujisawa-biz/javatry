@@ -36,10 +36,11 @@ public class TicketBooth {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    private int oneDayQuantity = ONE_DAY_MAX_QUANTITY;
-    private int twoDayQuantity = TWO_DAY_MAX_QUANTITY;
-    private int fourDayQuantity = FOUR_DAY_MAX_QUANTITY;
-    private int nightOnlyTwoDayQuantity = NIGHT_ONLY_TWO_DAY_MAX_QUANTITY;
+    // 以前のやり方: (mapに移行した) (2026/02/20)
+    //private int oneDayQuantity = ONE_DAY_MAX_QUANTITY;
+    //private int twoDayQuantity = TWO_DAY_MAX_QUANTITY;
+    //private int fourDayQuantity = FOUR_DAY_MAX_QUANTITY;
+    //private int nightOnlyTwoDayQuantity = NIGHT_ONLY_TWO_DAY_MAX_QUANTITY;
     private Integer salesProceeds; // null allowed: until first purchase
     private final Map<TicketType, Integer> ticketQuantityMap = new EnumMap<>(TicketType.class);
 
@@ -202,7 +203,7 @@ public class TicketBooth {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
-    // TODO done fujisawa getするところも、mapから取るようにしないと by jflute (2026/02/06)
+    // done fujisawa getするところも、mapから取るようにしないと by jflute (2026/02/06)
     public int getOneDayQuantity() {
         return ticketQuantityMap.get(TicketType.ONE_DAY);
     }

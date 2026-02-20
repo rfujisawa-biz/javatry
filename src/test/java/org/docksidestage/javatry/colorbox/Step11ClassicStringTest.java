@@ -70,6 +70,9 @@ public class Step11ClassicStringTest extends PlainTestCase {
             return;
         }
 
+        // #1on1: GoodGood, 同率首位の配慮までしっかりされているし... (2026/02/20)
+        // 実行結果の安定性を配慮して順序を固定化している。
+        // (SQLのorder byの固定化のソートキーのお話も)
         Set<String> namesWithMaxLength = new LinkedHashSet<>(); // 重複排除 + 登場順維持
         int maxLength = 0;
 
@@ -103,6 +106,9 @@ public class Step11ClassicStringTest extends PlainTestCase {
         int maxLength = 0;
         
         // 一旦愚直に
+        // #1on1: 2重ループがちょっと気持ち悪いけど...どうしても処理としては消えない (2026/02/20)
+        // なので、見た目をちょっと改善するだけ、例えば、1ループの処理をメソッドやクラスに切り出したりとかの工夫はある。
+        // ちなみに、ネステッドループとも言う。(SQLでjoinするときに駆動表となんとか表でネステッドループとか)
         for (ColorBox colorBox : colorBoxList) {
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
                 Object content = boxSpace.getContent();
@@ -145,6 +151,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
                 if (content == null) {
                     continue;
                 }
+                // #1on1: StringのときはtoString()を無駄に呼ばないのはGood (2026/02/20)
                 String strContent = (content instanceof String) ? (String) content : content.toString();
                 int length = strContent.length();
 
@@ -182,6 +189,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
             return;
         }
 
+        // #1on1: もし、0件の状態と、あったけど空文字だった場合の区別を付けるならnullとか使ったり話 (2026/02/20)
         int sum = 0;
         for (ColorBox colorBox : colorBoxList) {
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
@@ -209,6 +217,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
             return;
         }
 
+        // #1on1: LinkedHashSetのコンストラクターの闇(dummy) (2026/02/20)
         Set<BoxColor> hitColorSet = new LinkedHashSet<>(); // 重複なし + 登場順維持
 
         for (ColorBox colorBox : colorBoxList) {
@@ -218,6 +227,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     String strContent = (String) content;
                     if (strContent.startsWith("Water")) {
                         hitColorSet.add(colorBox.getColor());
+                        // #1on1: この配慮とても素晴らしい。パフォーマンス的には絶対にやった方が良い (2026/02/20)
                         break; // この箱はヒット確定なので、同じ箱の残りスペースは見ない
                     }
                 }
