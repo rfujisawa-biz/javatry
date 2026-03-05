@@ -15,14 +15,20 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import static org.h2.mvstore.DataUtils.parseMap;
+
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.color.BoxColor;
 import org.docksidestage.bizfw.colorbox.space.BoxSpace;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.GuardianBox;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.SecretBox;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -241,7 +247,43 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * What number character is starting with the late "ど" of string containing two or more "ど"s in color-boxes? (e.g. "どんどん" => 3) <br>
      * (カラーボックスに入ってる「ど」を二つ以上含む文字列で、最後の「ど」は何文字目から始まる？ (e.g. "どんどん" => 3))
      */
+
+    // TODO 久保さん
+    // ちょっとやり方を変えてみてます。
+    // AIに書かせて、プログラムを読んでそれを修正していくみたいな感じ。
+    // 修正の過程を残したかったのですが、ちょっと遅く最終成果物だけ残ってます。
+    // ここでは、最初はAIが、「ど」を二つ以上含む最初の文字列で打ち切りをしていたため、全部保持するように変更しました。
     public void test_lastIndexOf_findIndex() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        Map<String, Integer> lastDoIndexMap = new LinkedHashMap<>(); // 対象文字列 -> 最後の「ど」(1始まり)
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (!(content instanceof String)) {
+                    continue;
+                }
+
+                String strContent = (String) content;
+                int firstIndex = strContent.indexOf("ど");
+                if (firstIndex < 0) {
+                    continue;
+                }
+                int lastIndexOfDo = strContent.lastIndexOf("ど");
+                if (firstIndex == lastIndexOfDo) { // 「ど」が1個だけ
+                    continue;
+                }
+
+                lastDoIndexMap.put(strContent, lastIndexOfDo + 1); // 文字位置は1から始まる
+            }
+        }
+
+        log("last 'ど' index (1-based) by string: " + lastDoIndexMap);
     }
 
     // ===================================================================================
@@ -251,7 +293,51 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * What is total length of text of GuardianBox class in color-boxes? <br>
      * (カラーボックスの中に入っているGuardianBoxクラスのtextの長さの合計は？)
      */
+    // ここでは、AIが最初に一番下の部分をtry-catchなしで書いてきた。
+    // getTextが例外を投げる可能性があったため、try-catchに手動変更。
+    // メソッドを追いかけて最終的にこの形になりました。
+    // colorBoxIndexを追加したのは、どのcolorBoxで例外が発生したかをわかりやすくするためです。
     public void test_welcomeToGuardian() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        int colorBoxIndex = 0;
+        int sum = 0;
+        for (ColorBox colorBox : colorBoxList) {
+            colorBoxIndex++;
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof GuardianBox) {
+                    GuardianBox guardianBox = (GuardianBox) content;
+                    guardianBox.wakeUp();
+                    try {
+                        guardianBox.allowMe();
+                    } catch (IllegalStateException e) {
+                        log("Exception occurred on colorBox " + colorBoxIndex + " in authorization: " + e.getMessage());
+                        break;
+                    }
+                    try {
+                        guardianBox.open();
+                    } catch (IllegalStateException e) {
+                        log("Exception occurred on colorBox " + colorBoxIndex +  "in opening: " + e.getMessage());
+                        break;
+                    }
+                    try {
+
+                        String text = guardianBox.getText();
+                        sum += text.length();
+                    } catch (IllegalStateException | YourPrivateRoom.GuardianBoxTextNotFoundException e) {
+                        log("Exception occurred on colorBox " + colorBoxIndex + " in getting text: " + e.getMessage());
+                        break;
+                    }
+                }
+            }
+        }
+
+        log("Total length of GuardianBox text: " + sum);
     }
 
     // ===================================================================================
@@ -261,25 +347,119 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * What string is converted to style "map:{ key = value ; key = value ; ... }" from java.util.Map in color-boxes? <br>
      * (カラーボックスの中に入っている java.util.Map を "map:{ key = value ; key = value ; ... }" という形式で表示すると？)
      */
+    // ここはAIの言った通りでほぼ修正していません。
     public void test_showMap_flat() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Map) {
+                    Map<?, ?> map = (Map<?, ?>) content; // <- こんな書き方あるんだー、となりました
+                    log("map:" + map);
+                }
+            }
+        }
     }
 
     /**
      * What string is converted to style "map:{ key = value ; key = map:{ key = value ; ... } ; ... }" from java.util.Map in color-boxes? <br>
      * (カラーボックスの中に入っている java.util.Map を "map:{ key = value ; key = map:{ key = value ; ... } ; ... }" という形式で表示すると？)
      */
+    // 最初に出てきたのは↑の問題と同じコード
+    // 「mapの入れ子構造になっている場合に、`map:{key = map{key=value}}`のように出力する。」というプロンプトで修正してみる。->なんとなく良さそう
+    //
     public void test_showMap_nested() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Map) {
+                    Map<?, ?> map = (Map<?, ?>) content;
+                    log(formatMapNested(map));
+                }
+            }
+        }
     }
 
+    private String formatMapNested(Map<?, ?> map) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("map:{ ");
+        boolean first = true;
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (!first) {
+                sb.append(" ; ");
+            }
+            first = false;
+
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            sb.append(key).append(" = ");
+
+            if (value instanceof Map) {
+                Map<?, ?> nestedMap = (Map<?, ?>) value;
+                sb.append(formatMapNested(nestedMap));
+            } else {
+                sb.append(value);
+            }
+        }
+        sb.append(" }");
+        return sb.toString();
+    }
     // ===================================================================================
     //                                                                           Good Luck
     //                                                                           =========
     // these are very difficult exercises so you can skip
     /**
      * What string of toString() is converted from text of SecretBox class in upper space on the "white" color-box to java.util.Map? <br>
-     * (whiteのカラーボックスのupperスペースに入っているSecretBoxクラスのtextをMapに変換してtoString()すると？)
+     * (whiteのカラーボックスのupperスペースに入っているSecretBoxクラスのtextをMapに変換してtoString()すると？) // <- 「の」が多い笑
      */
+
     public void test_parseMap_flat() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+        // AIが最初に出してきたコード
+//        for (ColorBox colorBox : colorBoxList) {
+//            if (colorBox.getColor().getColorName().equals("white")) {
+//                SecretBox secretBox = colorBox.getSpaceOnUpper().getSecretBox();
+//                Map<?, ?> map = parseMap(secretBox.getText());
+//                log("map:" + map);
+//            }
+//        }
+
+        // ifの中身を削除して、upperSpaceまで入力して出てきたコード
+//        for (ColorBox colorBox : colorBoxList) {
+//            if (colorBox.getColor().getColorName().equals("white")) {
+//                BoxSpace upperSpace = colorBox.getSpaceList().get(0);
+//                SecretBox secretBox = upperSpace.getSecretBox();
+//                Map<?, ?> map = parseMap(secretBox.getText());
+//                log("map:" + map);
+//            }
+//        }
+
+        // 最終的に、if(upperSpace.getContent() instanceof SecretBox)まで書いて、↓が出てきた
+        for (ColorBox colorBox : colorBoxList) {
+            if (colorBox.getColor().getColorName().equals("white")) {
+                BoxSpace upperSpace = colorBox.getSpaceList().get(0);
+                if (upperSpace.getContent() instanceof SecretBox) {
+                    SecretBox secretBox = (SecretBox) upperSpace.getContent();
+                    Map<?, ?> map = parseMap(secretBox.getText());
+                    log(map.toString());
+                }
+            }
+        }
     }
 
     /**
