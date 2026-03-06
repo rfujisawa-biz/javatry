@@ -17,6 +17,7 @@ package org.docksidestage.javatry.colorbox;
 
 import static org.h2.mvstore.DataUtils.parseMap;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -279,6 +280,13 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     continue;
                 }
 
+                // #1on1: ↑のコードをこう直すこともできる。 (2026/03/06)
+                // o 上記も以下も場合によってはどっちもどっちという面もある (が、みんな短いのが好き)
+                // o 一方で、AIに出させたコードにどこまで可読性とかを求めるか？話
+                //if (strContent.indexOf("ど") != strContent.lastIndexOf("ど")) {
+                //    lastDoIndexMap.put(strContent, lastIndexOfDo + 1); // 文字位置は1から始まる
+                //}
+
                 lastDoIndexMap.put(strContent, lastIndexOfDo + 1); // 文字位置は1から始まる
             }
         }
@@ -313,11 +321,17 @@ public class Step11ClassicStringTest extends PlainTestCase {
                 if (content instanceof GuardianBox) {
                     GuardianBox guardianBox = (GuardianBox) content;
                     guardianBox.wakeUp();
+                    // done fujisawa こっちのtry/catchはなくてもいいかなと (getText()だけあれば) by jflute (2026/03/06)
+                    // → try/catch入れているのは、将来中身がまた変わった時にデバッグしやすいように by ふじさわさん
+                    // → であれば、catchのところに、将来用のcatchであることをコメントで示しておくと良い by jflute
                     try {
                         guardianBox.allowMe();
-                    } catch (IllegalStateException e) {
+                    } catch (IllegalStateException e) { // こっちは現状では必要ないけど、将来変わった時のために
+                        // #1on1: 続行スタイルにしているのは意図している (一方でコメントあると良い) (2026/03/06)
+                        // #1on1: 不具合の時にすぐ落とすか？続行するか？どっちがオーソドックスか？(業務の内容次第) (2026/03/06)
+                        // colorBoxIndex で後で特定できるようにしているのGoodです。
                         log("Exception occurred on colorBox " + colorBoxIndex + " in authorization: " + e.getMessage());
-                        break;
+                        break; // 途中で想定外で開けられなくてもやれるだけやるという業務
                     }
                     try {
                         guardianBox.open();
@@ -325,8 +339,9 @@ public class Step11ClassicStringTest extends PlainTestCase {
                         log("Exception occurred on colorBox " + colorBoxIndex +  "in opening: " + e.getMessage());
                         break;
                     }
+                    // TODO fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
+                    // と捉えると、catchの中身を変えた方が良いかなと。log()の内容か、正常なレアケースの方はログも要らないかも。
                     try {
-
                         String text = guardianBox.getText();
                         sum += text.length();
                     } catch (IllegalStateException | YourPrivateRoom.GuardianBoxTextNotFoundException e) {
@@ -358,6 +373,8 @@ public class Step11ClassicStringTest extends PlainTestCase {
         for (ColorBox colorBox : colorBoxList) {
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
                 Object content = boxSpace.getContent();
+                // TODO fujisawa "map:{Small Coin Locker=300, Resort Line=250, Cinema" ... by jflute (2026/03/06)
+                // カンマではなくセミコロンで。
                 if (content instanceof Map) {
                     Map<?, ?> map = (Map<?, ?>) content; // <- こんな書き方あるんだー、となりました
                     log("map:" + map);
@@ -450,6 +467,8 @@ public class Step11ClassicStringTest extends PlainTestCase {
 //        }
 
         // 最終的に、if(upperSpace.getContent() instanceof SecretBox)まで書いて、↓が出てきた
+        // TODO fujisawa H2 database の DateUtils の parseMap() と今回は仕様が違う by jflute (2026/03/06)
+        // 仮に仕様が同じだとしても、runtimeスコープのライブラリをソースコード上で使ってはいけない(本来コンパイルエラーになるはず)
         for (ColorBox colorBox : colorBoxList) {
             if (colorBox.getColor().getColorName().equals("white")) {
                 BoxSpace upperSpace = colorBox.getSpaceList().get(0);
@@ -457,9 +476,16 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     SecretBox secretBox = (SecretBox) upperSpace.getContent();
                     Map<?, ?> map = parseMap(secretBox.getText());
                     log(map.toString());
+
+                    // #1on1:
+                    // {map={ dockside = over ; hangar = mystic ; broadway = bbb }}
+                    //  key :: "map"
+                    //  value :: "{ dockside = over ; hangar = mystic ; broadway = bbb }"
                 }
             }
         }
+        // #1on1: AIがライブラリのコードをコピーするかも？？？ (2026/03/06)
+        // ライセンスの話。GPLとかだとちょっと気をつけないと。
     }
 
     /**
