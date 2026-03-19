@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
@@ -246,7 +247,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * (カラーボックスに入ってる「ど」を二つ以上含む文字列で、最後の「ど」は何文字目から始まる？ (e.g. "どんどん" => 3))
      */
 
-    // TODO done 久保さん
+    // done 久保さん
     // ちょっとやり方を変えてみてます。
     // AIに書かせて、プログラムを読んでそれを修正していくみたいな感じ。
     // 修正の過程を残したかったのですが、ちょっと遅く最終成果物だけ残ってます。
@@ -336,8 +337,9 @@ public class Step11ClassicStringTest extends PlainTestCase {
                         log("Exception occurred on colorBox " + colorBoxIndex +  "in opening: " + e.getMessage());
                         break;
                     }
-                    // TODO done fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
+                    // done fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
                     // と捉えると、catchの中身を変えた方が良いかなと。log()の内容か、正常なレアケースの方はログも要らないかも。
+                    // TODO fujisawa TextNotFoundの処理を忘れている by jflute (2026/03/19)
                     try {
                         String text = guardianBox.getText();
                         sum += text.length();
@@ -370,7 +372,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
         for (ColorBox colorBox : colorBoxList) {
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
                 Object content = boxSpace.getContent();
-                // TODO done fujisawa "map:{Small Coin Locker=300, Resort Line=250, Cinema" ... by jflute (2026/03/06)
+                // done fujisawa "map:{Small Coin Locker=300, Resort Line=250, Cinema" ... by jflute (2026/03/06)
                 // カンマではなくセミコロンで。
                 if (content instanceof Map) {
                     Map<?, ?> map = (Map<?, ?>) content; // <- こんな書き方あるんだー、となりました
@@ -464,7 +466,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
 //        }
 
         // 最終的に、if(upperSpace.getContent() instanceof SecretBox)まで書いて、↓が出てきた
-        // TODO fujisawa H2 database の DateUtils の parseMap() と今回は仕様が違う by jflute (2026/03/06)
+        // done fujisawa H2 database の DateUtils の parseMap() と今回は仕様が違う by jflute (2026/03/06)
         // 仮に仕様が同じだとしても、runtimeスコープのライブラリをソースコード上で使ってはいけない(本来コンパイルエラーになるはず)
         for (ColorBox colorBox : colorBoxList) {
             if (colorBox.getColor().getColorName().equals("white")) {
@@ -543,8 +545,33 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     String lowerText = lowerSecretBox.getText();
                     Map<String, String> map = parseMapManually(middleText + lowerText);
                     log(map.toString()); // <- ここだけ最初に出してくれなかった
+                    for (Entry<String,String> entry : map.entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+                        log(key + " :: " + value);
+                    }
                 }
             }
         }
+        // #1on1: いったん途中の段階で検証してみた。
+        //
+        // [middle]
+        // map:{ dockside = over ; hangar = map:{ mystic = performance ; shadow = musical } ; broadway = bbb }
+        //
+        // [lower]
+        // map:{ dockside = over ; hangar = mystic ; broadway = map:{ encore! = musical ; bbb = review } }
+        //
+        //  ↓↓↓
+        // {
+        //     dockside=over, hangar=mystic, shadow=musical },
+        //     broadway=map:{ encore! = musical, bbb=review }
+        // }
+        //
+        // o middleとlowerの結果が合流していて、shadow="musical }" が独立している。
+        // o parseMapManually(middleText + lowerText); のところでドッキング
+        
+        // TODO fujisawa こちらまだ実装中ということなので次回 by jflute (2026/03/19)
+        
+        // #1on1: AIコードエージェント時代のレビューのジレンマ話 (2026/03/19)
     }
 }

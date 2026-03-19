@@ -15,9 +15,11 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
@@ -92,7 +94,7 @@ public class Step12StreamStringTest extends PlainTestCase {
      */
     public void test_length_findMax_stringContent() {
         // #1on1: StringAPI内でのinstanceofやgetContent()呼び出しの重複排除などの話 (2026/02/20)
-        // TODO done fujisawa 落ちてるところ直してもらえればと by jflute (2026/02/20)
+        // done fujisawa 落ちてるところ直してもらえればと by jflute (2026/02/20)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (!colorBoxList.isEmpty()) {
             int maxLength = colorBoxList.stream()
@@ -142,21 +144,32 @@ public class Step12StreamStringTest extends PlainTestCase {
                 .flatMap(box -> box.getSpaceList().stream())
                 .filter(space -> space.getContent() != null)
                 .map(space -> space.getContent().toString())
-                .mapToInt(str -> str.length())
-                .boxed()
+                .mapToInt(str -> str.length()) // #1on1: ここでIntStreamに型が変わってる
+                .boxed() // #1on1: ただ、結局Integerで扱いたいので Stream<Integer> に戻してる (reverseができないため)
                 .sorted(Comparator.reverseOrder()) // 降順にソート
                 .skip(1) // 先頭をスキップして二番目を取得
                 .findFirst()
                 .orElse(0);
 
+            // #1on1: 論理検証:
+            // A. 10 -> 9* -> 8 => orElseGet() で先頭を取って 9 になる
+            // B. 10(後) -> 10(先)* ->  8 => skip(1) で 10(後) が採用される v
+            // C. 10(後) -> 10(先)* -> 10(先先) => skip(1) で 10(先) が採用される o
+            // D. 10(後) -> 10(先)* -> 10(先先) -> 10(先先先) => skip(1) で 10(先先) が採用される v
+            // E. 10(後) ->  9(後)* ->  9(先) => skip(1) で 9(後) が採用される o
+            // F. 10(後) ->  9(後)* ->  9(先) -> 9(先先) => skip(1) で 9(先) が採用される v
+            // 
+            // filterしてからreverseOrderしてskip1なら、常に10(先)が来るかな？
+            //
+            // TODO fujisawa ↑の修正を (UnitTestもあるといいかも) by jflute (2026/03/19)
             String secondMaxString = colorBoxList.stream()
                     .flatMap(box -> box.getSpaceList().stream())
                     .filter(space -> space.getContent() != null)
                     .map(space -> space.getContent().toString())
                     .filter(str -> str.length() == secondMax)
-                    .skip(1)
+                    .skip(1) // 最初に同率首位/同率2位の対応をしている
                     .findFirst()
-                    .orElseGet(() -> colorBoxList.stream()
+                    .orElseGet(() -> colorBoxList.stream() // 単独2位のときの処理
                             .flatMap(box -> box.getSpaceList().stream())
                             .filter(space -> space.getContent() != null)
                             .map(space -> space.getContent().toString())
@@ -195,6 +208,8 @@ public class Step12StreamStringTest extends PlainTestCase {
      * ("Water" で始まる文字列をしまっているカラーボックスの色は？)
      */
     public void test_startsWith_findFirstWord() {
+        // #1on1: これはこれで一つの実装で、箱が2つあった場合は最初のやつを優先
+        // TODO fujisawa ただ、step11だと、箱が2つあった場合は両方ログに出すようにしている by jflute (2026/03/19)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (!colorBoxList.isEmpty()) {
             String answer = colorBoxList.stream()
