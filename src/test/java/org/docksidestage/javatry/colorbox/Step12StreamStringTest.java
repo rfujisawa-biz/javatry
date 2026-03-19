@@ -15,6 +15,7 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,12 +45,16 @@ public class Step12StreamStringTest extends PlainTestCase {
      */
     public void test_length_basic() { // example, so begin from the next method
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
-        String answer = colorBoxList.stream()
-                .findFirst()
-                .map(colorBox -> colorBox.getColor().getColorName())
-                .map(colorName -> colorName.length() + " (" + colorName + ")")
-                .orElse("*not found");
-        log(answer);
+        if (!colorBoxList.isEmpty()) {
+            String answer = colorBoxList.stream()
+                    .findFirst()
+                    .map(colorBox -> colorBox.getColor().getColorName())
+                    .map(colorName -> colorName.length() + " (" + colorName + ")")
+                    .orElse("*not found");
+            log(answer);
+        } else {
+            log("colorBoxList is empty!");
+        }
     }
 
     /**
@@ -76,6 +81,8 @@ public class Step12StreamStringTest extends PlainTestCase {
             // 最初の1件とかであれば、ソートしてfirstを取るでいいけど、同率首位を綺麗に切り取るとなったら...
             // やっぱり事前にmaxLengthが欲しくなるかな!?
             // 超パフォーマンス求められる場面だと、ループ一回で済ませられるfor文if文が活躍することあるかも。
+        } else {
+            log("colorBoxList is empty!");
         }
     }
 
@@ -85,23 +92,21 @@ public class Step12StreamStringTest extends PlainTestCase {
      */
     public void test_length_findMax_stringContent() {
         // #1on1: StringAPI内でのinstanceofやgetContent()呼び出しの重複排除などの話 (2026/02/20)
-        // TODO fujisawa 落ちてるところ直してもらえればと by jflute (2026/02/20)
+        // TODO done fujisawa 落ちてるところ直してもらえればと by jflute (2026/02/20)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (!colorBoxList.isEmpty()) {
             int maxLength = colorBoxList.stream()
-                    .mapToInt(box -> box.getSpaceList().stream()
-                            .mapToInt(space -> space.getContent().toString().length())
-                            .max()
-                            .getAsInt())
+                    .flatMap(box -> box.getSpaceList().stream())
+                    .filter(space -> space.getContent() instanceof String)
+                    .mapToInt(space -> space.getContent().toString().length())
                     .max()
-                    .getAsInt();
+                    .orElse(0);
 
             List<String> stringsWithMaxLength = colorBoxList.stream()
-                    .map(box -> box.getSpaceList().stream()
-                            .filter(space -> space.getContent().toString().length() == maxLength)
-                            .map(space -> space.getContent().toString())
-                            .collect(Collectors.toList()))
-                    .flatMap(List::stream)
+                    .flatMap(box -> box.getSpaceList().stream())
+                    .filter(space -> space.getContent() instanceof String)
+                    .filter(space -> space.getContent().toString().length() == maxLength)
+                    .map(space -> space.getContent().toString())
                     .collect(Collectors.toList());
 
             // #1on1: boxごとにspaceのfilterをするのではなく、spaceのflat一覧を作ってfilterの方が... (2026/02/06)
@@ -111,7 +116,9 @@ public class Step12StreamStringTest extends PlainTestCase {
             //        .filter(space -> space.getContent().toString().length() == maxLength)
             //        .map(space -> space.getContent().toString())
             //        .collect(Collectors.toList());
-            log(stringsWithMaxLength);
+            log("maxLength: " + maxLength + ", stringsWithMaxLength: " + stringsWithMaxLength);
+        } else {
+            log("colorBoxList is empty!");
         }
     }
 
@@ -120,6 +127,46 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる値 (文字列以外はtoString()) の中で、二番目に長い文字列は？ (同じ長さのものがあれば後の方を))
      */
     public void test_length_findSecondMax_contentToString() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (!colorBoxList.isEmpty()) {
+            // 初手に出してきた、filterでStringのみを絞っているので間違い
+//            int secondMax = colorBoxList.stream()
+//                    .flatMap(box -> box.getSpaceList().stream())
+//                    .filter(space -> space.getContent() instanceof String)
+//                    .mapToInt(space -> space.getContent().toString().length())
+//                    .sorted()
+//                    .skip(1)
+//                    .findFirst()
+//                    .orElse(0);
+            int secondMax = colorBoxList.stream()
+                .flatMap(box -> box.getSpaceList().stream())
+                .filter(space -> space.getContent() != null)
+                .map(space -> space.getContent().toString())
+                .mapToInt(str -> str.length())
+                .boxed()
+                .sorted(Comparator.reverseOrder()) // 降順にソート
+                .skip(1) // 先頭をスキップして二番目を取得
+                .findFirst()
+                .orElse(0);
+
+            String secondMaxString = colorBoxList.stream()
+                    .flatMap(box -> box.getSpaceList().stream())
+                    .filter(space -> space.getContent() != null)
+                    .map(space -> space.getContent().toString())
+                    .filter(str -> str.length() == secondMax)
+                    .skip(1)
+                    .findFirst()
+                    .orElseGet(() -> colorBoxList.stream()
+                            .flatMap(box -> box.getSpaceList().stream())
+                            .filter(space -> space.getContent() != null)
+                            .map(space -> space.getContent().toString())
+                            .filter(str -> str.length() == secondMax)
+                            .findFirst()
+                            .orElse(null));
+            log("secondMaxLength: " + secondMax + ", secondMaxString: " + secondMaxString);
+        } else {
+            log("colorBoxList is empty!");
+        }
     }
 
     /**
@@ -127,6 +174,17 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる文字列の長さの合計は？)
      */
     public void test_length_calculateLengthSum() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (!colorBoxList.isEmpty()) {
+            int lengthSum = colorBoxList.stream()
+                    .flatMap(box -> box.getSpaceList().stream())
+                    .filter(space -> space.getContent() instanceof String)
+                    .mapToInt(space -> space.getContent().toString().length())
+                    .sum();
+            log("lengthSum: " + lengthSum);
+        } else {
+            log("colorBoxList is empty!");
+        }
     }
 
     // ===================================================================================
@@ -137,6 +195,18 @@ public class Step12StreamStringTest extends PlainTestCase {
      * ("Water" で始まる文字列をしまっているカラーボックスの色は？)
      */
     public void test_startsWith_findFirstWord() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (!colorBoxList.isEmpty()) {
+            String answer = colorBoxList.stream()
+                    .filter(box -> box.getSpaceList().stream()
+                            .anyMatch(space -> space.getContent() instanceof String && ((String) space.getContent()).startsWith("Water")))
+                    .findFirst() // 箱が2つあったらどうしよう
+                    .map(box -> box.getColor().getColorName())
+                    .orElse("*not found");
+            log(answer);
+        } else {
+            log("colorBoxList is empty!");
+        }
     }
 
     /**
@@ -144,6 +214,12 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる「ど」を二つ以上含む文字列で、最後の「ど」は何文字目から始まる？ (e.g. "どんどん" => 3))
      */
     public void test_lastIndexOf_findIndex() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (!colorBoxList.isEmpty()) {
+// TODO 次ここから
+        } else {
+            log("colorBoxList is empty!");
+        }
     }
 
     // ===================================================================================

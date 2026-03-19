@@ -15,9 +15,6 @@
  */
 package org.docksidestage.javatry.colorbox;
 
-import static org.h2.mvstore.DataUtils.parseMap;
-
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -249,7 +246,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * (カラーボックスに入ってる「ど」を二つ以上含む文字列で、最後の「ど」は何文字目から始まる？ (e.g. "どんどん" => 3))
      */
 
-    // TODO 久保さん
+    // TODO done 久保さん
     // ちょっとやり方を変えてみてます。
     // AIに書かせて、プログラムを読んでそれを修正していくみたいな感じ。
     // 修正の過程を残したかったのですが、ちょっと遅く最終成果物だけ残ってます。
@@ -339,12 +336,12 @@ public class Step11ClassicStringTest extends PlainTestCase {
                         log("Exception occurred on colorBox " + colorBoxIndex +  "in opening: " + e.getMessage());
                         break;
                     }
-                    // TODO fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
+                    // TODO done fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
                     // と捉えると、catchの中身を変えた方が良いかなと。log()の内容か、正常なレアケースの方はログも要らないかも。
                     try {
                         String text = guardianBox.getText();
                         sum += text.length();
-                    } catch (IllegalStateException | YourPrivateRoom.GuardianBoxTextNotFoundException e) {
+                    } catch (IllegalStateException e) {
                         log("Exception occurred on colorBox " + colorBoxIndex + " in getting text: " + e.getMessage());
                         break;
                     }
@@ -373,11 +370,11 @@ public class Step11ClassicStringTest extends PlainTestCase {
         for (ColorBox colorBox : colorBoxList) {
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
                 Object content = boxSpace.getContent();
-                // TODO fujisawa "map:{Small Coin Locker=300, Resort Line=250, Cinema" ... by jflute (2026/03/06)
+                // TODO done fujisawa "map:{Small Coin Locker=300, Resort Line=250, Cinema" ... by jflute (2026/03/06)
                 // カンマではなくセミコロンで。
                 if (content instanceof Map) {
                     Map<?, ?> map = (Map<?, ?>) content; // <- こんな書き方あるんだー、となりました
-                    log("map:" + map);
+                    log(formatMapNested(map));
                 }
             }
         }
@@ -474,7 +471,8 @@ public class Step11ClassicStringTest extends PlainTestCase {
                 BoxSpace upperSpace = colorBox.getSpaceList().get(0);
                 if (upperSpace.getContent() instanceof SecretBox) {
                     SecretBox secretBox = (SecretBox) upperSpace.getContent();
-                    Map<?, ?> map = parseMap(secretBox.getText());
+                    String text = secretBox.getText();
+                    Map<String, String> map = parseMapManually(text);
                     log(map.toString());
 
                     // #1on1:
@@ -484,6 +482,41 @@ public class Step11ClassicStringTest extends PlainTestCase {
                 }
             }
         }
+    }
+
+    private Map<String, String> parseMapManually(String text) {
+        Map<String, String> result = new LinkedHashMap<>();
+
+        // "map:{ key = value ; key = value }" 形式を想定
+        if (text == null || !text.startsWith("map:{") || !text.endsWith("}")) {
+            return result;
+        }
+
+        // "map:{" と "}" を除去
+        String content = text.substring(5, text.length() - 1).trim();
+
+        if (content.isEmpty()) {
+            return result;
+        }
+
+        // ";" で分割
+        String[] pairs = content.split(";");
+        for (String pair : pairs) {
+            pair = pair.trim();
+            if (pair.isEmpty()) {
+                continue;
+            }
+
+            // "=" で分割
+            String[] keyValue = pair.split("=", 2);
+            if (keyValue.length == 2) {
+                String key = keyValue[0].trim();
+                String value = keyValue[1].trim();
+                result.put(key, value);
+            }
+        }
+
+        return result;
         // #1on1: AIがライブラリのコードをコピーするかも？？？ (2026/03/06)
         // ライセンスの話。GPLとかだとちょっと気をつけないと。
     }
@@ -493,5 +526,25 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * (whiteのカラーボックスのmiddleおよびlowerスペースに入っているSecretBoxクラスのtextをMapに変換してtoString()すると？)
      */
     public void test_parseMap_nested() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            if (colorBox.getColor().getColorName().equals("white")) {
+                BoxSpace middleSpace = colorBox.getSpaceList().get(1);
+                BoxSpace lowerSpace = colorBox.getSpaceList().get(2);
+                if (middleSpace.getContent() instanceof SecretBox && lowerSpace.getContent() instanceof SecretBox) {
+                    SecretBox middleSecretBox = (SecretBox) middleSpace.getContent();
+                    SecretBox lowerSecretBox = (SecretBox) lowerSpace.getContent();
+                    String middleText = middleSecretBox.getText();
+                    String lowerText = lowerSecretBox.getText();
+                    Map<String, String> map = parseMapManually(middleText + lowerText);
+                    log(map.toString()); // <- ここだけ最初に出してくれなかった
+                }
+            }
+        }
     }
 }
