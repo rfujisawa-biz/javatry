@@ -339,7 +339,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     }
                     // done fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
                     // と捉えると、catchの中身を変えた方が良いかなと。log()の内容か、正常なレアケースの方はログも要らないかも。
-                    // TODO done fujisawa TextNotFoundの処理を忘れている by jflute (2026/03/19)
+                    // done fujisawa TextNotFoundの処理を忘れている by jflute (2026/03/19)
                     try {
                         String text = guardianBox.getText();
                         sum += text.length();

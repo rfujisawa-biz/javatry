@@ -245,8 +245,10 @@ public class Step12StreamStringTest extends PlainTestCase {
                     .flatMap(box -> box.getSpaceList().stream())
                     .filter(space -> space.getContent() instanceof String && ((String) space.getContent()).contains("ど"))
                     .map(space -> space.getContent().toString())
-                    .filter(str -> str.contains("ど"))
+                    // TODO fujisawa "ど" の絞り込み、すでにされているはずなので不要かなと by jflute (2026/03/30)
+                    //.filter(str -> str.contains("ど"))
                     .filter(str -> str.indexOf("ど", str.indexOf("ど") + 1) >= 0)
+                    // #1on1: びっくりはするけど、でもまあ確かに感ある SimpleEntry さん (2026/03/30)
                     .map(str -> new AbstractMap.SimpleEntry<>(str, str.lastIndexOf("ど") + 1)) // 1-based index
                     .collect(Collectors.toList());
             log("last 'ど' index (1-based) by string: " + lastDoIndexMap);
@@ -271,6 +273,8 @@ public class Step12StreamStringTest extends PlainTestCase {
                     .map(space -> space.getContent())
                     .filter(content -> content instanceof YourPrivateRoom.GuardianBox)
                     .map(content -> (YourPrivateRoom.GuardianBox) content)
+                    // TODO fujisawa 例外ハンドリング周りもstep11と合わせてみて、AIさんがどう言うか？ by jflute (2026/03/30)
+                    // かつ、guardianBoxのコールバックが膨れた場合、privateメソッドに切り出したりとかして流れを見やすくしてみましょう。
                     .mapToInt(guardianBox -> {
                         guardianBox.wakeUp();
                         guardianBox.allowMe();
@@ -287,6 +291,17 @@ public class Step12StreamStringTest extends PlainTestCase {
             log("colorBoxList is empty!");
         }
     }
+    
+    // #1on1: 9ヶ月前に比べてAIの進化？ (2026/03/30)
+    // だいぶ進化した感じがある。by ふじさわさん
+    // このjavatryの方はIntelliJの組み込みなのでまだ貧弱な方だと思う by ふじさわさん
+    
+    // #1on1: 将棋や囲碁はゴールがあるからこそ、AIの進化がしやすい、AIが活躍しやすい。 (2026/03/30)
+    // プログラムも選択肢が少ない方がAIの恩恵を受けやすいんじゃないか？
+    // プログラミング言語のコンセプトの違いについて色々談義 (2026/03/30)
+    
+    // #1on1: コンパイラーがもうちょい親切に (2026/03/30)
+    // RustはコンパイラーのメッセージGood。
 
     // ===================================================================================
     //                                                                           Challenge
