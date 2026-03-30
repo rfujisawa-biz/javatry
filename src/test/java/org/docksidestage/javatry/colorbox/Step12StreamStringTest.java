@@ -15,11 +15,8 @@
  */
 package org.docksidestage.javatry.colorbox;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
@@ -158,7 +155,7 @@ public class Step12StreamStringTest extends PlainTestCase {
             // D. 10(後) -> 10(先)* -> 10(先先) -> 10(先先先) => skip(1) で 10(先先) が採用される v
             // E. 10(後) ->  9(後)* ->  9(先) => skip(1) で 9(後) が採用される o
             // F. 10(後) ->  9(後)* ->  9(先) -> 9(先先) => skip(1) で 9(先) が採用される v
-            // 
+            //
             // filterしてからreverseOrderしてskip1なら、常に10(先)が来るかな？
             //
             // TODO fujisawa ↑の修正を (UnitTestもあるといいかも) by jflute (2026/03/19)
@@ -211,14 +208,24 @@ public class Step12StreamStringTest extends PlainTestCase {
         // #1on1: これはこれで一つの実装で、箱が2つあった場合は最初のやつを優先
         // TODO fujisawa ただ、step11だと、箱が2つあった場合は両方ログに出すようにしている by jflute (2026/03/19)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+//        if (!colorBoxList.isEmpty()) {
+//            String answer = colorBoxList.stream()
+//                    .filter(box -> box.getSpaceList().stream()
+//                            .anyMatch(space -> space.getContent() instanceof String && ((String) space.getContent()).startsWith("Water")))
+//                    .findFirst() // 箱が2つあったらどうしよう
+//                    .map(box -> box.getColor().getColorName())
+//                    .orElse("*not found");
+//            log(answer);
+//        } else {
+//            log("colorBoxList is empty!");
+//        }
         if (!colorBoxList.isEmpty()) {
-            String answer = colorBoxList.stream()
+            List<String> colorsWithWaterStart = colorBoxList.stream()
                     .filter(box -> box.getSpaceList().stream()
                             .anyMatch(space -> space.getContent() instanceof String && ((String) space.getContent()).startsWith("Water")))
-                    .findFirst() // 箱が2つあったらどうしよう
                     .map(box -> box.getColor().getColorName())
-                    .orElse("*not found");
-            log(answer);
+                    .collect(Collectors.toList());
+            log(colorsWithWaterStart);
         } else {
             log("colorBoxList is empty!");
         }
@@ -229,9 +236,20 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスに入ってる「ど」を二つ以上含む文字列で、最後の「ど」は何文字目から始まる？ (e.g. "どんどん" => 3))
      */
     public void test_lastIndexOf_findIndex() {
+        // 最初のフィルターまで書いて、チャットでやってもらいました。
+        // filterを2つ重ねるところ、難しい
+        // map(str -> new AbstractMap.SimpleEntry<>(str, str.lastIndexOf("ど") + 1))のところ、new Mapじゃダメなんですね
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (!colorBoxList.isEmpty()) {
-// TODO 次ここから
+            List<Map.Entry<String, Integer>> lastDoIndexMap = colorBoxList.stream()
+                    .flatMap(box -> box.getSpaceList().stream())
+                    .filter(space -> space.getContent() instanceof String && ((String) space.getContent()).contains("ど"))
+                    .map(space -> space.getContent().toString())
+                    .filter(str -> str.contains("ど"))
+                    .filter(str -> str.indexOf("ど", str.indexOf("ど") + 1) >= 0)
+                    .map(str -> new AbstractMap.SimpleEntry<>(str, str.lastIndexOf("ど") + 1)) // 1-based index
+                    .collect(Collectors.toList());
+            log("last 'ど' index (1-based) by string: " + lastDoIndexMap);
         } else {
             log("colorBoxList is empty!");
         }
@@ -245,6 +263,29 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスの中に入っているGuardianBoxクラスのtextの長さの合計は？)
      */
     public void test_welcomeToGuardian() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        // AIがこういう時はforの方がいいですよって言ってきた
+        if (!colorBoxList.isEmpty()) {
+            int textSum = colorBoxList.stream()
+                    .flatMap(box -> box.getSpaceList().stream())
+                    .map(space -> space.getContent())
+                    .filter(content -> content instanceof YourPrivateRoom.GuardianBox)
+                    .map(content -> (YourPrivateRoom.GuardianBox) content)
+                    .mapToInt(guardianBox -> {
+                        guardianBox.wakeUp();
+                        guardianBox.allowMe();
+                        guardianBox.open();
+                        try { // この実装だと、Step11とはあってなさそう？
+                            return guardianBox.getText().length();
+                        } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
+                            return 0;
+                        }
+                    })
+                    .sum();
+            log("Total length of GuardianBox text: " + textSum);
+        } else {
+            log("colorBoxList is empty!");
+        }
     }
 
     // ===================================================================================
@@ -255,6 +296,7 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスの中に入っている java.util.Map を "map:{ key = value ; key = value ; ... }" という形式で表示すると？)
      */
     public void test_showMap_flat() {
+        // TODO つぎ
     }
 
     /**

@@ -334,18 +334,20 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     try {
                         guardianBox.open();
                     } catch (IllegalStateException e) {
-                        log("Exception occurred on colorBox " + colorBoxIndex +  "in opening: " + e.getMessage());
+                        log("Exception occurred on colorBox " + colorBoxIndex + "in opening: " + e.getMessage());
                         break;
                     }
                     // done fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
                     // と捉えると、catchの中身を変えた方が良いかなと。log()の内容か、正常なレアケースの方はログも要らないかも。
-                    // TODO fujisawa TextNotFoundの処理を忘れている by jflute (2026/03/19)
+                    // TODO done fujisawa TextNotFoundの処理を忘れている by jflute (2026/03/19)
                     try {
                         String text = guardianBox.getText();
                         sum += text.length();
                     } catch (IllegalStateException e) {
                         log("Exception occurred on colorBox " + colorBoxIndex + " in getting text: " + e.getMessage());
                         break;
+                    } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
+                        log("Text not found in colorBox " + colorBoxIndex + ": " + e.getMessage());
                     }
                 }
             }
