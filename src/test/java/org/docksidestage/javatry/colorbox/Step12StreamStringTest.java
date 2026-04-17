@@ -246,7 +246,7 @@ public class Step12StreamStringTest extends PlainTestCase {
                     .flatMap(box -> box.getSpaceList().stream())
                     .filter(space -> space.getContent() instanceof String && ((String) space.getContent()).contains("ど"))
                     .map(space -> space.getContent().toString())
-                    // TODO done fujisawa "ど" の絞り込み、すでにされているはずなので不要かなと by jflute (2026/03/30)
+                    // done fujisawa "ど" の絞り込み、すでにされているはずなので不要かなと by jflute (2026/03/30)
                     //.filter(str -> str.contains("ど"))
                     .filter(str -> str.indexOf("ど", str.indexOf("ど") + 1) >= 0)
                     // #1on1: びっくりはするけど、でもまあ確かに感ある SimpleEntry さん (2026/03/30)
@@ -287,6 +287,7 @@ public class Step12StreamStringTest extends PlainTestCase {
 //                        }
 //                    })
 //                    .sum();
+            // #1on1: 何番目のColorBoxかの情報をログに出したいので、IntStreamするしかない (2026/04/17)
             int textSum = IntStream.range(0, colorBoxList.size())
                     .map(colorBoxIndex -> colorBoxList.get(colorBoxIndex).getSpaceList().stream()
                             .map(space -> space.getContent())
@@ -301,6 +302,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         }
     }
 
+    // TODO fujisawa colorBoxIndex は、すでに + 1 された Number 的なものなので、colorBoxNumber の方が良さそう by jflute (2026/04/17)
     private int handleGuardianBoxTextLength(YourPrivateRoom.GuardianBox guardianBox, int colorBoxIndex) {
         guardianBox.wakeUp();
         try {

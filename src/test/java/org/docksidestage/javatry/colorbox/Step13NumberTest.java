@@ -155,6 +155,7 @@ public class Step13NumberTest extends PlainTestCase {
             log("colorBoxList is empty!");
             return;
         }
+        // TODO fujisawa nullを使うのではなく、Optionalを活用しましょう by jflute (2026/04/17)
         ColorBox target = colorBoxList.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream()
                         .anyMatch(space -> space.getContent() instanceof Integer))
