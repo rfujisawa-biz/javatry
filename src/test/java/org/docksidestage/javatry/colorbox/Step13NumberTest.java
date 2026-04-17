@@ -15,13 +15,19 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.util.Comparator;
+import java.util.List;
+
+import org.docksidestage.bizfw.colorbox.ColorBox;
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
  * The test of Number with color-box. <br>
  * Show answer by log() for question of javadoc.
  * @author jflute
- * @author your_name_here
+ * @author rfujisawa-biz
  */
 public class Step13NumberTest extends PlainTestCase {
 
@@ -33,6 +39,42 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスの中に入っているInteger型で、0から54までの値は何個ある？)
      */
     public void test_countZeroToFiftyFour_IntegerOnly() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        int count = 0;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Integer) {
+                    int number = (Integer) content;
+                    if (0 <= number && number <= 54) {
+                        ++count;
+                    }
+                }
+            }
+        }
+        log(count);
+    }
+
+    public void test_countZeroToFiftyFour_IntegerOnly_stream() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        long count = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent) // ラムダ式ではなくメソッド参照で書いてある
+                .filter(Integer.class::isInstance)
+                .map(Integer.class::cast)
+                .filter(number -> 0 <= number && number <= 54)
+                .count();
+        log(count);
     }
 
     /**
@@ -40,6 +82,44 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックの中に入っている数値で、0から54までの値は何個ある？)
      */
     public void test_countZeroToFiftyFour_Number() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        int count = 0;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Number) {
+                    Number number = (Number) content;
+                    double value = number.doubleValue();
+                    if (0 <= value && value <= 54) {
+                        ++count;
+                    }
+                }
+            }
+        }
+        log(count);
+    }
+
+    public void test_countZeroToFiftyFour_Number_stream() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        long count = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
+                .filter(Number.class::isInstance)
+                .map(Number.class::cast)
+                .mapToDouble(Number::doubleValue)
+                .filter(value -> 0 <= value && value <= 54)
+                .count();
+        log(count);
     }
 
     /**
@@ -47,6 +127,41 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスの中で、Integer型の Content を持っていてBoxSizeの幅が一番大きいカラーボックスの色は？)
      */
     public void test_findColorBigWidthHasInteger() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+        ColorBox target = null;
+        int maxWidth = Integer.MIN_VALUE;
+        for (ColorBox colorBox : colorBoxList) {
+            boolean hasInteger = colorBox.getSpaceList().stream()
+                    .anyMatch(space -> space.getContent() instanceof Integer);
+            if (hasInteger) {
+                int width = colorBox.getSize().getWidth();
+                if (width > maxWidth) {
+                    maxWidth = width;
+                    target = colorBox;
+                }
+            }
+        }
+        String colorName = target != null ? target.getColor().getColorName() : null;
+        log(colorName);
+    }
+
+    public void test_findColorBigWidthHasInteger_stream() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+        ColorBox target = colorBoxList.stream()
+                .filter(colorBox -> colorBox.getSpaceList().stream()
+                        .anyMatch(space -> space.getContent() instanceof Integer))
+                .max(Comparator.comparingInt(a -> a.getSize().getWidth()))
+                .orElse(null);
+        String colorName = target != null ? target.getColor().getColorName() : null;
+        log(colorName);
     }
 
     /**

@@ -17,6 +17,7 @@ package org.docksidestage.javatry.colorbox;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
@@ -245,7 +246,7 @@ public class Step12StreamStringTest extends PlainTestCase {
                     .flatMap(box -> box.getSpaceList().stream())
                     .filter(space -> space.getContent() instanceof String && ((String) space.getContent()).contains("ど"))
                     .map(space -> space.getContent().toString())
-                    // TODO fujisawa "ど" の絞り込み、すでにされているはずなので不要かなと by jflute (2026/03/30)
+                    // TODO done fujisawa "ど" の絞り込み、すでにされているはずなので不要かなと by jflute (2026/03/30)
                     //.filter(str -> str.contains("ど"))
                     .filter(str -> str.indexOf("ど", str.indexOf("ど") + 1) >= 0)
                     // #1on1: びっくりはするけど、でもまあ確かに感ある SimpleEntry さん (2026/03/30)
@@ -268,27 +269,60 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         // AIがこういう時はforの方がいいですよって言ってきた
         if (!colorBoxList.isEmpty()) {
-            int textSum = colorBoxList.stream()
-                    .flatMap(box -> box.getSpaceList().stream())
-                    .map(space -> space.getContent())
-                    .filter(content -> content instanceof YourPrivateRoom.GuardianBox)
-                    .map(content -> (YourPrivateRoom.GuardianBox) content)
-                    // TODO fujisawa 例外ハンドリング周りもstep11と合わせてみて、AIさんがどう言うか？ by jflute (2026/03/30)
-                    // かつ、guardianBoxのコールバックが膨れた場合、privateメソッドに切り出したりとかして流れを見やすくしてみましょう。
-                    .mapToInt(guardianBox -> {
-                        guardianBox.wakeUp();
-                        guardianBox.allowMe();
-                        guardianBox.open();
-                        try { // この実装だと、Step11とはあってなさそう？
-                            return guardianBox.getText().length();
-                        } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
-                            return 0;
-                        }
-                    })
+//            int textSum = colorBoxList.stream()
+//                    .flatMap(box -> box.getSpaceList().stream())
+//                    .map(space -> space.getContent())
+//                    .filter(content -> content instanceof YourPrivateRoom.GuardianBox)
+//                    .map(content -> (YourPrivateRoom.GuardianBox) content)
+//                    // TODO done fujisawa 例外ハンドリング周りもstep11と合わせてみて、AIさんがどう言うか？ by jflute (2026/03/30)
+//                    // かつ、guardianBoxのコールバックが膨れた場合、privateメソッドに切り出したりとかして流れを見やすくしてみましょう。
+//                    .mapToInt(guardianBox -> {
+//                        guardianBox.wakeUp();
+//                        guardianBox.allowMe();
+//                        guardianBox.open();
+//                        try { // この実装だと、Step11とはあってなさそう？
+//                            return guardianBox.getText().length();
+//                        } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
+//                            return 0;
+//                        }
+//                    })
+//                    .sum();
+            int textSum = IntStream.range(0, colorBoxList.size())
+                    .map(colorBoxIndex -> colorBoxList.get(colorBoxIndex).getSpaceList().stream()
+                            .map(space -> space.getContent())
+                            .filter(content -> content instanceof YourPrivateRoom.GuardianBox)
+                            .map(content -> (YourPrivateRoom.GuardianBox) content)
+                            .mapToInt(guardianBox -> handleGuardianBoxTextLength(guardianBox, colorBoxIndex + 1))
+                            .sum())
                     .sum();
             log("Total length of GuardianBox text: " + textSum);
         } else {
             log("colorBoxList is empty!");
+        }
+    }
+
+    private int handleGuardianBoxTextLength(YourPrivateRoom.GuardianBox guardianBox, int colorBoxIndex) {
+        guardianBox.wakeUp();
+        try {
+            guardianBox.allowMe();
+        } catch (IllegalStateException e) { // 現状では起きなくても、Step11と同じく将来の変化を追いやすくする
+            log("Exception occurred on colorBox " + colorBoxIndex + " in authorization: " + e.getMessage());
+            return 0;
+        }
+        try {
+            guardianBox.open();
+        } catch (IllegalStateException e) {
+            log("Exception occurred on colorBox " + colorBoxIndex + " in opening: " + e.getMessage());
+            return 0;
+        }
+        try {
+            return guardianBox.getText().length();
+        } catch (IllegalStateException e) {
+            log("Exception occurred on colorBox " + colorBoxIndex + " in getting text: " + e.getMessage());
+            return 0;
+        } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
+            log("Text not found in colorBox " + colorBoxIndex + ": " + e.getMessage());
+            return 0;
         }
     }
     
