@@ -149,7 +149,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         //
         // filterしてからreverseOrderしてskip1なら、常に10(先)が来るかな？
         //
-        // TODO done? fujisawa ↑の修正を (UnitTestもあるといいかも) by jflute (2026/03/19)
+        // done? fujisawa ↑の修正を (UnitTestもあるといいかも) by jflute (2026/03/19)
         // さっきやってもらってまだ確認しきれてません。。。
     }
 
@@ -204,6 +204,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         }
     }
 
+    // TODO fujisawa 場所、ちょっと移動。近いところに by jflute (2026/05/01)
     private String findSecondMaxContentString(List<?> contentList) {
         List<String> contentStringList = contentList.stream()
                 .filter(Objects::nonNull)
@@ -212,7 +213,8 @@ public class Step12StreamStringTest extends PlainTestCase {
 
         return IntStream.range(0, contentStringList.size())
                 .mapToObj(index -> new AbstractMap.SimpleEntry<>(index, contentStringList.get(index)))
-                .sorted(Comparator.<Map.Entry<Integer, String>>comparingInt(entry -> entry.getValue().length()).reversed()
+                .sorted(Comparator.<Map.Entry<Integer, String>>comparingInt(entry -> entry.getValue().length())
+                        .reversed()
                         .thenComparing(Map.Entry.comparingByKey(Comparator.reverseOrder())))
                 .skip(1)
                 .map(Map.Entry::getValue)
@@ -229,7 +231,7 @@ public class Step12StreamStringTest extends PlainTestCase {
      */
     public void test_startsWith_findFirstWord() {
         // #1on1: これはこれで一つの実装で、箱が2つあった場合は最初のやつを優先
-        // TODO done fujisawa ただ、step11だと、箱が2つあった場合は両方ログに出すようにしている by jflute (2026/03/19)
+        // done fujisawa ただ、step11だと、箱が2つあった場合は両方ログに出すようにしている by jflute (2026/03/19)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
 //        if (!colorBoxList.isEmpty()) {
 //            String answer = colorBoxList.stream()
@@ -296,7 +298,7 @@ public class Step12StreamStringTest extends PlainTestCase {
 //                    .map(space -> space.getContent())
 //                    .filter(content -> content instanceof YourPrivateRoom.GuardianBox)
 //                    .map(content -> (YourPrivateRoom.GuardianBox) content)
-//                    // TODO done fujisawa 例外ハンドリング周りもstep11と合わせてみて、AIさんがどう言うか？ by jflute (2026/03/30)
+//                    // done fujisawa 例外ハンドリング周りもstep11と合わせてみて、AIさんがどう言うか？ by jflute (2026/03/30)
 //                    // かつ、guardianBoxのコールバックが膨れた場合、privateメソッドに切り出したりとかして流れを見やすくしてみましょう。
 //                    .mapToInt(guardianBox -> {
 //                        guardianBox.wakeUp();
@@ -324,7 +326,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         }
     }
 
-    // TODO done fujisawa colorBoxIndex は、すでに + 1 された Number 的なものなので、colorBoxNumber の方が良さそう by jflute (2026/04/17)
+    // done fujisawa colorBoxIndex は、すでに + 1 された Number 的なものなので、colorBoxNumber の方が良さそう by jflute (2026/04/17)
     private int handleGuardianBoxTextLength(YourPrivateRoom.GuardianBox guardianBox, int colorBoxNumber) {
         guardianBox.wakeUp();
         try {

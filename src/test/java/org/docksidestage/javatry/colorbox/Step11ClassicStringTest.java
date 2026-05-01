@@ -310,7 +310,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
             return;
         }
 
-        // TODO done fujisawa 0で初期化しているけども、実質的にNo役割なので、colorBoxNumber とかの方が良いかなと by jflute (2026/04/17)
+        // done fujisawa 0で初期化しているけども、実質的にNo役割なので、colorBoxNumber とかの方が良いかなと by jflute (2026/04/17)
         int colorBoxNumber = 0;
         int sum = 0;
         for (ColorBox colorBox : colorBoxList) {

@@ -156,7 +156,7 @@ public class Step13NumberTest extends PlainTestCase {
             log("colorBoxList is empty!");
             return;
         }
-        // TODO done fujisawa nullを使うのではなく、Optionalを活用しましょう by jflute (2026/04/17)
+        // done fujisawa nullを使うのではなく、Optionalを活用しましょう by jflute (2026/04/17)
         Optional<ColorBox> target = colorBoxList.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream()
                         .anyMatch(space -> space.getContent() instanceof Integer))
@@ -288,11 +288,38 @@ public class Step13NumberTest extends PlainTestCase {
                 .map(space -> (Map<?, ?>) space.getContent())
                 .filter(map -> map.entrySet().stream()
                         .allMatch(entry -> entry.getKey() instanceof String && entry.getValue() instanceof Number))
+                // ちょっとログでstreamの中身をチラ見
+                // Land Annual Passport=61000, Sea Annual Passport=61000
+                //.peek(obj -> log("@@@: " + obj))
+                //
+                // #1on1: これに差し替えると [Land Annual Passport] になる (2026/05/01)
+                // .map(map -> (Map<String, Number>) map)
+                // 警告を消すなら↓
+//                .map(map -> {
+//                    @SuppressWarnings("unchecked")
+//                    Map<String, Number> castMap = (Map<String, Number>) map;
+//                    return castMap;
+//                }) // [Land Annual Passport]
+                //
+                // toMap() でMapインスタンスを差し替える時に、デフォルトだとHashMapなので順番がランダム。
+                // たまたま、Sea Annual Passport が先に来て、その後のmaxで採用された。
+                // (一方で、max側のcomparingで同率の時のソート順を決めてないので、元のMapの順序に依存している)
+                /* なので、toMap で LinkedHashMap を new するようにすれば、順序が維持されて結果が同じになる。
+                .map(map -> map.entrySet().stream()
+                        .collect(Collectors.toMap(
+                                entry -> (String) entry.getKey(),
+                                entry -> (Number) entry.getValue(),
+                                (key, value) -> value, // BinaryOperatorくんは適当 (何も変換しないでいいのかな!?)
+                                () -> new LinkedHashMap<String, Number>()
+                                ))) // [Sea Annual Passport]
+                 */
+                // 実業務だったら、元のMapもLinkedとは限らないので、
+                // comparingのところで非機能要件的なルールを一つ追加して、第二ソートキーとかで何かしらのルールで安定させる。
                 .map(map -> map.entrySet().stream()
                         .collect(Collectors.toMap(
                                 entry -> (String) entry.getKey(),
                                 entry -> (Number) entry.getValue()
-                        )))
+                        ))) // [Sea Annual Passport]
                 .collect(Collectors.toList());
         log(targetList);
 
@@ -308,6 +335,7 @@ public class Step13NumberTest extends PlainTestCase {
     }
 
     // リファクタリングしてもらったら、↑と結果が変わった
+    // #1on1: 原因は判明。上のコメントで書いた。
     public void test_findMaxMapNumberValue_refactor() {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (colorBoxList.isEmpty()) {
@@ -323,6 +351,14 @@ public class Step13NumberTest extends PlainTestCase {
                 .filter(map -> !map.isEmpty())
                 .filter(map -> map.entrySet().stream()
                         .allMatch(entry -> entry.getKey() instanceof String && entry.getValue() instanceof Number))
+                // これを入れると Land じゃなくて Sea になる
+                //.map(map -> map.entrySet().stream()
+                //        .collect(Collectors.toMap(
+                //                entry -> (String) entry.getKey(),
+                //                entry -> (Number) entry.getValue()
+                //        ))) // [Sea Annual Passport]
+                // #1on1: こっちの方は、上でinstanceofして保証されてるから、Map自体の型解決はせず、
+                // getの利用箇所でダウンキャストしている。
                 .map(map -> map.entrySet().stream()
                         .max(Comparator.comparingDouble(entry -> ((Number) entry.getValue()).doubleValue()))
                         .map(entry -> (String) entry.getKey())
@@ -332,6 +368,7 @@ public class Step13NumberTest extends PlainTestCase {
         log(maxKeys);
     }
 
+    // TODO jflute 次回1on1にて見る (2026/05/01)
     /**
      * What is total of number or number-character values in Map in purple color-box? <br> 
      * (purpleのカラーボックスに入ってる Map の中のvalueの数値・数字の合計は？)
