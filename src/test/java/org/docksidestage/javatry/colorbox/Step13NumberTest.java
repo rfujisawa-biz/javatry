@@ -15,8 +15,9 @@
  */
 package org.docksidestage.javatry.colorbox;
 
-import java.util.Comparator;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.space.BoxSpace;
@@ -155,13 +156,12 @@ public class Step13NumberTest extends PlainTestCase {
             log("colorBoxList is empty!");
             return;
         }
-        // TODO fujisawa nullを使うのではなく、Optionalを活用しましょう by jflute (2026/04/17)
-        ColorBox target = colorBoxList.stream()
+        // TODO done fujisawa nullを使うのではなく、Optionalを活用しましょう by jflute (2026/04/17)
+        Optional<ColorBox> target = colorBoxList.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream()
                         .anyMatch(space -> space.getContent() instanceof Integer))
-                .max(Comparator.comparingInt(a -> a.getSize().getWidth()))
-                .orElse(null);
-        String colorName = target != null ? target.getColor().getColorName() : null;
+                .max(Comparator.comparingInt(a -> a.getSize().getWidth()));
+        String colorName = target.map(colorBox -> colorBox.getColor().getColorName()).orElse(null);
         log(colorName);
     }
 
@@ -169,7 +169,97 @@ public class Step13NumberTest extends PlainTestCase {
      * What is total of BigDecimal values in List in color-boxes? <br>
      * (カラーボックスの中に入ってる List の中の BigDecimal を全て足し合わせると？)
      */
+    public void test_sumBigDecimalInList_stream() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 最初に出してきた、カラーボックスに直接入っているBigDecimalを足し合わせようとしている
+//        BigDecimal total = colorBoxList.stream()
+//                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+//                .filter(space -> space.getContent() instanceof BigDecimal)
+//                .map(space -> (BigDecimal) space.getContent())
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//        log("Total BigDecimal value: " + total);
+        log(        colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .filter(space -> space.getContent() instanceof List)
+                .flatMap(space -> ((List<?>) space.getContent()).stream())
+                .filter(content -> content instanceof BigDecimal)
+                .map(content -> (BigDecimal) content)
+                        .collect(Collectors.toList())
+                );
+
+        BigDecimal total = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .filter(space -> space.getContent() instanceof List)
+                .flatMap(space -> ((List<?>) space.getContent()).stream()) // ここまで書き換えて補完させた
+                .filter(content -> content instanceof BigDecimal)
+                .map(content -> (BigDecimal) content)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        log("Total BigDecimal value: " + total);
+    }
+
+    // 先にstreamのパターンを書いてきたので、あとでstreamじゃないパターンを
     public void test_sumBigDecimalInList() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 深いな... streamの方が見やすい
+        BigDecimal total = BigDecimal.ZERO;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof List) {
+                    List<?> contentList = (List<?>) content;
+                    for (Object element : contentList) {
+                        if (element instanceof BigDecimal) {
+                            total = total.add((BigDecimal) element);
+                        }
+                    }
+                }
+            }
+        }
+
+        log("Total BigDecimal value: " + total);
+    }
+
+    // ネスト深くない！？って言ったら修正してきたけど、あまり変わらない。
+    public void test_sumBigDecimalInList_reduceNest() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        BigDecimal total = BigDecimal.ZERO;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (!(content instanceof List)) {
+                    continue;
+                }
+
+                List<?> contentList = (List<?>) content;
+                for (Object element : contentList) {
+                    if (!(element instanceof BigDecimal)) {
+                        continue;
+                    }
+
+                    BigDecimal decimal = (BigDecimal) element;
+                    total = total.add(decimal);
+                }
+            }
+        }
+
+        log("Total BigDecimal value: " + total);
     }
 
     // ===================================================================================
@@ -178,8 +268,68 @@ public class Step13NumberTest extends PlainTestCase {
     /**
      * What key is related to value that is max number in Map that has only number in color-boxes? <br>
      * (カラーボックスに入ってる、valueが数値のみの Map の中で一番大きいvalueのkeyは？)
+     * 該当するMapが複数ある場合、それぞれの中でvalueが最大値であるkeyを返す
+     * 例: mapA = {'id': 1, 'price': 100}, mapB = {'id': 1000, 'price': 150}
+     * ↑の場合、mapAのkey 'price', mapBのkey 'id' が返る
      */
     public void test_findMaxMapNumberValue() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // AIが全然できなかったので、途中まで手で書いて実装
+        // streamを一旦分割して書いてみようとして、Map<String, Number>に詰め直すところをまずやった。
+        // その後は、maxKeysを探すところはAIでできた
+        List<Map<String, Number>> targetList = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .filter(space -> space.getContent() instanceof Map)
+                .map(space -> (Map<?, ?>) space.getContent())
+                .filter(map -> map.entrySet().stream()
+                        .allMatch(entry -> entry.getKey() instanceof String && entry.getValue() instanceof Number))
+                .map(map -> map.entrySet().stream()
+                        .collect(Collectors.toMap(
+                                entry -> (String) entry.getKey(),
+                                entry -> (Number) entry.getValue()
+                        )))
+                .collect(Collectors.toList());
+        log(targetList);
+
+        List<String> maxKeys = targetList.stream()
+                .map(map -> map.entrySet().stream()
+                        .max(Comparator.comparingDouble(entry -> entry.getValue().doubleValue()))
+                        .map(Map.Entry::getKey)
+                        .orElse(null))
+                .map(key -> key != null ? key : "")
+                .collect(Collectors.toList());
+
+        log(maxKeys);
+    }
+
+    // リファクタリングしてもらったら、↑と結果が変わった
+    public void test_findMaxMapNumberValue_refactor() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        List<String> maxKeys = colorBoxList.stream()
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
+                .filter(content -> content instanceof Map)
+                .map(content -> (Map<?, ?>) content)
+                .filter(map -> !map.isEmpty())
+                .filter(map -> map.entrySet().stream()
+                        .allMatch(entry -> entry.getKey() instanceof String && entry.getValue() instanceof Number))
+                .map(map -> map.entrySet().stream()
+                        .max(Comparator.comparingDouble(entry -> ((Number) entry.getValue()).doubleValue()))
+                        .map(entry -> (String) entry.getKey())
+                        .orElse(""))
+                .collect(Collectors.toList());
+
+        log(maxKeys);
     }
 
     /**
@@ -187,5 +337,37 @@ public class Step13NumberTest extends PlainTestCase {
      * (purpleのカラーボックスに入ってる Map の中のvalueの数値・数字の合計は？)
      */
     public void test_sumMapNumberValue() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 一発で書いてもらえた
+        double total = colorBoxList.stream()
+                .filter(colorBox -> "purple".equals(colorBox.getColor().getColorName()))
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
+                .filter(content -> content instanceof Map)
+                .map(content -> (Map<?, ?>) content)
+                .filter(map -> map.entrySet().stream()
+                        .allMatch(entry -> entry.getKey() instanceof String && entry.getValue() != null))
+                .flatMap(map -> map.entrySet().stream())
+                .map(Map.Entry::getValue)
+                .filter(value -> value instanceof Number || value instanceof String)
+                .mapToDouble(value -> {
+                    if (value instanceof Number) {
+                        return ((Number) value).doubleValue();
+                    } else {
+                        try {
+                            return Double.parseDouble((String) value);
+                        } catch (NumberFormatException e) {
+                            return 0.0;
+                        }
+                    }
+                })
+                .sum();
+
+        log("Total sum of number values in purple ColorBox maps: " + total);
     }
 }

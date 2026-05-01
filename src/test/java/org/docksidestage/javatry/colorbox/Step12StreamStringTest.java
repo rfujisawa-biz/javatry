@@ -129,55 +129,61 @@ public class Step12StreamStringTest extends PlainTestCase {
     public void test_length_findSecondMax_contentToString() {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (!colorBoxList.isEmpty()) {
-            // 初手に出してきた、filterでStringのみを絞っているので間違い
-//            int secondMax = colorBoxList.stream()
-//                    .flatMap(box -> box.getSpaceList().stream())
-//                    .filter(space -> space.getContent() instanceof String)
-//                    .mapToInt(space -> space.getContent().toString().length())
-//                    .sorted()
-//                    .skip(1)
-//                    .findFirst()
-//                    .orElse(0);
-            int secondMax = colorBoxList.stream()
-                .flatMap(box -> box.getSpaceList().stream())
-                .filter(space -> space.getContent() != null)
-                .map(space -> space.getContent().toString())
-                .mapToInt(str -> str.length()) // #1on1: ここでIntStreamに型が変わってる
-                .boxed() // #1on1: ただ、結局Integerで扱いたいので Stream<Integer> に戻してる (reverseができないため)
-                .sorted(Comparator.reverseOrder()) // 降順にソート
-                .skip(1) // 先頭をスキップして二番目を取得
-                .findFirst()
-                .orElse(0);
-
-            // #1on1: 論理検証:
-            // A. 10 -> 9* -> 8 => orElseGet() で先頭を取って 9 になる
-            // B. 10(後) -> 10(先)* ->  8 => skip(1) で 10(後) が採用される v
-            // C. 10(後) -> 10(先)* -> 10(先先) => skip(1) で 10(先) が採用される o
-            // D. 10(後) -> 10(先)* -> 10(先先) -> 10(先先先) => skip(1) で 10(先先) が採用される v
-            // E. 10(後) ->  9(後)* ->  9(先) => skip(1) で 9(後) が採用される o
-            // F. 10(後) ->  9(後)* ->  9(先) -> 9(先先) => skip(1) で 9(先) が採用される v
-            //
-            // filterしてからreverseOrderしてskip1なら、常に10(先)が来るかな？
-            //
-            // TODO fujisawa ↑の修正を (UnitTestもあるといいかも) by jflute (2026/03/19)
-            String secondMaxString = colorBoxList.stream()
+            List<Object> contentList = colorBoxList.stream()
                     .flatMap(box -> box.getSpaceList().stream())
-                    .filter(space -> space.getContent() != null)
-                    .map(space -> space.getContent().toString())
-                    .filter(str -> str.length() == secondMax)
-                    .skip(1) // 最初に同率首位/同率2位の対応をしている
-                    .findFirst()
-                    .orElseGet(() -> colorBoxList.stream() // 単独2位のときの処理
-                            .flatMap(box -> box.getSpaceList().stream())
-                            .filter(space -> space.getContent() != null)
-                            .map(space -> space.getContent().toString())
-                            .filter(str -> str.length() == secondMax)
-                            .findFirst()
-                            .orElse(null));
+                    .map(space -> space.getContent())
+                    .collect(Collectors.toList());
+            String secondMaxString = findSecondMaxContentString(contentList);
+            int secondMax = secondMaxString != null ? secondMaxString.length() : 0;
             log("secondMaxLength: " + secondMax + ", secondMaxString: " + secondMaxString);
         } else {
             log("colorBoxList is empty!");
         }
+        // #1on1: 論理検証:
+        // A. 10 -> 9* -> 8 => orElseGet() で先頭を取って 9 になる
+        // B. 10(後) -> 10(先)* ->  8 => skip(1) で 10(後) が採用される v
+        // C. 10(後) -> 10(先)* -> 10(先先) => skip(1) で 10(先) が採用される o
+        // D. 10(後) -> 10(先)* -> 10(先先) -> 10(先先先) => skip(1) で 10(先先) が採用される v
+        // E. 10(後) ->  9(後)* ->  9(先) => skip(1) で 9(後) が採用される o
+        // F. 10(後) ->  9(後)* ->  9(先) -> 9(先先) => skip(1) で 9(先) が採用される v
+        //
+        // filterしてからreverseOrderしてskip1なら、常に10(先)が来るかな？
+        //
+        // TODO done? fujisawa ↑の修正を (UnitTestもあるといいかも) by jflute (2026/03/19)
+        // さっきやってもらってまだ確認しきれてません。。。
+    }
+
+    public void test_length_findSecondMax_contentToString_sameTopLength_usesFormerTopAsSecond() {
+        List<Object> contentList = Arrays.asList("earth", "venus", "io");
+
+        assertEquals("earth", findSecondMaxContentString(contentList));
+    }
+
+    public void test_length_findSecondMax_contentToString_pluralTopTie_returnsSecondLatest() {
+        List<Object> contentList = Arrays.asList("alpha", "bravo", "cider", "go");
+
+        assertEquals("bravo", findSecondMaxContentString(contentList));
+    }
+
+    public void test_length_findSecondMax_contentToString_sameSecondLength_usesLatterOne() {
+        List<Object> contentList = Arrays.asList("longest", "apple", "grape", "fig");
+
+        assertEquals("grape", findSecondMaxContentString(contentList));
+    }
+
+    public void test_length_findSecondMax_contentToString_nonStringAndNull_areHandled() {
+        List<Object> contentList = Arrays.asList(null, 12, new Object() {
+            @Override
+            public String toString() {
+                return "bridge";
+            }
+        }, "sun");
+
+        assertEquals("sun", findSecondMaxContentString(contentList));
+    }
+
+    public void test_length_findSecondMax_contentToString_onlyOneCandidate_returnsNull() {
+        assertNull(findSecondMaxContentString(Collections.singletonList("only")));
     }
 
     /**
@@ -198,6 +204,22 @@ public class Step12StreamStringTest extends PlainTestCase {
         }
     }
 
+    private String findSecondMaxContentString(List<?> contentList) {
+        List<String> contentStringList = contentList.stream()
+                .filter(Objects::nonNull)
+                .map(content -> content instanceof String ? (String) content : content.toString())
+                .collect(Collectors.toList());
+
+        return IntStream.range(0, contentStringList.size())
+                .mapToObj(index -> new AbstractMap.SimpleEntry<>(index, contentStringList.get(index)))
+                .sorted(Comparator.<Map.Entry<Integer, String>>comparingInt(entry -> entry.getValue().length()).reversed()
+                        .thenComparing(Map.Entry.comparingByKey(Comparator.reverseOrder())))
+                .skip(1)
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
     // ===================================================================================
     //                                                                      Pickup Methods
     //                                                                      ==============
@@ -207,7 +229,7 @@ public class Step12StreamStringTest extends PlainTestCase {
      */
     public void test_startsWith_findFirstWord() {
         // #1on1: これはこれで一つの実装で、箱が2つあった場合は最初のやつを優先
-        // TODO fujisawa ただ、step11だと、箱が2つあった場合は両方ログに出すようにしている by jflute (2026/03/19)
+        // TODO done fujisawa ただ、step11だと、箱が2つあった場合は両方ログに出すようにしている by jflute (2026/03/19)
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
 //        if (!colorBoxList.isEmpty()) {
 //            String answer = colorBoxList.stream()
@@ -302,28 +324,28 @@ public class Step12StreamStringTest extends PlainTestCase {
         }
     }
 
-    // TODO fujisawa colorBoxIndex は、すでに + 1 された Number 的なものなので、colorBoxNumber の方が良さそう by jflute (2026/04/17)
-    private int handleGuardianBoxTextLength(YourPrivateRoom.GuardianBox guardianBox, int colorBoxIndex) {
+    // TODO done fujisawa colorBoxIndex は、すでに + 1 された Number 的なものなので、colorBoxNumber の方が良さそう by jflute (2026/04/17)
+    private int handleGuardianBoxTextLength(YourPrivateRoom.GuardianBox guardianBox, int colorBoxNumber) {
         guardianBox.wakeUp();
         try {
             guardianBox.allowMe();
         } catch (IllegalStateException e) { // 現状では起きなくても、Step11と同じく将来の変化を追いやすくする
-            log("Exception occurred on colorBox " + colorBoxIndex + " in authorization: " + e.getMessage());
+            log("Exception occurred on colorBox " + colorBoxNumber + " in authorization: " + e.getMessage());
             return 0;
         }
         try {
             guardianBox.open();
         } catch (IllegalStateException e) {
-            log("Exception occurred on colorBox " + colorBoxIndex + " in opening: " + e.getMessage());
+            log("Exception occurred on colorBox " + colorBoxNumber + " in opening: " + e.getMessage());
             return 0;
         }
         try {
             return guardianBox.getText().length();
         } catch (IllegalStateException e) {
-            log("Exception occurred on colorBox " + colorBoxIndex + " in getting text: " + e.getMessage());
+            log("Exception occurred on colorBox " + colorBoxNumber + " in getting text: " + e.getMessage());
             return 0;
         } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
-            log("Text not found in colorBox " + colorBoxIndex + ": " + e.getMessage());
+            log("Text not found in colorBox " + colorBoxNumber + ": " + e.getMessage());
             return 0;
         }
     }
@@ -347,7 +369,44 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスの中に入っている java.util.Map を "map:{ key = value ; key = value ; ... }" という形式で表示すると？)
      */
     public void test_showMap_flat() {
-        // TODO つぎ
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        colorBoxList.stream()
+                .flatMap(box -> box.getSpaceList().stream())
+                .filter(space -> space.getContent() instanceof Map)
+                .map(space -> (Map<?, ?>) space.getContent())
+                .forEach(map ->
+                    log(formatMapNested(map))
+                );
+    }
+
+    private String formatMapNested(Map<?, ?> map) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("map:{ ");
+        boolean first = true;
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (!first) {
+                sb.append(" ; ");
+            }
+            first = false;
+
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            sb.append(key).append(" = ");
+
+            if (value instanceof Map) {
+                Map<?, ?> nestedMap = (Map<?, ?>) value;
+                sb.append(formatMapNested(nestedMap));
+            } else {
+                sb.append(value);
+            }
+        }
+        sb.append(" }");
+        return sb.toString();
     }
 
     /**
@@ -355,6 +414,20 @@ public class Step12StreamStringTest extends PlainTestCase {
      * (カラーボックスの中に入っている java.util.Map を "map:{ key = value ; key = map:{ key = value ; ... } ; ... }" という形式で表示すると？)
      */
     public void test_showMap_nested() {
+        // test_showMap_flatが実装済みだったので、一発で実装してもらえた
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        colorBoxList.stream()
+                .flatMap(box -> box.getSpaceList().stream())
+                .filter(space -> space.getContent() instanceof Map)
+                .map(space -> (Map<?, ?>) space.getContent())
+                .forEach(map ->
+                    log(formatMapNested(map))
+                );
     }
 
     // ===================================================================================

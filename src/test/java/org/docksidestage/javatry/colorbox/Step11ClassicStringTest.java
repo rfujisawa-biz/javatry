@@ -302,7 +302,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
     // ここでは、AIが最初に一番下の部分をtry-catchなしで書いてきた。
     // getTextが例外を投げる可能性があったため、try-catchに手動変更。
     // メソッドを追いかけて最終的にこの形になりました。
-    // colorBoxIndexを追加したのは、どのcolorBoxで例外が発生したかをわかりやすくするためです。
+    // colorBoxNumberを追加したのは、どのcolorBoxで例外が発生したかをわかりやすくするためです。
     public void test_welcomeToGuardian() {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (colorBoxList.isEmpty()) {
@@ -310,11 +310,11 @@ public class Step11ClassicStringTest extends PlainTestCase {
             return;
         }
 
-        // TODO fujisawa 0で初期化しているけども、実質的にNo役割なので、colorBoxNumber とかの方が良いかなと by jflute (2026/04/17)
-        int colorBoxIndex = 0;
+        // TODO done fujisawa 0で初期化しているけども、実質的にNo役割なので、colorBoxNumber とかの方が良いかなと by jflute (2026/04/17)
+        int colorBoxNumber = 0;
         int sum = 0;
         for (ColorBox colorBox : colorBoxList) {
-            colorBoxIndex++;
+            colorBoxNumber++;
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
                 Object content = boxSpace.getContent();
                 if (content instanceof GuardianBox) {
@@ -329,13 +329,13 @@ public class Step11ClassicStringTest extends PlainTestCase {
                         // #1on1: 続行スタイルにしているのは意図している (一方でコメントあると良い) (2026/03/06)
                         // #1on1: 不具合の時にすぐ落とすか？続行するか？どっちがオーソドックスか？(業務の内容次第) (2026/03/06)
                         // colorBoxIndex で後で特定できるようにしているのGoodです。
-                        log("Exception occurred on colorBox " + colorBoxIndex + " in authorization: " + e.getMessage());
+                        log("Exception occurred on colorBox " + colorBoxNumber + " in authorization: " + e.getMessage());
                         break; // 途中で想定外で開けられなくてもやれるだけやるという業務
                     }
                     try {
                         guardianBox.open();
                     } catch (IllegalStateException e) {
-                        log("Exception occurred on colorBox " + colorBoxIndex + "in opening: " + e.getMessage());
+                        log("Exception occurred on colorBox " + colorBoxNumber + "in opening: " + e.getMessage());
                         break;
                     }
                     // done fujisawa IllegalStateExceptionはバグ、TextNotFoundは正常なレアケース by jflute (2026/03/06)
@@ -345,10 +345,10 @@ public class Step11ClassicStringTest extends PlainTestCase {
                         String text = guardianBox.getText();
                         sum += text.length();
                     } catch (IllegalStateException e) {
-                        log("Exception occurred on colorBox " + colorBoxIndex + " in getting text: " + e.getMessage());
+                        log("Exception occurred on colorBox " + colorBoxNumber + " in getting text: " + e.getMessage());
                         break;
                     } catch (YourPrivateRoom.GuardianBoxTextNotFoundException e) {
-                        log("Text not found in colorBox " + colorBoxIndex + ": " + e.getMessage());
+                        log("Text not found in colorBox " + colorBoxNumber + ": " + e.getMessage());
                     }
                 }
             }
