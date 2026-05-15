@@ -49,6 +49,7 @@ public class Step14DateTest extends PlainTestCase {
             return;
         }
 
+        // #1on1: AIが次のエクササイズの問題と紛れたのかもしれない (2026/05/15)
 //        for (ColorBox colorBox : colorBoxList) {
 //            if (colorBox.getColor().getColorName().equals("yellow")) { // なぜか黄色いカラーボックスに限定してきた(次の問題が黄色指定なのですね)
 //                Set<String> yellowDateSet = colorBox.getColor().getColorSet(); // getColorSet()という謎のメソッドを出してきた
@@ -65,7 +66,6 @@ public class Step14DateTest extends PlainTestCase {
                     LocalDate date = (LocalDate) boxSpace.getContent();
                     log("content transformed: " + date.format(DateTimeFormatter.ofPattern("yyyy+MM+dd")));
                 }
-
             }
         }
     }
@@ -106,6 +106,7 @@ public class Step14DateTest extends PlainTestCase {
                 continue;
             }
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                  // #1on1: 逆にこっちは上のエクササイズ向け？ (2026/05/15)
 //                if (boxSpace.getContent() instanceof LocalDate) {
 //                    log("content: " + boxSpace.getContent());
 //                    LocalDate date = (LocalDate) boxSpace.getContent();
@@ -126,9 +127,18 @@ public class Step14DateTest extends PlainTestCase {
                     for (Object obj : set) {
                         if (obj instanceof String) {
                             String dateStr = (String) obj;
+                            // #1on1: ここで2O19を弾いている (2026/05/15)
+                            // try/catchでもいいかもしれないけど、事前にチェックできるに越したことはない。
                             if (!dateStr.matches("[0-9]{4}/[0-9]{2}/[0-9]{2}")) {
                                 continue;
                             }
+                            // ここでは、"2026/05/15" 形式の文字列だけになっている。
+                            // #1on1: まだ、parseで例外で落ちる可能性がある。 (2026/05/15)
+                            // 2026/5/15 だと matches() で弾かれる。これはこれで気にしないといけない。
+                            // 2026/00/15 とか by ふじさわさん
+                            // ってこと考えると、結局 try/catch は必要なのかなと。
+                            // ちなみに、HandyDateの紹介も
+                            // TODO fujisawa 事前チェックはありつつ、try/catchもあった方が良い by jflute (2026/05/15)
                             LocalDate date = LocalDate.parse(dateStr, formatter);
                             String dateString = date.toString(); // toStringは不要な気がするけど一応やっておく
                             log("parsed date: " + dateString);
@@ -165,6 +175,13 @@ public class Step14DateTest extends PlainTestCase {
                 .map(LocalDate::toString)
                 .forEach(dateString -> log("parsed date: " + dateString));
     } // なんか長いな。。
+    // #1on1: 確かに事務的なfilter/mapで行を消化してしまいがち (2026/05/15)
+    // 個人的には、空行開けたりコメント入れたりで処理のまとまりを表現したくなっちゃうけど...
+    // あまりそれをやってるひとはいないかも。
+    
+    // #1on1: ベタ書きとStreamの可読性の違い (2026/05/15)
+    // ベタ書きは無駄も多いけど構造で直感的な面もある。
+    // Streamはすっきりしてるけど全部フラットで箇条書き文章読んでみるみたいな、読めばわかる。
 
     /**
      * What is total of month numbers of date in color-boxes? <br>
@@ -278,6 +295,10 @@ public class Step14DateTest extends PlainTestCase {
         log(answer);
     }
 
+    // #1on1: Streamの見た目の流れを壊さずにprivateメソッドするのGood (2026/05/15)
+    // 一方で、もうちょいうまくスッキリさせられないだろうか？ by ふじさわさん
+    // setがあるので、どこかのその分岐を解決してあげないといけないから、その汚れ役がここになるのかなと。
+    // 汚れ役が散らばってると全体が汚くなるけど、汚れ役をまとめて、表舞台は綺麗にしているとも言える。
     private Stream<LocalDate> toDateStream(Object content, DateTimeFormatter formatter) {
         if (content instanceof LocalDate) {
             return Stream.of((LocalDate) content);

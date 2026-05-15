@@ -16,7 +16,10 @@
 package org.docksidestage.javatry.colorbox;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
@@ -368,7 +371,7 @@ public class Step13NumberTest extends PlainTestCase {
         log(maxKeys);
     }
 
-    // TODO jflute 次回1on1にて見る (2026/05/01)
+    // done jflute 次回1on1にて見る (2026/05/01)
     /**
      * What is total of number or number-character values in Map in purple color-box? <br> 
      * (purpleのカラーボックスに入ってる Map の中のvalueの数値・数字の合計は？)
@@ -396,6 +399,10 @@ public class Step13NumberTest extends PlainTestCase {
                     if (value instanceof Number) {
                         return ((Number) value).doubleValue();
                     } else {
+                        // #1on1: 明らかにparseできない文字列もparseに入っちゃうけど... (2026/05/15)
+                        // それを完璧に除外するのは案外難しい。
+                        // また、parseできるかどうか？をbooleanで事前に判定するメソッドもない。
+                        // 例外newはほんとはちょっと重いので少々避けたいけど、この場合仕方ない。
                         try {
                             return Double.parseDouble((String) value);
                         } catch (NumberFormatException e) {

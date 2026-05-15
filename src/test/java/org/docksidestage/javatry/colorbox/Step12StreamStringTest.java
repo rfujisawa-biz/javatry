@@ -153,7 +153,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         // さっきやってもらってまだ確認しきれてません。。。
     }
 
-    // TODO done fujisawa 場所、ちょっと移動。近いところに by jflute (2026/05/01)
+    // done fujisawa 場所、ちょっと移動。近いところに by jflute (2026/05/01)
     private String findSecondMaxContentString(List<?> contentList) {
         List<String> contentStringList = contentList.stream()
                 .filter(Objects::nonNull)
