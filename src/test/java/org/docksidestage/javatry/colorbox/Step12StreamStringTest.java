@@ -153,6 +153,24 @@ public class Step12StreamStringTest extends PlainTestCase {
         // さっきやってもらってまだ確認しきれてません。。。
     }
 
+    // TODO done fujisawa 場所、ちょっと移動。近いところに by jflute (2026/05/01)
+    private String findSecondMaxContentString(List<?> contentList) {
+        List<String> contentStringList = contentList.stream()
+                .filter(Objects::nonNull)
+                .map(content -> content instanceof String ? (String) content : content.toString())
+                .collect(Collectors.toList());
+
+        return IntStream.range(0, contentStringList.size())
+                .mapToObj(index -> new AbstractMap.SimpleEntry<>(index, contentStringList.get(index)))
+                .sorted(Comparator.<Map.Entry<Integer, String>>comparingInt(entry -> entry.getValue().length())
+                        .reversed()
+                        .thenComparing(Map.Entry.comparingByKey(Comparator.reverseOrder())))
+                .skip(1)
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
     public void test_length_findSecondMax_contentToString_sameTopLength_usesFormerTopAsSecond() {
         List<Object> contentList = Arrays.asList("earth", "venus", "io");
 
@@ -202,24 +220,6 @@ public class Step12StreamStringTest extends PlainTestCase {
         } else {
             log("colorBoxList is empty!");
         }
-    }
-
-    // TODO fujisawa 場所、ちょっと移動。近いところに by jflute (2026/05/01)
-    private String findSecondMaxContentString(List<?> contentList) {
-        List<String> contentStringList = contentList.stream()
-                .filter(Objects::nonNull)
-                .map(content -> content instanceof String ? (String) content : content.toString())
-                .collect(Collectors.toList());
-
-        return IntStream.range(0, contentStringList.size())
-                .mapToObj(index -> new AbstractMap.SimpleEntry<>(index, contentStringList.get(index)))
-                .sorted(Comparator.<Map.Entry<Integer, String>>comparingInt(entry -> entry.getValue().length())
-                        .reversed()
-                        .thenComparing(Map.Entry.comparingByKey(Comparator.reverseOrder())))
-                .skip(1)
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
     }
 
     // ===================================================================================
