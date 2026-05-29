@@ -15,8 +15,13 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +29,7 @@ import java.util.stream.Stream;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.space.BoxSpace;
+import org.docksidestage.bizfw.colorbox.space.DoorBoxSpace;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
 
@@ -139,7 +145,12 @@ public class Step14DateTest extends PlainTestCase {
                             // ってこと考えると、結局 try/catch は必要なのかなと。
                             // ちなみに、HandyDateの紹介も
                             // TODO fujisawa 事前チェックはありつつ、try/catchもあった方が良い by jflute (2026/05/15)
-                            LocalDate date = LocalDate.parse(dateStr, formatter);
+                            LocalDate date;
+                            try {
+                                date = LocalDate.parse(dateStr, formatter);
+                            } catch (DateTimeParseException e) {
+                                continue;
+                            }
                             String dateString = date.toString(); // toStringは不要な気がするけど一応やっておく
                             log("parsed date: " + dateString);
                         }
@@ -321,6 +332,52 @@ public class Step14DateTest extends PlainTestCase {
      * (yellowのカラーボックスに入っている二つの日付は何日離れている？)
      */
     public void test_diffDay() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // ↓ 最初に出てきた. 同じ日付になってしまうのでは？
+//        int total = 0;
+//        for (ColorBox colorBox : colorBoxList) {
+//            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+//                if (boxSpace.getContent() instanceof LocalDate) {
+//                    LocalDate date1 = (LocalDate) boxSpace.getContent();
+//                    log("date1: " + date1);
+//                    for (BoxSpace boxSpace2 : colorBox.getSpaceList()) {
+//                        if (boxSpace2.getContent() instanceof LocalDate) {
+//                            LocalDate date2 = (LocalDate) boxSpace2.getContent();
+//                            log("date2: " + date2);
+//                            total += (int) Math.abs(date1.toEpochDay() - date2.toEpochDay());
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        List<LocalDate> dateList = new ArrayList<>();
+        for (ColorBox colorBox : colorBoxList) {
+            if (!"yellow".equals(colorBox.getColor().getColorName())) {
+                continue;
+            }
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                toDateStream(boxSpace.getContent(), formatter).forEach(dateList::add);
+            }
+        }
+        if (dateList.size() < 2) {
+            log("two dates are not found!");
+            return;
+        }
+
+        LocalDate date1 = dateList.get(0);
+        LocalDate date2 = dateList.get(1);
+        log("date1: " + date1);
+        log("date2: " + date2);
+
+        long diffDay = Math.abs(ChronoUnit.DAYS.between(date1, date2));
+        log("> " + diffDay);
     }
 
     /**
@@ -333,6 +390,96 @@ public class Step14DateTest extends PlainTestCase {
      * redのカラーボックスに入っているLong型を日数として足して、カラーボックスに入っているリストの中のBigDecimalの整数値が3の小数点第一位の数を日数として引いた日付は？)
      */
     public void test_birthdate() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 1. yellowのカラーボックスに入っているLocalDateを抽出し、targetDate変数に代入する
+        // 2. yellowのカラーボックスに入っているLocalDateTimeの秒数をtargetDateの月数に足す
+        // 3. redのカラーボックスに入っているLong型を日数としてtargetDateに足す
+        // 4. redのカラーボックスに入っているリストの中のBigDecimalの整数値が3の小数点第一位の数をtargetDateの日数から引く
+        // 5. 日付を出力する
+        // 問題文の読解が難しかったので↑のコメントをつけて、実装させた
+
+        LocalDate targetDate = null;
+        for (ColorBox colorBox : colorBoxList) {
+            if (!"yellow".equals(colorBox.getColor().getColorName())) {
+                continue;
+            }
+
+            LocalDate foundDate = null;
+            Integer second = null;
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof LocalDate) {
+                    foundDate = (LocalDate) content;
+                }
+                if (content instanceof LocalDateTime) {
+                    second = ((LocalDateTime) content).getSecond();
+                }
+            }
+            if (foundDate != null && second != null) {
+                targetDate = foundDate.plusMonths(second);
+                break;
+            }
+        }
+        if (targetDate == null) {
+            log("yellow LocalDate or LocalDateTime is not found!");
+            return;
+        }
+
+        Long redLong = null;
+        for (ColorBox colorBox : colorBoxList) {
+            if (!"red".equals(colorBox.getColor().getColorName())) {
+                continue;
+            }
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Long) {
+                    redLong = (Long) content;
+                    break;
+                }
+            }
+            if (redLong != null) {
+                break;
+            }
+        }
+        if (redLong == null) {
+            log("red Long number is not found!");
+            return;
+        }
+        targetDate = targetDate.plusDays(redLong);
+
+        Integer subtractDay = null;
+        outer: for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (!(content instanceof List<?>)) {
+                    continue;
+                }
+                for (Object element : (List<?>) content) {
+                    if (!(element instanceof BigDecimal)) {
+                        continue;
+                    }
+
+                    BigDecimal decimal = (BigDecimal) element;
+                    if (decimal.intValue() != 3) {
+                        continue;
+                    }
+                    // 3.x の x を日数として使う
+                    subtractDay = decimal.abs().remainder(BigDecimal.ONE).movePointRight(1).intValue() % 10;
+                    break outer;
+                }
+            }
+        }
+        if (subtractDay == null) {
+            log("target BigDecimal is not found!");
+            return;
+        }
+
+        log(targetDate.minusDays(subtractDay));
     }
 
     /**
@@ -340,5 +487,51 @@ public class Step14DateTest extends PlainTestCase {
      * (カラーボックスに入っているLocalTimeの秒は？)
      */
     public void test_beReader() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 最初に出してきたが、ログが出ない
+//        for (ColorBox colorBox : colorBoxList) {
+//            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+//                if (boxSpace.getContent() instanceof LocalTime) {
+//                    LocalTime localTime = (LocalTime) boxSpace.getContent();
+//                    log(localTime.getSecond());
+//                }
+//            }
+//        }
+        // AIに聞いてみたら、DoorColorBoxが存在する可能性がある。とのこと
+        // ↓修正してもらった
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = readContent(boxSpace);
+                if (content instanceof LocalTime) {
+                    LocalTime localTime = (LocalTime) content;
+                    log(localTime.getSecond());
+                    return;
+                }
+            }
+        }
+
+        log("LocalTime is not found!");
+    }
+
+    private Object readContent(BoxSpace boxSpace) {
+        if (!(boxSpace instanceof DoorBoxSpace)) {
+            return boxSpace.getContent();
+        }
+        DoorBoxSpace doorBoxSpace = (DoorBoxSpace) boxSpace;
+        if (doorBoxSpace.isOpen()) {
+            return doorBoxSpace.getContent();
+        }
+        doorBoxSpace.openTheDoor();
+        try {
+            return doorBoxSpace.getContent();
+        } finally {
+            doorBoxSpace.closeTheDoor();
+        }
     }
 }

@@ -15,6 +15,11 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.util.List;
+
+import org.docksidestage.bizfw.colorbox.ColorBox;
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -33,6 +38,21 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (カラーボックスに入っているthrowできるオブジェクトのクラス名は？)
      */
     public void test_throwable() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Throwable) { // 最初に出てきた時に instanceof Exceptionで確認していたので修正
+                    Throwable cause = (Throwable) content;
+                    log("content is Throwable: " + cause.getClass().getName());
+                }
+            }
+        }
     }
 
     /**
@@ -40,6 +60,35 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (カラーボックスに入っている例外オブジェクトのネストした例外インスタンスのメッセージは？)
      */
     public void test_nestedException() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 最初に出てきたのは↑の問題と同じ
+//        for (ColorBox colorBox : colorBoxList) {
+//            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+//                Object content = boxSpace.getContent();
+//                if (content instanceof Exception) {
+//                    Exception cause = (Exception) content;
+//                    log("content is Exception: " + cause.getMessage());
+//                }
+//            }
+//        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof Exception) {
+                    Exception cause = (Exception) content;
+                    Throwable nested = cause.getCause();
+                    if (nested != null) {
+                        log("Nested Message: " + nested.getMessage());
+                    }
+                }
+            }
+        }
     }
 
     // ===================================================================================
@@ -50,6 +99,29 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (カラーボックスに入っているFavoriteProviderインターフェースのjustHere()メソッドの戻り値は？)
      */
     public void test_interfaceCall() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // ↓ なぜか黄色のカラーボックスに絞っている
+//        for (ColorBox colorBox : colorBoxList) {
+//            if (colorBox.getColor().getColorName().equals("yellow")) {
+//                YourPrivateRoom.FavoriteProvider favoriteProvider = (YourPrivateRoom.FavoriteProvider) colorBox.getSpaceList().get(0).getContent();
+//                log("favoriteProvider.justHere(): " + favoriteProvider.justHere());
+//            }
+//        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof YourPrivateRoom.FavoriteProvider) {
+                    YourPrivateRoom.FavoriteProvider favoriteProvider = (YourPrivateRoom.FavoriteProvider) content;
+                    log("favoriteProvider.justHere(): " + favoriteProvider.justHere());
+                }
+            }
+        }
     }
 
     // ===================================================================================

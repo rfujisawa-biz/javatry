@@ -15,6 +15,7 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -526,6 +527,80 @@ public class Step11ClassicStringTest extends PlainTestCase {
         // ライセンスの話。GPLとかだとちょっと気をつけないと。
     }
 
+    private Map<String, Object> parseMapNestedManually(String text) {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        if (!isMapText(text)) {
+            return result;
+        }
+
+        String content = text.substring(5, text.length() - 1).trim();
+        if (content.isEmpty()) {
+            return result;
+        }
+
+        for (String pair : splitMapPairs(content)) {
+            String trimmedPair = pair.trim();
+            if (trimmedPair.isEmpty()) {
+                continue;
+            }
+
+            int equalIndex = findTopLevelEqualIndex(trimmedPair);
+            if (equalIndex >= 0) {
+                String key = trimmedPair.substring(0, equalIndex).trim();
+                String valueText = trimmedPair.substring(equalIndex + 1).trim();
+                Object value = isMapText(valueText) ? parseMapNestedManually(valueText) : valueText;
+                result.put(key, value);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean isMapText(String text) {
+        return text != null && text.startsWith("map:{") && text.endsWith("}");
+    }
+
+    private List<String> splitMapPairs(String content) {
+        List<String> pairList = new ArrayList<>();
+        int beginIndex = 0;
+        int nestLevel = 0;
+
+        for (int i = 0; i < content.length(); i++) {
+            if (isMapBeginAt(content, i)) {
+                nestLevel++;
+                i += "map:{".length() - 1;
+            } else if (content.charAt(i) == '}') {
+                nestLevel--;
+            } else if (content.charAt(i) == ';' && nestLevel == 0) {
+                pairList.add(content.substring(beginIndex, i));
+                beginIndex = i + 1;
+            }
+        }
+        pairList.add(content.substring(beginIndex));
+
+        return pairList;
+    }
+
+    private int findTopLevelEqualIndex(String pair) {
+        int nestLevel = 0;
+        for (int i = 0; i < pair.length(); i++) {
+            if (isMapBeginAt(pair, i)) {
+                nestLevel++;
+                i += "map:{".length() - 1;
+            } else if (pair.charAt(i) == '}') {
+                nestLevel--;
+            } else if (pair.charAt(i) == '=' && nestLevel == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean isMapBeginAt(String text, int index) {
+        return text.startsWith("map:{", index);
+    }
+
     /**
      * What string of toString() is converted from text of SecretBox class in both middle and lower spaces on the "white" color-box to java.util.Map? <br>
      * (whiteのカラーボックスのmiddleおよびlowerスペースに入っているSecretBoxクラスのtextをMapに変換してtoString()すると？)
@@ -546,11 +621,31 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     SecretBox lowerSecretBox = (SecretBox) lowerSpace.getContent();
                     String middleText = middleSecretBox.getText();
                     String lowerText = lowerSecretBox.getText();
-                    Map<String, String> map = parseMapManually(middleText + lowerText);
-                    log(map.toString()); // <- ここだけ最初に出してくれなかった
-                    for (Entry<String,String> entry : map.entrySet()) {
+
+                    //Map<String, String> map = parseMapManually(middleText + lowerText);
+                    //log(map.toString()); // <- ここだけ最初に出してくれなかった
+                    //for (Entry<String,String> entry : map.entrySet()) {
+                    //    String key = entry.getKey();
+                    //    String value = entry.getValue();
+                    //    log(key + " :: " + value);
+                    //}
+
+                    Map<String, Object> middleMap = parseMapNestedManually(middleText);
+                    Map<String, Object> lowerMap = parseMapNestedManually(lowerText);
+
+                    log("[middle]");
+                    log(middleMap.toString());
+                    for (Entry<String, Object> entry : middleMap.entrySet()) {
                         String key = entry.getKey();
-                        String value = entry.getValue();
+                        Object value = entry.getValue();
+                        log(key + " :: " + value);
+                    }
+
+                    log("[lower]");
+                    log(lowerMap.toString());
+                    for (Entry<String, Object> entry : lowerMap.entrySet()) {
+                        String key = entry.getKey();
+                        Object value = entry.getValue();
                         log(key + " :: " + value);
                     }
                 }
@@ -573,7 +668,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
         // o middleとlowerの結果が合流していて、shadow="musical }" が独立している。
         // o parseMapManually(middleText + lowerText); のところでドッキング
         
-        // TODO fujisawa こちらまだ実装中ということなので次回 by jflute (2026/03/19)
+        // TODO done? fujisawa こちらまだ実装中ということなので次回 by jflute (2026/03/19)
         
         // #1on1: AIコードエージェント時代のレビューのジレンマ話 (2026/03/19)
     }
