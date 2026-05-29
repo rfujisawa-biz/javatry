@@ -561,6 +561,9 @@ public class Step11ClassicStringTest extends PlainTestCase {
         return text != null && text.startsWith("map:{") && text.endsWith("}");
     }
 
+    // #1on1: 頑張って二人で理解してみた (2026/05/29)
+    // https://x.com/mizchi/status/2059567539878068246
+    // ブラックボックステストの価値が上がっている話。
     private List<String> splitMapPairs(String content) {
         List<String> pairList = new ArrayList<>();
         int beginIndex = 0;
@@ -668,7 +671,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
         // o middleとlowerの結果が合流していて、shadow="musical }" が独立している。
         // o parseMapManually(middleText + lowerText); のところでドッキング
         
-        // TODO done? fujisawa こちらまだ実装中ということなので次回 by jflute (2026/03/19)
+        // done? fujisawa こちらまだ実装中ということなので次回 by jflute (2026/03/19)
         
         // #1on1: AIコードエージェント時代のレビューのジレンマ話 (2026/03/19)
     }

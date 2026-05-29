@@ -144,7 +144,7 @@ public class Step14DateTest extends PlainTestCase {
                             // 2026/00/15 とか by ふじさわさん
                             // ってこと考えると、結局 try/catch は必要なのかなと。
                             // ちなみに、HandyDateの紹介も
-                            // TODO fujisawa 事前チェックはありつつ、try/catchもあった方が良い by jflute (2026/05/15)
+                            // done fujisawa 事前チェックはありつつ、try/catchもあった方が良い by jflute (2026/05/15)
                             LocalDate date;
                             try {
                                 date = LocalDate.parse(dateStr, formatter);
@@ -339,23 +339,36 @@ public class Step14DateTest extends PlainTestCase {
         }
 
         // ↓ 最初に出てきた. 同じ日付になってしまうのでは？
-//        int total = 0;
-//        for (ColorBox colorBox : colorBoxList) {
-//            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
-//                if (boxSpace.getContent() instanceof LocalDate) {
-//                    LocalDate date1 = (LocalDate) boxSpace.getContent();
-//                    log("date1: " + date1);
-//                    for (BoxSpace boxSpace2 : colorBox.getSpaceList()) {
-//                        if (boxSpace2.getContent() instanceof LocalDate) {
-//                            LocalDate date2 = (LocalDate) boxSpace2.getContent();
-//                            log("date2: " + date2);
-//                            total += (int) Math.abs(date1.toEpochDay() - date2.toEpochDay());
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        // #1on1: 上段と上段に関しては、0になって実質的スキップになるはずだが... (2026/05/29)
+        // 上段と中段やってから、中段と上段をやったら、abs()で両方プラスになって倍になるのでは？ by ふたり
+        // totalがミリ秒になっている？ by くぼ → いや、toEpochDay()は日数っぽい by ふじさわさん
+        // あと、二つyellowの絞りができてないのと、Setの対応ができてない。
+        int total = 0;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                // #1on1: LocalDateしか対象にしてなかったので、LocalDateTimeも対象にするようにした (2026/05/29)
+                if (content instanceof LocalDate || content instanceof LocalDateTime) {
+                    LocalDate date1 = content instanceof LocalDate ? (LocalDate) content : ((LocalDateTime)content).toLocalDate();
+                    log("date1: " + date1);
+                    for (BoxSpace boxSpace2 : colorBox.getSpaceList()) {
+                        Object content2 = boxSpace2.getContent();
+                        if (content2 instanceof LocalDate || content2 instanceof LocalDateTime) {
+                            LocalDate date2 = content2 instanceof LocalDate ? (LocalDate) content2 : ((LocalDateTime)content2).toLocalDate();
+                            log("date2: " + date2);
+                            total += (int) Math.abs(date1.toEpochDay() - date2.toEpochDay());
+                        }
+                    }
+                }
+            }
+        }
+        log("total: " + total); // 13434 (ちょうど倍になってる)
+        long betaniDashita = ChronoUnit.DAYS.between(LocalDate.of(1983, 4, 15), LocalDate.of(2001, 9, 4));
+        log(betaniDashita); // 6717
 
+        // #1on1: yellowが二つあって、別の互いのLocalDateで比較している (2026/05/29)
+        // まあここはそもそもデータのトラップがあったりするところではある。
+        // (同じ一つのyellowの中のLocalDateとLocalDateTimeの比較にはなってない)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         List<LocalDate> dateList = new ArrayList<>();
         for (ColorBox colorBox : colorBoxList) {
@@ -402,6 +415,7 @@ public class Step14DateTest extends PlainTestCase {
         // 4. redのカラーボックスに入っているリストの中のBigDecimalの整数値が3の小数点第一位の数をtargetDateの日数から引く
         // 5. 日付を出力する
         // 問題文の読解が難しかったので↑のコメントをつけて、実装させた
+        // #1on1: 人間が要件を分解して翻訳してあげたのGood (2026/05/29)
 
         LocalDate targetDate = null;
         for (ColorBox colorBox : colorBoxList) {
@@ -494,15 +508,16 @@ public class Step14DateTest extends PlainTestCase {
         }
 
         // 最初に出してきたが、ログが出ない
-//        for (ColorBox colorBox : colorBoxList) {
-//            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
-//                if (boxSpace.getContent() instanceof LocalTime) {
-//                    LocalTime localTime = (LocalTime) boxSpace.getContent();
-//                    log(localTime.getSecond());
-//                }
-//            }
-//        }
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                if (boxSpace.getContent() instanceof LocalTime) {
+                    LocalTime localTime = (LocalTime) boxSpace.getContent();
+                    log(localTime.getSecond());
+                }
+            }
+        }
         // AIに聞いてみたら、DoorColorBoxが存在する可能性がある。とのこと
+        // #1on1: That's 罠プログラム (2026/05/29)
         // ↓修正してもらった
 
         for (ColorBox colorBox : colorBoxList) {

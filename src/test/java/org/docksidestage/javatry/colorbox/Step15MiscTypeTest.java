@@ -53,6 +53,7 @@ public class Step15MiscTypeTest extends PlainTestCase {
                 }
             }
         }
+        // #1on1: Good (2026/05/29)
     }
 
     /**
@@ -77,6 +78,8 @@ public class Step15MiscTypeTest extends PlainTestCase {
 //            }
 //        }
 
+        // #1on1: forの二つは自分で書いて...AIに実装させた (2026/05/29)
+        // ネストがそもそもなんだろう？となってAIに聞いたら出てきた。
         for (ColorBox colorBox : colorBoxList) {
             for (BoxSpace boxSpace : colorBox.getSpaceList()) {
                 Object content = boxSpace.getContent();
@@ -106,6 +109,7 @@ public class Step15MiscTypeTest extends PlainTestCase {
         }
 
         // ↓ なぜか黄色のカラーボックスに絞っている
+        // #1on1: ごめんなさい、英語の方にyellowが入ってしまっている。
 //        for (ColorBox colorBox : colorBoxList) {
 //            if (colorBox.getColor().getColorName().equals("yellow")) {
 //                YourPrivateRoom.FavoriteProvider favoriteProvider = (YourPrivateRoom.FavoriteProvider) colorBox.getSpaceList().get(0).getContent();
