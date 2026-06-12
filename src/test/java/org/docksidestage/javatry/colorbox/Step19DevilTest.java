@@ -61,7 +61,11 @@ public class Step19DevilTest extends PlainTestCase {
         // 6. そのカラーボックスの色の長さを取得する
         // 7. カラーボックスの中から、色の長さが6.で取得した数字と同じカラーボックスを見つける
         // 8. そのカラーボックスの一番下のスペースに入っているものを取得する
-
+        
+        // #1on1: 1,2のステップはインライン補完、実際の実装は普通に実装してもらったのでプロセスが違う (2026/06/12)
+        // "6. そのカラーボックスの色の長さを取得する" が間違っているが...
+        // 実装のAIの方は、6が間違ってるよってコメントを残して、ただしい実装をした。
+        // つまり実装のAIの方は、元の問題文もしっかり読んで実装したと言える。
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         if (colorBoxList.isEmpty()) {
             log("colorBoxList is empty!");

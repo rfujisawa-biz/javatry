@@ -144,6 +144,7 @@ public class Step15MiscTypeTest extends PlainTestCase {
             return;
         }
 
+        // #1on1: AIに書かせると、途中で止まったりして、なので人間が背中を押してあげて書けた (2026/06/12)
         for (ColorBox colorBox : colorBoxList) {
             if (!"beige".equals(colorBox.getColor().getColorName())) {
                 continue; // beigeのカラーボックスに絞る
@@ -177,6 +178,14 @@ public class Step15MiscTypeTest extends PlainTestCase {
     public void test_lineNumber() {
         final AtomicInteger lineNumber = new AtomicInteger(-1);
 
+        // #1on1: StackTrace使って呼び出し情報を構築する話 e.g. DBFlute, Logback (2026/06/12)
+        // #1on1: 現場のSQLどこのかわからん話 (2026/06/12)
+        // DataDog, slowquery。
+        // LastaFluteのSQLにどこから呼び出したか？情報をコメントで常に入れてる話。
+        // AIに探させる話。
+        //
+        // #1on1: バインド変数のお話 (2026/06/12)
+        // SQLキャッシュの話、SQLインジェクションの話。
         List<ColorBox> colorBoxList = new YourPrivateRoom() {
             @Override
             protected StandardColorBox makeEighthColorBox() {
