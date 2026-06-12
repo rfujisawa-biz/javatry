@@ -15,13 +15,19 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.docksidestage.bizfw.colorbox.ColorBox;
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
  * The test of Devil with color-box, (try if you woke up Devil in StringTest) <br>
  * Show answer by log() for question of javadoc.
  * @author jflute
- * @author your_name_here
+ * @author rfujisawa-biz
  */
 public class Step19DevilTest extends PlainTestCase {
 
@@ -44,6 +50,122 @@ public class Step19DevilTest extends PlainTestCase {
      *  5. the question is what is in the lowest space of colorbox D?
      */
     public void test_too_long() {
+        // 最初にステップごとに整理した。1を書いたらAIが補完してくれた。
+        // 特に↓以上の指示はしていないので、各ステップでカラーボックスが複数あることは考えず、最初に見つかったものを対象にしている。
+
+        // 1. カラーボックスの中から、nullを含んでいるカラーボックスを見つける
+        // 2. そのカラーボックスの色の名前の3文字目の文字を取得する
+        // 3. カラーボックスの中から、色の名前が2.で取得した文字で終わっているカラーボックスを見つける
+        // 4. そのカラーボックスの深さの十の位の数字を取得する
+        // 5. カラー�ボックスの中から、スペースの中のリストの中で最初に見つかるBigDecimalの2nd decimal placeが4.で取得した数字と同じものを見つける
+        // 6. そのカラーボックスの色の長さを取得する
+        // 7. カラーボックスの中から、色の長さが6.で取得した数字と同じカラーボックスを見つける
+        // 8. そのカラーボックスの一番下のスペースに入っているものを取得する
+
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        // 1. カラーボックスの中から、nullを含んでいるカラーボックスを見つける
+        ColorBox nullContentColorBox = null;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                if (boxSpace.getContent() == null) {
+                    nullContentColorBox = colorBox;
+                    break;
+                }
+            }
+            if (nullContentColorBox != null) {
+                break;
+            }
+        }
+        if (nullContentColorBox == null) {
+            log("null content color-box is not found!");
+            return;
+        }
+
+        // 2. そのカラーボックスの色の名前の3文字目の文字を取得する
+        String nullContentColorName = nullContentColorBox.getColor().getColorName();
+        char thirdCharacter = nullContentColorName.charAt(2);
+
+        // 3. カラーボックスの中から、色の名前が2.で取得した文字で終わっているカラーボックスを見つける
+        ColorBox endsWithThirdCharacterColorBox = null;
+        for (ColorBox colorBox : colorBoxList) {
+            String colorName = colorBox.getColor().getColorName();
+            if (colorName.endsWith(String.valueOf(thirdCharacter))) {
+                endsWithThirdCharacterColorBox = colorBox;
+                break;
+            }
+        }
+        if (endsWithThirdCharacterColorBox == null) {
+            log("ends-with target color-box is not found!");
+            return;
+        }
+
+        // 4. そのカラーボックスの深さの十の位の数字を取得する
+        int depth = endsWithThirdCharacterColorBox.getSize().getDepth();
+        int tensPlaceOfDepth = depth / 10 % 10;
+
+        // 5. カラーボックスの中から、スペースの中のリストの中で最初に見つかるBigDecimalの2nd decimal placeが4.で取得した数字と同じものを見つける
+        BigDecimal targetDecimal = null;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (!(content instanceof List)) {
+                    continue;
+                }
+
+                List<?> contentList = (List<?>) content;
+                for (Object element : contentList) {
+                    if (!(element instanceof BigDecimal)) {
+                        continue;
+                    }
+
+                    BigDecimal decimal = (BigDecimal) element;
+                    int secondDecimalPlace = decimal.abs()
+                            .movePointRight(2)
+                            .intValue() % 10;
+                    if (secondDecimalPlace == tensPlaceOfDepth) {
+                        targetDecimal = decimal;
+                        break;
+                    }
+                }
+                if (targetDecimal != null) {
+                    break;
+                }
+            }
+            if (targetDecimal != null) {
+                break;
+            }
+        }
+        if (targetDecimal == null) {
+            log("target BigDecimal is not found!");
+            return;
+        }
+
+        // 6. そのBigDecimalの一の位の数字を取得する
+        int onesPlaceOfDecimal = targetDecimal.abs().intValue() % 10;
+
+        // 7. カラーボックスの中から、色の長さが6.で取得した数字と同じカラーボックスを見つける
+        ColorBox sameLengthColorBox = null;
+        for (ColorBox colorBox : colorBoxList) {
+            String colorName = colorBox.getColor().getColorName();
+            if (colorName.length() == onesPlaceOfDecimal) {
+                sameLengthColorBox = colorBox;
+                break;
+            }
+        }
+        if (sameLengthColorBox == null) {
+            log("same length color-box is not found!");
+            return;
+        }
+
+        // 8. そのカラーボックスの一番下のスペースに入っているものを取得する
+        List<BoxSpace> spaceList = sameLengthColorBox.getSpaceList();
+        Object lowerContent = spaceList.get(spaceList.size() - 1).getContent();
+        log(lowerContent);
     }
 
     // ===================================================================================
@@ -54,6 +176,7 @@ public class Step19DevilTest extends PlainTestCase {
      * ((このテストメソッドの中だけで無理やり)赤いカラーボックスの高さを160に変更して、BoxSizeをtoString()すると？)
      */
     public void test_looks_like_easy() {
+        
     }
 
     // ===================================================================================

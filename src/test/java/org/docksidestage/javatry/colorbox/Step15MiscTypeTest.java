@@ -16,8 +16,10 @@
 package org.docksidestage.javatry.colorbox;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
+import org.docksidestage.bizfw.colorbox.impl.StandardColorBox;
 import org.docksidestage.bizfw.colorbox.space.BoxSpace;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
@@ -136,6 +138,33 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (beigeのカラーボックスに入っているListの中のBoxedResortのBoxedStageのkeywordは？(値がなければ固定の"none"という値を))
      */
     public void test_optionalMapping() {
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        for (ColorBox colorBox : colorBoxList) {
+            if (!"beige".equals(colorBox.getColor().getColorName())) {
+                continue; // beigeのカラーボックスに絞る
+            }
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content instanceof List) {
+                    List<?> listContent = (List<?>) content;
+                    for (Object item : listContent) {
+                        if (item instanceof YourPrivateRoom.BoxedResort) {
+                            YourPrivateRoom.BoxedResort boxedResort = (YourPrivateRoom.BoxedResort) item;
+                            String keyword = boxedResort.getPark()
+                                    .flatMap(YourPrivateRoom.BoxedPark::getStage)
+                                    .map(YourPrivateRoom.BoxedStage::getKeyword)
+                                    .orElse("none");
+                            log(keyword);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // ===================================================================================
@@ -146,5 +175,26 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (getColorBoxList()メソッドの中のmakeEighthColorBox()メソッドを呼び出している箇所の行数は？)
      */
     public void test_lineNumber() {
+        final AtomicInteger lineNumber = new AtomicInteger(-1);
+
+        List<ColorBox> colorBoxList = new YourPrivateRoom() {
+            @Override
+            protected StandardColorBox makeEighthColorBox() {
+                for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+                    if (YourPrivateRoom.class.getName().equals(element.getClassName())
+                            && "getColorBoxList".equals(element.getMethodName())) {
+                        lineNumber.set(element.getLineNumber());
+                        break;
+                    }
+                }
+                return super.makeEighthColorBox();
+            }
+        }.getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        log(lineNumber.get());
     }
 }
