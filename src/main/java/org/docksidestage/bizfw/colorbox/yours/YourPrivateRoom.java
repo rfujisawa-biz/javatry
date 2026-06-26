@@ -186,7 +186,7 @@ public class YourPrivateRoom {
         set.add("2O19/04/22"); // super trap
         colorBox.getUpperSpace().setContent(set);
         colorBox.getMiddleSpace().setContent(new BittersweetMemorableException("nullsidestage", doyoulikeNullPointer()));
-        colorBox.getLowerSpace().setContent((FavoriteProvider) () -> "mystic");
+        colorBox.getLowerSpace().setContent((FavoriteProvider) () -> "mystic"); // ここか
         return colorBox;
     }
 

@@ -15,6 +15,7 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -180,7 +181,41 @@ public class Step19DevilTest extends PlainTestCase {
      * ((このテストメソッドの中だけで無理やり)赤いカラーボックスの高さを160に変更して、BoxSizeをtoString()すると？)
      */
     public void test_looks_like_easy() {
-        
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        ColorBox redColorBox = null;
+        for (ColorBox colorBox : colorBoxList) {
+            if ("red".equals(colorBox.getColor().getColorName())) {
+                redColorBox = colorBox;
+                break;
+            }
+        }
+
+        if (redColorBox == null) {
+            log("red color-box is not found!");
+            return;
+        }
+
+        // Change height to 160 forcibly
+        try {
+            Field heightField = redColorBox.getSize().getClass().getDeclaredField("height");
+            heightField.setAccessible(true); // こんなメソッドがあるのは怖い
+            heightField.setInt(redColorBox.getSize(), 160);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to change box height forcibly.", e);
+        }
+        log(redColorBox.getSize().toString());
+
+        // なぜこのような機能がJavaに導入されたのか、AIに聞いてみた
+        // Java は基本的には強いカプセル化を守る言語だが、フレームワーク・ツール・ランタイム基盤には、その壁を越えてメタ的に扱う能力が必要だった。 そのため reflection と、さらに深いアクセスのための setAccessible が入った、
+        // ただし、この仕組みは強力すぎるので、後年かなり制限されました。OpenJDK は、反射で JDK 内部要素に触れることがセキュリティと保守性を損なったと明言していて、Java 9 のモジュール導入以降は strong encapsulation を強め、setAccessible(true) でも開けないケースが増えました。
+        // JEP 403 では、その引き締めの理由として security と maintainability を挙げています。
+
+        // 今回は特にモジュールが保護されていなかったから、setAccessible(true) が使えた？
     }
 
     // ===================================================================================
@@ -191,5 +226,118 @@ public class Step19DevilTest extends PlainTestCase {
      * (カラーボックスに入っているFunctionalInterfaceアノテーションが付与されているインターフェースの引数なしのFunctionalメソッドの戻り値は？)
      */
     public void test_be_frameworker() {
+        /*
+        List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        Object functionalInterfaceInstance = null;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content != null && content.getClass().isAnnotationPresent(FunctionalInterface.class)) {
+                    functionalInterfaceInstance = content;
+                    break;
+                }
+            }
+            if (functionalInterfaceInstance != null) {
+                break;
+            }
+        }
+
+        if (functionalInterfaceInstance == null) {
+            log("FunctionalInterface instance is not found!");
+            return;
+        }
+
+        try {
+            java.lang.reflect.Method functionalMethod = null;
+            for (java.lang.reflect.Method method : functionalInterfaceInstance.getClass().getMethods()) {
+                if (method.isAnnotationPresent(java.lang.Override.class)) {
+                    continue;
+                }
+                if (java.lang.reflect.Modifier.isAbstract(method.getModifiers())) {
+                    functionalMethod = method;
+                    break;
+                }
+            }
+
+            if (functionalMethod == null) {
+                log("Functional method is not found!");
+                return;
+            }
+
+            Object returnValue = functionalMethod.invoke(functionalInterfaceInstance);
+            log(returnValue);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to invoke functional method.", e);
+        }
+        */
+        // ↑ 実行してみたが見つからず、間違ってそうなので、AIに聞いてみた
+        // いいえ。test_be_frameworker() は現状の実装だと正しくありません。
+        // 対象の見つけ方が違います
+        // Step19DevilTest.java では content.getClass().isAnnotationPresent(FunctionalInterface.class) を見ていますが、箱に入っているのはラムダ実体です。@FunctionalInterface が付いているのは実装クラスではなく FavoriteProvider インターフェース側です。実データは YourPrivateRoom.java にあり、注釈は YourPrivateRoom.java です。
+        // この条件だと functionalInterfaceInstance は見つからず、"FunctionalInterface instance is not found!" になりやすいです。
+        //
+        // functional method の取り方も違います
+        // Step19DevilTest.java で functionalInterfaceInstance.getClass().getMethods() から abstract method を探していますが、ラムダの実装クラス上ではそのメソッドは abstract ではありません。@Override 判定もここでは意味が薄いです。見るべきなのは「そのオブジェクトが実装している interface」です。
+
+    List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
+        if (colorBoxList.isEmpty()) {
+            log("colorBoxList is empty!");
+            return;
+        }
+
+        Object functionalInterfaceInstance = null;
+        java.lang.reflect.Method functionalMethod = null;
+        for (ColorBox colorBox : colorBoxList) {
+            for (BoxSpace boxSpace : colorBox.getSpaceList()) {
+                Object content = boxSpace.getContent();
+                if (content == null) {
+                    continue;
+                }
+
+                for (Class<?> interfaceType : content.getClass().getInterfaces()) {
+                    if (!interfaceType.isAnnotationPresent(FunctionalInterface.class)) {
+                        continue;
+                    }
+                    for (java.lang.reflect.Method method : interfaceType.getDeclaredMethods()) {
+                        if (java.lang.reflect.Modifier.isAbstract(method.getModifiers()) && method.getParameterCount() == 0) {
+                            functionalInterfaceInstance = content;
+                            functionalMethod = method;
+                            break;
+                        }
+                    }
+                    if (functionalInterfaceInstance != null) {
+                        break;
+                    }
+                }
+                if (functionalInterfaceInstance != null) {
+                    break;
+                }
+            }
+            if (functionalInterfaceInstance != null) {
+                break;
+            }
+        }
+
+        if (functionalInterfaceInstance == null) {
+            log("FunctionalInterface instance is not found!");
+            return;
+        }
+
+        if (functionalMethod == null) {
+            log("Functional method is not found!");
+            return;
+        }
+
+        try {
+            Object returnValue = functionalMethod.invoke(functionalInterfaceInstance);
+            log(returnValue);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to invoke functional method.", e);
+        }
     }
 }
